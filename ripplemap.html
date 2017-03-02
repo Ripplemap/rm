@@ -1,0 +1,210 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Ripple Map</title>
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="css/example.css">
+    <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+
+    <style type="text/css">
+      @import url(css/style.css);
+
+      .highlight {
+        background-color: #ffff66;
+      }
+
+      #signup {
+        background-color: #eeddff;
+        font-size: 20px;
+        line-height: 30px;
+      }
+
+      #storytime {
+        background-color: #efd8ff;
+      }
+
+      .hide {
+        display: none;
+      }
+
+      .tag {
+        cursor: not-allowed;
+        background-color: #fcecff;
+        padding: 2px;
+        margin: 1px;
+      }
+
+      #the-conversation {
+        font-size: 20px;
+        line-height: 30px;
+        /* padding: 30px 0px; */
+        /* margin: 15px 0px; */
+      }
+
+      #the-conversation select {
+        border: aliceblue;
+        font-size: inherit;
+      }
+
+       #header {
+        margin-bottom: 2em;
+      }
+
+      h1 {
+        font-size: 40px;
+        color: #9900ff;
+      }
+
+      .background {
+        stroke: white;
+        stroke-width: 1px;
+        fill: white;
+      }
+
+      canvas {
+      /*  border: 1px solid black; */
+      }
+
+      #legend {
+        position: absolute;
+        top: 0px;
+        left: 11px;
+        padding: 10px;
+        font-size: 14px;
+      }
+
+      #sentences, h3 {
+        font-size: 16px;
+      }
+
+      .word:active, .word:focus, .word:hover {
+        border: none;
+        outline: none;
+        background-color: #dfd;
+      }
+
+      .thing:active, .thing:focus, .thing:hover {
+        background-color: #fee;
+      }
+
+      .action:active, .action:focus, .action:hover {
+        background-color: #ffe;
+      }
+
+      .happening:active, .happening:focus, .happening:hover {
+        background-color: #fef;
+      }
+
+      .effect:active, .effect:focus, .effect:hover {
+        background-color: #eff;
+      }
+
+      .edge:active, .edge:focus, .edge:hover {
+        background-color: #eee;
+      }
+
+      /* column styles */
+
+      #left {
+        width: 400px;
+        float: left;
+        background-color: #efd8ff;
+        padding: 1em;
+      }
+
+      #right {
+        position: relative;
+        margin-left: 420px;
+        padding-left: 19px;
+      }
+
+      .clear {
+        clear: both;
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <div id="header">
+      <h1>Welcome to the <span class="orgname">AMC</span> Ripple Map <span id="tags"></span></h1>
+    </div>
+
+    <div id="main">
+      <div id="left">
+
+        <div id="signup">
+          <form id="login">
+            <p>
+              We'd love to hear your stories! Let's start with your contact info:
+            </p>
+            <input name="email" id="email" type="text" placeholder="email" class="typeahead" />
+          </form>
+        </div>
+
+        <div id="storytime" class="hide">
+          <h3>Want to add something to the map?</h3>
+          <form id="the-conversation"></form>
+          <p><em>Use <em>Tab</em> to autocomplete and <em>Return</em> to proceed. Reload the page to fix a mistake.</em></p>
+        </div>
+
+        <hr style="clear:both" />
+
+        <div id="controls">
+          <p>
+            Currently viewing tags: <span id="tagnames"></span>
+          </p>
+          <p>
+            Add a tag:
+            <form id="addtag" action="">
+              <select id="othertags" id="" name=""></select>
+              <input name="" type="submit" value="Go!" />
+            </form>
+          </p>
+        </div>
+
+        <hr style="clear:both" />
+
+        <h3>Click any story to edit</h3>
+
+        <div id="sentences"> </div>
+      </div>
+
+
+      <div id="right">
+
+        <canvas id="ripples" width="900" height="900"></canvas>
+
+        <div id="legend">
+          <strong>Keys: </strong> <br />
+          '←' for previous year <br />
+          '→' for next year <br />
+          'e' toggles recent connections <br />
+          'f' toggles filter stories by year <br />
+          'l' for legend edges <br />
+
+          <p style="display:none">
+            min year:
+            <span id="minyear"></span>
+            max year:
+            <span id="maxyear"></span>
+          </p>
+        </div>
+
+      </div>
+
+      <div class="clear"></div>
+    </div>
+
+    <!-- scripts! -->
+
+    <!--     this is just here for the autocomplete :/ -->
+    <script type="text/javascript" src="vendor/jquery.js"></script>
+    <script type="text/javascript" src="vendor/typeahead.bundle.js"></script>
+
+    <script type="text/javascript" src="vendor/dagoba.js"></script>
+    <script type="text/javascript" src="ripplemap.js"></script>
+
+  </body>
+</html>

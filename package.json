@@ -1,0 +1,9 @@
+{
+  "name": "ripplemap",
+  "version": "0.8.7",
+  "description": "The Ripple Mapping Project",
+  "main": "index.js",
+  "repository": "git@github.com:Ripplemap/rm.git",
+  "author": "dann",
+  "license": "MIT"
+}
