@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "rollup-plugin-babel": "^2.7.1",
-    "rollup-plugin-includepaths": "^0.1.8"
+    "rollup-plugin-includepaths": "^0.1.8",
+    "rollup-watch": "^3.2.2"
   }
 }
