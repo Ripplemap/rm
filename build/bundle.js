@@ -1524,6 +1524,35 @@ function add_to_server_facts(type, live_item) {
   send_data_to_server(fact);
 }
 
+function persist() {
+  // THINK: do we still need localstorage caching?
+  Dagoba.persist(G, 'rripplemap');
+}
+
+persist = debounce(persist, 1000);
+
+function debounce(func, wait, immediate) {
+  // via underscore, needs cleaning
+  // Returns a function, that, as long as it continues to be invoked, will not
+  // be triggered. The function will be called after it stops being called for
+  // N milliseconds. If `immediate` is passed, trigger the function on the
+  // leading edge, instead of the trailing.
+
+  var timeout;
+  return function () {
+    var context = this,
+        args = arguments;
+    var later = function later() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
+}
+
 function send_data_to_server(data, cb) {
   var url = 'http://ripplemap.io:8888';
 
@@ -1564,6 +1593,8 @@ function get_facts_from_server(cb) {
 }
 
 // Some fun functions that help or something
+
+function noop() {}
 
 function eq(attr, val) {
   return function (obj) {
@@ -1635,6 +1666,24 @@ cats.action = {};
 cats.effect = {};
 cats.happening = {};
 
+function get_node(catstr, typestr, props) {
+  var node = convert_props(props);
+
+  var cat = cats[catstr];
+  if (!cat) return error$1('that is not a valid cat', catstr);
+
+  var type = cat[typestr];
+  if (!type) return error$1('that is not a valid ' + catstr + ' type', typestr);
+
+  // TODO: check props again the cattype's property list
+
+  node.cat = catstr;
+  node.type = typestr;
+  node.name = props.name || typestr; // TODO: remove (or something...)
+
+  return node;
+}
+
 function add_alias(catstr, typestr, alias) {
   // TODO: check alias
 
@@ -1652,6 +1701,32 @@ function add_alias(catstr, typestr, alias) {
   cat[alias] = type;
 
   // THINK: alias rules?
+}
+
+function add_thing(type, props, persist$$1) {
+  var node = get_node('thing', type, props);
+  if (!node) return false;
+
+  node.priority = 1; // bbq???
+
+  add_to_graph('node', node);
+  if (persist$$1) add_to_server_facts('node', node);
+
+  return node;
+}
+
+function add_action(type, props, persist$$1) {
+  var node = get_node('action', type, props);
+  if (!node) return false;
+
+  node.priority = 1; // bbq???
+
+  // TODO: check props against type (what does this mean?)
+
+  add_to_graph('node', node);
+  if (persist$$1) add_to_server_facts('node', node);
+
+  return node;
 }
 
 function new_thing_type(type, properties) {
@@ -1869,6 +1944,17 @@ function convert_props(props) {
 }
 
 var convo = new_conversation();
+function join_conversation(conversation) {
+  var conversation = conversation || convo;
+
+  var wants = conversation.current.slots[0].key;
+  var value = el(wants).value;
+
+  convo = fulfill_desire(conversation, value);
+
+  return convo;
+}
+
 function new_sentence() {
   var slots = [{ key: 'subject', type: 'word', cat: 'thing' }, { key: 'verb', type: 'word', cat: 'action' }, { key: 'object', type: 'word', cat: 'thing' }, { key: 'date', type: 'date' }];
   return { slots: slots, filled: [] };
@@ -1879,15 +1965,87 @@ function new_conversation() {
   return { sentences: [sentence], current: sentence };
 }
 
+function fulfill_desire(conversation, value) {
+  var conversation = conversation || convo;
+
+  var sentence = give_word(conversation.current, value);
+
+  // TODO: allow multi-sentence conversations
+
+
+  if (!sentence.slots.length) {
+    var subject, verb, object, date;
+    sentence.filled.forEach(function (slot) {
+      if (slot.type === 'gettype') {
+        var thing = add_thing(slot.value, { name: slot.name }, true);
+        if (slot.oldkey === 'subject') subject = thing;
+        if (slot.oldkey === 'object') object = thing;
+      } else if (slot.type === 'date') {
+        date = slot.value;
+      } else if (slot.key === 'subject') {
+        subject = slot.word;
+      } else if (slot.key === 'object') {
+        object = slot.word;
+      } else if (slot.key === 'verb') {
+        verb = (slot.word || {}).type || slot.value;
+      }
+    });
+
+    if (subject && verb && object) {
+      verb = add_action(verb, { time: new Date(date).getTime() }, true);
+      add_edge('the', verb._id, object._id, 0, true);
+      add_edge('did', subject._id, verb._id, 0, true);
+    }
+
+    // start over
+    // TODO: show the sentence
+    conversation = new_conversation();
+    render$1(); // THINK: this should queue or something... rAF?
+  }
+
+  return conversation;
+}
+
+function give_word(sentence, value) {
+  var slot = sentence.slots.shift();
+  if (!slot) return error$1('This sentence is finished');
+
+  // TODO: check this logic modularly
+  if (slot.type === 'word') {
+    var word = G.v({ name: value, cat: slot.cat }).run()[0];
+    if (word) {
+      slot.word = word;
+    }
+  }
+
+  if (slot.cat === 'thing') {
+    if (slot.type === 'word') {
+      if (!slot.word) {
+        sentence.slots.unshift({ key: 'type', type: 'gettype', name: value, cat: slot.cat, oldkey: slot.key });
+      }
+    } else if (slot.type === 'gettype') {
+      // var nameslot = sentence.filled[sentence.filled.length-1]
+    }
+  }
+
+  // fix it in post
+  slot.value = value;
+  sentence.filled.push(slot);
+
+  return sentence;
+}
+
 // this does some dom things
 
 var el = function () {
   var els = {};
+  var default_el = { addEventListener: noop };
+
   return function (el_id) {
     // NOTE: removing caching for now to deal with vdom
     // if(els[el_id])
     //   return els[el_id]
-    els[el_id] = document.getElementById(el_id) || {};
+    els[el_id] = document.getElementById(el_id) || default_el;
     return els[el_id];
   };
 }();
@@ -1902,9 +2060,249 @@ function append_el(el_id, val) {
 
 // LOGIN/ORG/TAG STUFF
 
-
+function login(e) {
+  e.preventDefault();
+  state.email = el('email').value;
+  el('login').classList.add('hide');
+  el('storytime').classList.remove('hide');
+}
 
 // SOME HIGHLIGHTING OR SOMETHING
+
+var highlight_fun;
+var highlight_target;
+
+function activate_highlighter() {
+  highlight_fun = el('sentences').addEventListener('mousemove', highlighter);
+}
+
+function deactivate_highlighter() {
+  el('sentences').removeEventListener('mousemove', highlight_fun);
+}
+
+function highlighter(e) {
+  for (var t = e.target; t && t.matches; t = t.parentNode) {
+    if (t.matches('.sentence')) {
+      if (highlight_target === t) return undefined;
+
+      highlight_target = t;
+      var ids = [].slice.call(t.children).map(function (node) {
+        return node.dataset.id;
+      }).filter(Boolean);
+      var fun = function fun(v) {
+        return ~ids.indexOf(v._id);
+      };
+      // ids.forEach(id => G.v(id).run()[0].highlight = true)
+      // render()
+      highlight(fun);
+      return undefined;
+    }
+  }
+}
+
+function highlight(o_or_f) {
+  var current = G.v({ highlight: true }).run();
+  current.forEach(function (node) {
+    // node.highlight = false
+    delete node.highlight; // better when collapsing
+  });
+
+  if (!o_or_f) {
+    render$1();
+    return undefined;
+  }
+
+  if (typeof o_or_f === 'function') {
+    current = G.v().filter(o_or_f).run();
+  } else {
+    current = G.v(o_or_f).run();
+  }
+
+  current.forEach(function (node) {
+    node.highlight = true;
+  });
+
+  render$1();
+}
+
+// INTERACTIONS & DOM BINDINGS
+
+function click_tagnames(ev) {
+  ev.preventDefault();
+  var target = ev.target;
+  var tag = target.innerText;
+  if (!tag) return undefined;
+  removetag(tag);
+}
+
+function mouseover_tagnames(ev) {
+  var target = ev.target;
+  var tag = target.innerText;
+
+  if (!tag) return undefined;
+
+  if (highlight_target === tag) return undefined;
+
+  highlight_target = tag;
+  highlight(function (v) {
+    return ~v.tags.indexOf(tag);
+  });
+}
+
+function mouseout_tagnames(ev) {
+  if (!highlight_target) return undefined;
+
+  highlight_target = false;
+  highlight();
+}
+
+function global_keydown(ev) {
+  // TODO: clean this up (prevent span hijacking)
+  if (ev.target.tagName === 'SPAN' || ev.target.tagName === 'INPUT' || ev.target.tagName === 'SELECT' || ev.target.tagName === 'TEXTAREA') return true;
+
+  var key = ev.keyCode || ev.which;
+
+  // var key_a = 97
+  var key_e = 69;
+  var key_f = 70;
+  var key_l = 76;
+  var key_n = 78;
+  var key_p = 80;
+  // var key_s = 115
+  var tilde = 126;
+  var larro = 37;
+  var uarro = 38;
+  var rarro = 39;
+  var darro = 40;
+  // var langl = 60
+  // var rangl = 62
+
+  if (key === larro || key === darro || key === key_p) {
+    ev.preventDefault();
+    if (state.current_year <= state.my_minyear) return false;
+    state.current_year--;
+    render$1();
+  }
+
+  if (key === rarro || key === uarro || key === key_n) {
+    ev.preventDefault();
+    if (state.current_year >= state.my_maxyear) return false;
+    state.current_year++;
+    render$1();
+  }
+
+  if (key === key_f) {
+    state.filter_sentences = !state.filter_sentences;
+    render$1();
+  }
+
+  if (key === key_e) {
+    state.all_edges = !state.all_edges;
+    render$1();
+  }
+
+  if (key === key_l) {
+    state.show_labels = !state.show_labels;
+    render$1();
+  }
+
+  if (key === tilde) {
+    state.admin_mode = !state.admin_mode;
+    render$1();
+  }
+}
+
+function submit_addtag(ev) {
+  ev.preventDefault();
+  addtag(el('othertags').value);
+}
+
+function keyup_sentences(ev) {
+  // var key = ev.keyCode || ev.which
+  var span = ev.target;
+  var type = span.classList.contains('edge') ? 'edge' : 'cat';
+  var val = span.textContent;
+  var id = span.getAttribute('data-id');
+
+  // TODO: trap return for special effects
+  // TODO: maybe trap tab also
+
+  // ev.preventDefault()
+
+  // handle the node case
+  if (type === 'cat' && id && val) {
+    var node = G.vertexIndex[id];
+    if (node && node.name !== val) {
+      // update the name/label in the real graph
+      node.name = val;
+      pub(id);
+    }
+  }
+
+  // handle the edge case
+  if (type === 'edge') {
+    var id1 = span.getAttribute('data-id1');
+    var id2 = span.getAttribute('data-id2');
+
+    var node1 = G.vertexIndex[id1];
+    var edges = node1._in.concat(node1._out);
+    var edge = edges.filter(function (edge) {
+      return edge._in._id === id1 && edge._out._id === id2 || edge._in._id === id2 && edge._out._id === id1;
+    })[0];
+
+    if (!edge) return undefined;
+
+    edge.label = val;
+    edge.type = val;
+
+    // pub(id1 + '-' + id2)
+    // Dagoba.persist(G, 'rripplemap')
+    persist();
+  }
+
+  function pub(id) {
+    // publish the change
+    // Dagoba.persist(G, 'rripplemap')
+    persist();
+
+    // update all other sentences
+    var spans = document.querySelectorAll('span.node-' + id);
+    for (var i = 0; i < spans.length; i++) {
+      if (spans[i] !== span) spans[i].textContent = val;
+    }
+
+    // rerender the graph
+    render$1(0);
+  }
+}
+
+function click_sentences(ev) {
+  var target = ev.target;
+  if (target.nodeName !== 'BUTTON') return true;
+
+  var id = target.getAttribute('data-id');
+  var node = G.vertexIndex[id];
+
+  if (!node) return error$1('That node does not exist');
+
+  if (node.cat === 'action') {
+    // remove "sentence"
+    G.removeVertex(node);
+  } else {
+    G.removeVertex(node); // THINK: is this really reasonable?
+  }
+
+  persist();
+  render$1();
+}
+
+function submit_convo(ev) {
+  ev.preventDefault();
+
+  whatsnext(G, join_conversation());
+
+  return false;
+}
 
 var ctx = el('ripples').getContext('2d');
 
@@ -2260,7 +2658,7 @@ function add_rings(env) {
   for (var i = env.params.minyear; i <= env.params.maxyear; i++) {
     var color = i === state.current_year ? '#999' : '#ccc';
     var radius = state.ring_radius * (i - env.params.my_minyear + 1);
-    env.shapes.unshift({ shape: 'circle', x: 0, y: 0, r: radius, stroke: color, fill: 'white', line: 1, type: 'ring', year: i });
+    env.shapes.unshift({ shape: 'circle', x: 0, y: 0, r: radius, stroke: color, fill: 'rgba(0, 0, 0, 0)', line: 1, type: 'ring', year: i });
   }
   return env;
 }
@@ -2609,6 +3007,14 @@ function write_sentences(env) {
 
 // FORM BUILDER & FRIENDS
 
+function whatsnext(graph, conversation) {
+  // TODO: incorporate graph knowledge (graph is the whole world, or the relevant subgraph)
+  // THINK: what is a conversation?
+  // are we currently in a sentence? then find the highest weighted unfilled 'port'
+
+  render_conversation(conversation);
+}
+
 function get_cat_dat(cat, q) {
   var substrRegex = new RegExp(q, 'i');
   var frontRegex = new RegExp('^' + q, 'i');
@@ -2778,6 +3184,27 @@ function render_all() {
 /*global Dagoba */
 
 var G = Dagoba.graph();
+function addtag(tag) {
+  state.tags.push(tag);
+  G = Dagoba.graph();
+  fact_to_graph(state.facts);
+  render_all();
+}
+
+function removetag(tag) {
+  var index = state.tags.indexOf(tag);
+  if (index === -1) return undefined;
+
+  state.tags.splice(index, 1);
+  G = Dagoba.graph();
+  fact_to_graph(state.facts);
+  render_all();
+}
+
+// function reset_graph() {
+//   G = Dagoba.graph()
+// }
+
 function add_data(cb) {
   get_facts_from_server(function (facts) {
     cb(fact_to_graph(capture_facts(facts)));
@@ -2866,7 +3293,64 @@ function set_intersect(xs, ys) {
   });
 }
 
+///////////////////////// DOM GLUE ///////////////////////////////
+
+
+function do_the_glue() {
+
+  el('login').addEventListener('submit', login);
+
+  el('addtag').addEventListener('submit', submit_addtag);
+
+  el('the-conversation').addEventListener('submit', submit_convo);
+
+  el('sentences').addEventListener('mouseover', activate_highlighter);
+  el('sentences').addEventListener('mouseout', deactivate_highlighter);
+  el('sentences').addEventListener('keyup', keyup_sentences);
+  el('sentences').addEventListener('click', click_sentences);
+
+  el('tagnames').addEventListener('click', click_tagnames);
+  el('tagnames').addEventListener('mouseover', mouseover_tagnames);
+  el('tagnames').addEventListener('mouseout', mouseout_tagnames);
+
+  document.addEventListener('keydown', global_keydown);
+}
+
+///////////////////// END DOM GLUE ///////////////////////////////
+
+
+// package and expose some functionality for the view side,
+// and create outward-facing bindings to spin everything up.
+
+
+// init network load
+// expose rendering functions
+// create dom hooks on demand as html is rendered
+
+
+// TODO: partition incoming bleep bloops by action
+// TODO: build edit functions
+// TODO: build remove functions
+// TODO: ask user for email address
+// TODO: show current tags
+// TODO: allow changing of tags
+// TODO: allow multitag views
+// TODO: add all tags on server
+// TODO: try to get an additional compaction in
+
+// TODO: consolidate like-named nodes
+// TODO: consolidate email addresses on server
+// TODO: copy tags into url
+
+
+// INIT
+
+
+// TODO: break this up a little so the logic is clearer
+
 function init$$1() {
+  do_the_glue();
+
   if (window.location.host === "127.0.0.1") {
     if (window.location.hash) state.safe_mode = window.location.hash.slice(1);else state.safe_mode = true;
   }
