@@ -1,7 +1,11 @@
+import {G} from 'graph'
 import {eq, prop, clone, truncate, push_it, pipe} from 'fun'
 import * as dom from 'dom'
+import {conversation} from 'convo'
+import {cats} from 'model'
+import state from 'state'
 
-export {init, render, render_conversation}
+export {init, render, render_conversation, showtags, render_all}
 
 
 const all_edges        = true  // awkward... :(
@@ -24,7 +28,7 @@ function init() {
   // TODO: consider a workflow for managing this tripartite pipeline, so we can auto-cache etc
   viz_pipe = pipe( mod('data', sg_compact)
                  , mod('data', likenamed)
-                 , mod('data', clusters)
+                 , mod('data', cluster)
                  , mod('data', Dagoba.cloneflat)
                    // layout:
                  , set_year
@@ -58,15 +62,15 @@ function init() {
 
 function render() {
   // TODO: cloning is inefficient: make lazy subgraphs
-  var env = {data: Dagoba.clone(RM.G), params: {my_maxyear: my_maxyear, my_minyear: my_minyear}, shapes: [], ctx: RM.ctx}
+  var env = {data: Dagoba.clone(G), params: {my_maxyear: my_maxyear, my_minyear: my_minyear}, shapes: [], ctx: ctx}
 
   viz_pipe(env)
   word_pipe(env)
 
   // if(n === undefined)
-  //   RM.pipelines.forEach(function(pipeline) { pipeline(env) })
+  //   state.pipelines.forEach(function(pipeline) { pipeline(env) })
   // else
-  //   RM.pipelines[n](env)
+  //   state.pipelines[n](env)
 }
 
 
@@ -137,7 +141,7 @@ let clusters = [ ['AMC', 'amc', 'Allied Media Conference', 'allied media confere
               , ['jayy dodd', 'jayy']
               ]
 
-function clusters(g) {
+function cluster(g) {
   clusters.map(function(names) {
     return names.reduce(function(acc, name) {
       return acc.concat(g.v({name: name}).run())
@@ -636,7 +640,7 @@ function draw_angle_text(ctx, x1, y1, x2, y2, str, font, fill_color) {
 // SENTENCE STRUCTURES
 
 function get_actions(env) {
-  var actions = RM.G.v({cat: 'action'}).run() // FIXME: use env.data, not G
+  var actions = G.v({cat: 'action'}).run() // FIXME: use env.data, not G
   env.params.actions = actions
   return env
 }
@@ -775,7 +779,7 @@ function whatsnext(graph, conversation) {
 function get_cat_dat(cat, q) {
   var substrRegex = new RegExp(q, 'i')
   var frontRegex = new RegExp('^' + q, 'i')
-  var nodes = RM.G.vertices.filter(function(node) {return node.cat === cat}).map(prop('name'))
+  var nodes = G.vertices.filter(function(node) {return node.cat === cat}).map(prop('name'))
         .filter(function(name) {return substrRegex.test(name)})
 
   nodes.sort(function(a, b) {
@@ -820,7 +824,7 @@ function render_conversation(conversation) {
   dom.set_el('conversation', prelude + inputs + submit_button)
 
   // wiring... /sigh
-  var catnames = Object.keys(RM.cats)
+  var catnames = Object.keys(cats)
   catnames.forEach(function(cat) {
     $('.'+cat+'-input').typeahead(typeahead_params, typeahead_source(cat))
   })
@@ -911,4 +915,43 @@ function render_conversation(conversation) {
 
 function mayben(val) {
   return /^[aeiou]/.test(val) ? 'n' : ''
+}
+
+
+function set_minus(xs, ys) {
+  return xs.filter(function(x) {
+    return ys.indexOf(x) === -1
+  })
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+function showtags() {
+  // generate current tags
+  // hoverable span for highlight, plus clickable for remove
+  var tagwrapper = ['<span class="tag">', '</span>']
+  var tagstr = state.tags.map(function(tag) { return tagwrapper[0] + tag + tagwrapper[1] }).join(', ')
+  dom.set_el('tagnames', tagstr)
+
+  // generate select box
+  var unused = set_minus(Object.keys(state.tagkeys), state.tags).sort()
+  var optionstr = '<option>' + unused.join('</option><option>') + '</option>'
+  dom.set_el('othertags', optionstr)
+}
+
+
+function render_all() {
+  render()
+  render_conversation(conversation)
+  showtags()
 }

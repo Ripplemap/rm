@@ -1,13 +1,120 @@
 'use strict';
 
-/*global Dagoba */
+const state = {};
+state.tags = []; // THINK: default to ['plain']?
+state.facts = [];
+state.tagkeys = {};
+state.query = {};
 
-const G$1 = Dagoba.graph();
+state.safe_mode = false;
+state.loading = true; // TODO: fix this
 
+function add_to_server_facts(type, live_item) {
+  if (state.loading) return undefined;
 
-// function reset_graph() {
-//   RM.G = Dagoba.graph()
-// }
+  /*
+    data model:
+   user: id
+   action: add/remove/edit
+   type: node/edge
+   tags: [...]
+   [maybe other stats can live here?]
+   data:
+     node: {id, name, type, cat...}
+     edge: {_in, _out, type, label}
+    */
+
+  // var item = JSON.parse(JSON.stringify(live_item))
+  var item = Object.keys(live_item).reduce(function (acc, key) {
+    if (['_in', '_out'].indexOf(key) !== -1) return acc;
+    acc[key] = live_item[key];
+    return acc;
+  }, {});
+
+  if (type === 'edge') {
+    item._out = live_item._out._id;
+    item._in = live_item._in._id;
+  }
+
+  // FIXME: present splash page of some kind
+
+  var fact = { email: state.email,
+    action: 'add',
+    type: type,
+    tags: state.tags,
+    data: item
+  };
+
+  send_data_to_server(fact);
+}
+
+function persist() {
+  // THINK: do we still need localstorage caching?
+  Dagoba.persist(G, 'rripplemap');
+}
+
+persist = debounce(persist, 1000);
+
+function debounce(func, wait, immediate) {
+  // via underscore, needs cleaning
+  // Returns a function, that, as long as it continues to be invoked, will not
+  // be triggered. The function will be called after it stops being called for
+  // N milliseconds. If `immediate` is passed, trigger the function on the
+  // leading edge, instead of the trailing.
+
+  var timeout;
+  return function () {
+    var context = this,
+        args = arguments;
+    var later = function () {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
+}
+
+function send_data_to_server(data, cb) {
+  var url = 'http://ripplemap.io:8888';
+
+  if (state.safe_mode === 'daring') {
+    url = 'http://localhost:8888';
+  } else if (state.safe_mode) {
+    return console.log(G);
+  }
+
+  fetch(url, { method: 'post',
+    body: JSON.stringify(data)
+  }).then(function (response) {
+    return response.json();
+  }).then(function (result) {
+    if (cb) cb(result);
+  });
+}
+
+function get_facts_from_server(cb) {
+  var url = 'http://ripplemap.io:8888';
+
+  // local shunt for airplane mode
+  if (state.safe_mode === 'local') return cb(JSON.parse(localStorage['DAGOBA::ripmapdata']));
+
+  if (state.safe_mode === 'daring') {
+    url = 'http://localhost:8888';
+  }
+
+  fetch(url, {
+    method: 'get'
+  }).then(function (response) {
+    return response.json();
+  }).then(function (data) {
+    cb(data);
+  }).catch(function (err) {
+    console.log('lalalal', err);
+  });
+}
 
 // Some fun functions that help or something
 
@@ -71,11 +178,385 @@ function pipe() {
   return magic_pipe;
 }
 
-const state = {};
+function error(mess) {
+  console.log(arguments, mess);
+}
+
+const cats = {}; // ripplemap categories
+cats.thing = {};
+cats.action = {};
+cats.effect = {};
+cats.happening = {};
+
+function get_node(catstr, typestr, props) {
+  var node = convert_props(props);
+
+  var cat = cats[catstr];
+  if (!cat) return error('that is not a valid cat', catstr);
+
+  var type = cat[typestr];
+  if (!type) return error('that is not a valid ' + catstr + ' type', typestr);
+
+  // TODO: check props again the cattype's property list
+
+  node.cat = catstr;
+  node.type = typestr;
+  node.name = props.name || typestr; // TODO: remove (or something...)
+
+  return node;
+}
+
+function add_alias(catstr, typestr, alias) {
+  // TODO: check alias
+
+  // add an alias to anything
+  var cat = cats[catstr];
+  if (!cat) return error('Invalid cat', catstr);
+
+  var type = cat[typestr];
+  if (!type) return error('That is not a valid thing type', typestr);
+
+  // add alias
+  type.aliases.push(alias);
+
+  // add type to list
+  cat[alias] = type;
+
+  // THINK: alias rules?
+}
+
+function add_thing(type, props, persist$$1) {
+  var node = get_node('thing', type, props);
+  if (!node) return false;
+
+  node.priority = 1; // bbq???
+
+  add_to_graph('node', node);
+  if (persist$$1) add_to_server_facts('node', node);
+
+  return node;
+}
+
+function add_action(type, props, persist$$1) {
+  var node = get_node('action', type, props);
+  if (!node) return false;
+
+  node.priority = 1; // bbq???
+
+  // TODO: check props against type (what does this mean?)
+
+  add_to_graph('node', node);
+  if (persist$$1) add_to_server_facts('node', node);
+
+  return node;
+}
+
+function new_thing_type(type, properties) {
+  // TODO: valid type?
+
+  // does this type exist already?
+  var cattype = cats.thing[type];
+  if (cattype) return error('That thing type already exists', type);
+
+  // manually create
+  // THINK: should we copy properties here?
+  cattype = { type: type };
+  cattype.aliases = []; // THINK: but if you do don't override properties.aliases
+
+  // add properties.cc
+  cattype.cc = properties.cc || {};
+
+  // add default props for all things
+  cattype.props = {}; // THINK: get props from properties.props?
+  cattype.props.name = {};
+  cattype.props.start = {}; // THINK: these have both fuzziness and confidence issues (how sure is the user of the time, how sure are we of the user)
+  cattype.props.end = {};
+
+  // TODO: add questions
+
+  // put in place
+  cats.thing[type] = cattype;
+
+  // add properties.aliases
+  if (properties.aliases) {
+    properties.aliases.forEach(function (alias) {
+      add_alias('thing', type, alias);
+    });
+  }
+}
+
+function new_action_type(type, properties) {
+  // TODO: valid type?
+
+  // does this type exist already?
+  var cattype = cats.action[type];
+  if (cattype) return error('That action type already exists', type);
+
+  // manually create
+  // THINK: should we copy properties here?
+  cattype = { type: type };
+
+  // add properties.edges and default edges
+  cattype.edges = properties.edges || {};
+  cattype.edges.did = { dir: 'in', plural: 0, label: 'did', types: ['person'], aliases: [] };
+  cattype.edges.to = { dir: 'in', plural: 0, label: 'to', types: ['effect'], aliases: [] };
+  cattype.edges.the = { dir: 'out', plural: 0, label: 'the', types: ['thing'], aliases: [] };
+
+  // add default props for all actions
+  cattype.props = {}; // THINK: get props from properties.props?
+  cattype.aliases = []; // THINK: but if you do don't override properties.aliases
+
+  // TODO: add questions
+
+  // put in place
+  cats.action[type] = cattype;
+
+  // add properties.aliases
+  if (properties.aliases) {
+    properties.aliases.forEach(function (alias) {
+      add_alias('action', type, alias);
+    });
+  }
+}
+
+function new_effect_type(type, properties) {
+  // TODO: valid type?
+
+  // does this type exist already?
+  var cattype = cats.effect[type];
+  if (cattype) return error('That effect type already exists', type);
+
+  // manually create
+  // THINK: should we copy properties here?
+  cattype = { type: type };
+
+  // add properties.edges and default edges
+  cattype.edges = properties.edges || {};
+  cattype.edges.to = { dir: 'out', plural: 0, label: 'to', types: ['action'], aliases: [] };
+  cattype.edges.by = { dir: 'in', plural: 1, label: 'by', types: ['thing'], aliases: [] };
+  cattype.edges.was = { dir: 'in', plural: 1, label: 'was', types: ['person'], aliases: [] };
+  cattype.edges.during = { dir: 'out', plural: 0, label: 'during', types: ['happening'], aliases: [] };
+
+  // add default props for all effects
+  cattype.props = {}; // THINK: get props from properties.props?
+  cattype.aliases = []; // THINK: but if you do don't override properties.aliases
+
+  // TODO: add questions
+
+  // put in place
+  cats.effect[type] = cattype;
+
+  // add properties.aliases
+  if (properties.aliases) {
+    properties.aliases.forEach(function (alias) {
+      add_alias('effect', type, alias);
+    });
+  }
+}
+
+function new_happening_type(type, properties) {
+  // what properties do happenings have?
+  // an edge type can have an alias for storytelling purposes
+
+  // TODO: valid type?
+
+  // does this type exist already?
+  var cattype = cats.happening[type];
+  if (cattype) return error('That happening type already exists', type);
+
+  // manually create
+  // THINK: should we copy properties here?
+  cattype = { type: type };
+
+  // add properties.edges and default edges
+  cattype.edges = properties.edges || {};
+  cattype.edges.at = { dir: 'out', plural: 0, label: 'at', types: ['place', 'event'], aliases: [] };
+  cattype.edges.the = { dir: 'out', plural: 1, label: 'the', types: ['outcome', 'event'], aliases: [] };
+  cattype.edges.did = { dir: 'in', plural: 1, label: 'did', types: ['person'], aliases: [] };
+  cattype.edges.during = { dir: 'in', plural: 0, label: 'during', types: ['effect'], aliases: [] };
+
+  // add default props for all happenings
+  cattype.props = {}; // THINK: get props from properties.props?
+  cattype.aliases = []; // THINK: but if you do don't override properties.aliases
+
+  // TODO: add questions
+
+  // put in place
+  cats.happening[type] = cattype;
+
+  // add properties.aliases
+  if (properties.aliases) {
+    properties.aliases.forEach(function (alias) {
+      add_alias('happening', type, alias);
+    });
+  }
+}
+
+function add_edge(type, from, to, props, persist$$1) {
+  var edge = {};
+
+  // check from and to
+  // check type against from and to interfaces
+  // publish in dagoba + persist
+
+  edge = convert_props(props);
+  edge._in = to;
+  edge._out = from;
+  edge.type = type;
+  edge.label = type;
+
+  // THINK: if Dagoba supported proper subgraphs, we could have RM.facts and RM.G and keep them fully in sync, instead of limiting RM.G to just the "viewable" facts. we'll need a new RM.GG or something for the currently viewable subgraph. this would also help with all the duplicate node warning messages, cut down on allocations, and allow a pipeline based around building new graphs (or extending/syncing the main graph from the factbase). so facts_to_graph would take a graph and some facts and put them together, or something. or as you add new facts they're automatically ramified into the graph. or fizzlemorts.
+
+  add_to_graph('edge', edge);
+  if (persist$$1) add_to_server_facts('edge', edge);
+}
+
+new_thing_type('person', {});
+new_thing_type('org', { cc: ['org'] });
+new_thing_type('place', { cc: ['place', 'event'] });
+new_thing_type('event', { cc: ['event', 'outcome'], timerange: true }); // already has start and end, so... ?
+new_thing_type('outcome', { cc: ['outcome'], aliases: ['artwork', 'session'] }); // local vs ubiquitous outcomes -- they're structurally different
+
+new_action_type('pass', { aliases: [] });
+new_action_type('join', { aliases: [] });
+new_action_type('leave', { aliases: [] });
+new_action_type('create', { aliases: [] });
+new_action_type('attend', { aliases: ['participate in'] });
+new_action_type('manage', { aliases: ['run', 'lead', 'facilitate', 'coordinate', 'organize'] });
+new_action_type('assist', { aliases: ['help', 'host', 'contribute'] });
+new_action_type('present', { aliases: [] });
+new_action_type('represent', { aliases: [] });
+new_action_type('fund', { aliases: [] });
+new_action_type('inspire', { aliases: [] });
+new_action_type('invite', { aliases: [] });
+
+new_effect_type('inspire', { aliases: ['influenced'] });
+new_effect_type('convince', { aliases: ['ask'] });
+new_effect_type('introduce', { aliases: ['meet'] });
+
+new_happening_type('conversation', { aliases: [] });
+new_happening_type('experience', { aliases: ['see', 'hear', 'watch', 'attend'] });
+
+// MODEL HELPERS
+
+
+function add_to_graph(type, item) {
+  if (type === 'node') {
+    // TODO: this is kind of a hack, but also kind of not
+    if (!item._id) item._id = get_new_id();
+    G.addVertex(item);
+  }
+
+  if (type === 'edge') {
+    G.addEdge(item);
+  }
+}
+
+function get_new_id() {
+  // TODO: swap this out for maybe a mongo_id implementation
+  return ("" + Math.random()).slice(2);
+}
+
+function convert_props(props) {
+  if (typeof props !== 'object') return {};
+
+  if (Array.isArray(props)) return {};
+
+  return clone(props);
+}
+
+let conversation = new_conversation();
+function join_conversation(conversation) {
+  var wants = conversation.current.slots[0].key;
+  var value = el(wants).value;
+
+  var convo = fulfill_desire(conversation, value);
+
+  conversation = convo;
+  return convo;
+}
+
+function new_sentence() {
+  var slots = [{ key: 'subject', type: 'word', cat: 'thing' }, { key: 'verb', type: 'word', cat: 'action' }, { key: 'object', type: 'word', cat: 'thing' }, { key: 'date', type: 'date' }];
+  return { slots: slots, filled: [] };
+}
+
+function new_conversation() {
+  var sentence = new_sentence();
+  return { sentences: [sentence], current: sentence };
+}
+
+function fulfill_desire(conversation, value) {
+  var sentence = give_word(conversation.current, value);
+
+  // TODO: allow multi-sentence conversations
+
+
+  if (!sentence.slots.length) {
+    var subject, verb, object, date;
+    sentence.filled.forEach(function (slot) {
+      if (slot.type === 'gettype') {
+        var thing = add_thing(slot.value, { name: slot.name }, true);
+        if (slot.oldkey === 'subject') subject = thing;
+        if (slot.oldkey === 'object') object = thing;
+      } else if (slot.type === 'date') {
+        date = slot.value;
+      } else if (slot.key === 'subject') {
+        subject = slot.word;
+      } else if (slot.key === 'object') {
+        object = slot.word;
+      } else if (slot.key === 'verb') {
+        verb = (slot.word || {}).type || slot.value;
+      }
+    });
+
+    if (subject && verb && object) {
+      verb = add_action(verb, { time: new Date(date).getTime() }, true);
+      add_edge('the', verb._id, object._id, 0, true);
+      add_edge('did', subject._id, verb._id, 0, true);
+    }
+
+    // start over
+    // TODO: show the sentence
+    conversation = new_conversation();
+    render(); // THINK: this should queue or something... rAF?
+  }
+
+  return conversation;
+}
+
+function give_word(sentence, value) {
+  var slot = sentence.slots.shift();
+  if (!slot) return error('This sentence is finished');
+
+  // TODO: check this logic modularly
+  if (slot.type === 'word') {
+    var word = G.v({ name: value, cat: slot.cat }).run()[0];
+    if (word) {
+      slot.word = word;
+    }
+  }
+
+  if (slot.cat === 'thing') {
+    if (slot.type === 'word') {
+      if (!slot.word) {
+        sentence.slots.unshift({ key: 'type', type: 'gettype', name: value, cat: slot.cat, oldkey: slot.key });
+      }
+    } else if (slot.type === 'gettype') {
+      // var nameslot = sentence.filled[sentence.filled.length-1]
+    }
+  }
+
+  // fix it in post
+  slot.value = value;
+  sentence.filled.push(slot);
+
+  return sentence;
+}
 
 // this does some dom things
 
-const el$1 = function () {
+const el = function () {
   const els = {};
   return function (el_id) {
     // NOTE: removing caching for now to deal with vdom
@@ -87,20 +568,20 @@ const el$1 = function () {
 }();
 
 function set_el(el_id, val) {
-  el$1(el_id).innerHTML = val;
+  el(el_id).innerHTML = val;
 }
 
 function append_el(el_id, val) {
-  el$1(el_id).innerHTML += val;
+  el(el_id).innerHTML += val;
 }
 
 // LOGIN/ORG/TAG STUFF
 
-el$1('login').addEventListener('submit', function (e) {
+el('login').addEventListener('submit', function (e) {
   e.preventDefault();
-  state.email = el$1('email').value;
-  el$1('login').classList.add('hide');
-  el$1('storytime').classList.remove('hide');
+  state.email = el('email').value;
+  el('login').classList.add('hide');
+  el('storytime').classList.remove('hide');
 });
 
 // SOME HIGHLIGHTING OR SOMETHING
@@ -108,15 +589,15 @@ el$1('login').addEventListener('submit', function (e) {
 var highlight_fun;
 var highlight_target;
 
-el$1('sentences').addEventListener('mouseover', activate_highlighter);
-el$1('sentences').addEventListener('mouseout', deactivate_highlighter);
+el('sentences').addEventListener('mouseover', activate_highlighter);
+el('sentences').addEventListener('mouseout', deactivate_highlighter);
 
 function activate_highlighter() {
-  highlight_fun = el$1('sentences').addEventListener('mousemove', highlighter);
+  highlight_fun = el('sentences').addEventListener('mousemove', highlighter);
 }
 
 function deactivate_highlighter() {
-  el$1('sentences').removeEventListener('mousemove', highlight_fun);
+  el('sentences').removeEventListener('mousemove', highlight_fun);
 }
 
 function highlighter(e) {
@@ -164,7 +645,7 @@ function highlight(o_or_f) {
 
 // INTERACTIONS & DOM BINDINGS
 
-el$1('tagnames').addEventListener('click', function (ev) {
+el('tagnames').addEventListener('click', function (ev) {
   ev.preventDefault();
   var target = ev.target;
   var tag = target.innerText;
@@ -172,7 +653,7 @@ el$1('tagnames').addEventListener('click', function (ev) {
   removetag(tag);
 });
 
-el$1('tagnames').addEventListener('mouseover', function (ev) {
+el('tagnames').addEventListener('mouseover', function (ev) {
   var target = ev.target;
   var tag = target.innerText;
 
@@ -186,7 +667,7 @@ el$1('tagnames').addEventListener('mouseover', function (ev) {
   });
 });
 
-el$1('tagnames').addEventListener('mouseout', function (ev) {
+el('tagnames').addEventListener('mouseout', function (ev) {
   if (!highlight_target) return undefined;
 
   highlight_target = false;
@@ -249,12 +730,12 @@ document.addEventListener('keydown', function (ev) {
   }
 });
 
-el$1('addtag').addEventListener('submit', function (ev) {
+el('addtag').addEventListener('submit', function (ev) {
   ev.preventDefault();
-  addtag(el$1('othertags').value);
+  addtag(el('othertags').value);
 });
 
-el$1('sentences').addEventListener('keyup', function (ev) {
+el('sentences').addEventListener('keyup', function (ev) {
   // var key = ev.keyCode || ev.which
   var span = ev.target;
   var type = span.classList.contains('edge') ? 'edge' : 'cat';
@@ -313,7 +794,7 @@ el$1('sentences').addEventListener('keyup', function (ev) {
   }
 });
 
-el$1('sentences').addEventListener('click', function (ev) {
+el('sentences').addEventListener('click', function (ev) {
   var target = ev.target;
   if (target.nodeName !== 'BUTTON') return true;
 
@@ -333,7 +814,7 @@ el$1('sentences').addEventListener('click', function (ev) {
   render();
 });
 
-el$1('the-conversation').addEventListener('submit', function (ev) {
+el('the-conversation').addEventListener('submit', function (ev) {
   ev.preventDefault();
 
   whatsnext(graph, join_conversation(conversation));
@@ -350,7 +831,7 @@ const current_year$1 = 2017; // more hacks
 const filter_sentences$1 = false; // awkward... :(
 const ring_radius = 40; // lalala
 
-const ctx = el$1('ripples').getContext('2d');
+const ctx = el('ripples').getContext('2d');
 
 var viz_pipe;
 var word_pipe;
@@ -359,7 +840,7 @@ var word_pipe;
 
 function init$1() {
   // TODO: consider a workflow for managing this tripartite pipeline, so we can auto-cache etc
-  viz_pipe = pipe(mod('data', sg_compact), mod('data', likenamed), mod('data', clusters), mod('data', Dagoba.cloneflat)
+  viz_pipe = pipe(mod('data', sg_compact), mod('data', likenamed), mod('data', cluster), mod('data', Dagoba.cloneflat)
   // layout:
   , set_year, data_to_graph, add_fakes, set_coords, set_score, minimize_edge_length, remove_fakes, unique_y_pos, filter_by_year
   // shapes:
@@ -370,17 +851,17 @@ function init$1() {
   word_pipe = pipe(get_actions, filter_actions, make_sentences, write_sentences);
 }
 
-function render$1() {
+function render() {
   // TODO: cloning is inefficient: make lazy subgraphs
-  var env = { data: Dagoba.clone(RM.G), params: { my_maxyear: my_maxyear$1, my_minyear: my_minyear$1 }, shapes: [], ctx: RM.ctx };
+  var env = { data: Dagoba.clone(G), params: { my_maxyear: my_maxyear$1, my_minyear: my_minyear$1 }, shapes: [], ctx: ctx };
 
   viz_pipe(env);
   word_pipe(env);
 
   // if(n === undefined)
-  //   RM.pipelines.forEach(function(pipeline) { pipeline(env) })
+  //   state.pipelines.forEach(function(pipeline) { pipeline(env) })
   // else
-  //   RM.pipelines[n](env)
+  //   state.pipelines[n](env)
 }
 
 // COMPACTIONS
@@ -437,7 +918,7 @@ function likenamed(g) {
 
 let clusters = [['AMC', 'amc', 'Allied Media Conference', 'allied media conference', 'Allied media Conference'], ['AMP', 'amp', 'Allied Media Projects', 'allied media projects'], ['AMC2016 Coordinators Weekend', 'AMC 2016 Coordinators Meeting'], ['jayy dodd', 'jayy']];
 
-function clusters(g) {
+function cluster(g) {
   clusters.map(function (names) {
     return names.reduce(function (acc, name) {
       return acc.concat(g.v({ name: name }).run());
@@ -931,7 +1412,7 @@ function draw_angle_text(ctx, x1, y1, x2, y2, str, font, fill_color) {
 // SENTENCE STRUCTURES
 
 function get_actions(env) {
-  var actions = RM.G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
+  var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
   env.params.actions = actions;
   return env;
 }
@@ -1049,7 +1530,7 @@ function write_sentences(env) {
 function get_cat_dat(cat, q) {
   var substrRegex = new RegExp(q, 'i');
   var frontRegex = new RegExp('^' + q, 'i');
-  var nodes = RM.G.vertices.filter(function (node) {
+  var nodes = G.vertices.filter(function (node) {
     return node.cat === cat;
   }).map(prop('name')).filter(function (name) {
     return substrRegex.test(name);
@@ -1062,7 +1543,7 @@ function get_cat_dat(cat, q) {
   return nodes;
 }
 
-function render_conversation(conversation) {
+function render_conversation(conversation$$1) {
   var typeahead_params = { hint: true, highlight: true, minLength: 1 };
   function typeahead_source(cat) {
     return { name: 'states', source: function (q, cb) {
@@ -1075,7 +1556,7 @@ function render_conversation(conversation) {
   var submit_button = '<input type="submit" style="position: absolute; left: -9999px">';
 
   // special case the first step
-  var sentence = conversation.current;
+  var sentence = conversation$$1.current;
 
   sentence.filled.forEach(function (slot, i) {
     prelude += inject_value(slot, slot.value, i) + ' ';
@@ -1098,7 +1579,7 @@ function render_conversation(conversation) {
   set_el('conversation', prelude + inputs + submit_button);
 
   // wiring... /sigh
-  var catnames = Object.keys(RM.cats);
+  var catnames = Object.keys(cats);
   catnames.forEach(function (cat) {
     $('.' + cat + '-input').typeahead(typeahead_params, typeahead_source(cat));
   });
@@ -1185,400 +1666,69 @@ function mayben(val) {
   );
 }
 
-/*global Dagoba */
-
-// package and expose some functionality for the view side,
-// and create outward-facing bindings to spin everything up.
-
-
-// init network load
-// expose rendering functions
-// create dom hooks on demand as html is rendered
-
-
-// THE BEGINNING
-
-const RM$1 = {};
-RM$1.facts = [];
-RM$1.tags = []; // THINK: default to ['plain']?
-RM$1.tagkeys = {};
-
-// TODO: fix these globals
-
-const safe_mode = false; // okay whatever
-const query = {}; // vroom vroom
-
-
-RM$1.conversation = new_conversation();
-
-// HELPERS
-
-
-/* INTERFACES FOR RIPPLE MODEL
- *
- * There are four categories: Thing, Action, Effect, and Happening
- *
- * Each category has multiple types associated with it. Each node has a category and type.
- *
- * Each node also tracks its cron, the adding user, and some type of 'confidence interval' (later)
- *
- * Each edge has a type, which is its label. Nodes expect edges of certain types.
- *
- */
-
-RM$1.cats = {}; // ripplemap categories
-RM$1.cats.thing = {};
-RM$1.cats.action = {};
-RM$1.cats.effect = {};
-RM$1.cats.happening = {};
-
-function add_alias(catstr, typestr, alias) {
-  // TODO: check alias
-
-  // add an alias to anything
-  var cat = RM$1.cats[catstr];
-  if (!cat) return error('Invalid cat', catstr);
-
-  var type = cat[typestr];
-  if (!type) return error('That is not a valid thing type', typestr);
-
-  // add alias
-  type.aliases.push(alias);
-
-  // add type to list
-  cat[alias] = type;
-
-  // THINK: alias rules?
-}
-
-function new_thing_type(type, properties) {
-  // TODO: valid type?
-
-  // does this type exist already?
-  var cattype = RM$1.cats.thing[type];
-  if (cattype) return error('That thing type already exists', type);
-
-  // manually create
-  // THINK: should we copy properties here?
-  cattype = { type: type };
-  cattype.aliases = []; // THINK: but if you do don't override properties.aliases
-
-  // add properties.cc
-  cattype.cc = properties.cc || {};
-
-  // add default props for all things
-  cattype.props = {}; // THINK: get props from properties.props?
-  cattype.props.name = {};
-  cattype.props.start = {}; // THINK: these have both fuzziness and confidence issues (how sure is the user of the time, how sure are we of the user)
-  cattype.props.end = {};
-
-  // TODO: add questions
-
-  // put in place
-  RM$1.cats.thing[type] = cattype;
-
-  // add properties.aliases
-  if (properties.aliases) {
-    properties.aliases.forEach(function (alias) {
-      add_alias('thing', type, alias);
-    });
-  }
-}
-
-function new_action_type(type, properties) {
-  // TODO: valid type?
-
-  // does this type exist already?
-  var cattype = RM$1.cats.action[type];
-  if (cattype) return error('That action type already exists', type);
-
-  // manually create
-  // THINK: should we copy properties here?
-  cattype = { type: type };
-
-  // add properties.edges and default edges
-  cattype.edges = properties.edges || {};
-  cattype.edges.did = { dir: 'in', plural: 0, label: 'did', types: ['person'], aliases: [] };
-  cattype.edges.to = { dir: 'in', plural: 0, label: 'to', types: ['effect'], aliases: [] };
-  cattype.edges.the = { dir: 'out', plural: 0, label: 'the', types: ['thing'], aliases: [] };
-
-  // add default props for all actions
-  cattype.props = {}; // THINK: get props from properties.props?
-  cattype.aliases = []; // THINK: but if you do don't override properties.aliases
-
-  // TODO: add questions
-
-  // put in place
-  RM$1.cats.action[type] = cattype;
-
-  // add properties.aliases
-  if (properties.aliases) {
-    properties.aliases.forEach(function (alias) {
-      add_alias('action', type, alias);
-    });
-  }
-}
-
-function new_effect_type(type, properties) {
-  // TODO: valid type?
-
-  // does this type exist already?
-  var cattype = RM$1.cats.effect[type];
-  if (cattype) return error('That effect type already exists', type);
-
-  // manually create
-  // THINK: should we copy properties here?
-  cattype = { type: type };
-
-  // add properties.edges and default edges
-  cattype.edges = properties.edges || {};
-  cattype.edges.to = { dir: 'out', plural: 0, label: 'to', types: ['action'], aliases: [] };
-  cattype.edges.by = { dir: 'in', plural: 1, label: 'by', types: ['thing'], aliases: [] };
-  cattype.edges.was = { dir: 'in', plural: 1, label: 'was', types: ['person'], aliases: [] };
-  cattype.edges.during = { dir: 'out', plural: 0, label: 'during', types: ['happening'], aliases: [] };
-
-  // add default props for all effects
-  cattype.props = {}; // THINK: get props from properties.props?
-  cattype.aliases = []; // THINK: but if you do don't override properties.aliases
-
-  // TODO: add questions
-
-  // put in place
-  RM$1.cats.effect[type] = cattype;
-
-  // add properties.aliases
-  if (properties.aliases) {
-    properties.aliases.forEach(function (alias) {
-      add_alias('effect', type, alias);
-    });
-  }
-}
-
-function new_happening_type(type, properties) {
-  // what properties do happenings have?
-  // an edge type can have an alias for storytelling purposes
-
-  // TODO: valid type?
-
-  // does this type exist already?
-  var cattype = RM$1.cats.happening[type];
-  if (cattype) return error('That happening type already exists', type);
-
-  // manually create
-  // THINK: should we copy properties here?
-  cattype = { type: type };
-
-  // add properties.edges and default edges
-  cattype.edges = properties.edges || {};
-  cattype.edges.at = { dir: 'out', plural: 0, label: 'at', types: ['place', 'event'], aliases: [] };
-  cattype.edges.the = { dir: 'out', plural: 1, label: 'the', types: ['outcome', 'event'], aliases: [] };
-  cattype.edges.did = { dir: 'in', plural: 1, label: 'did', types: ['person'], aliases: [] };
-  cattype.edges.during = { dir: 'in', plural: 0, label: 'during', types: ['effect'], aliases: [] };
-
-  // add default props for all happenings
-  cattype.props = {}; // THINK: get props from properties.props?
-  cattype.aliases = []; // THINK: but if you do don't override properties.aliases
-
-  // TODO: add questions
-
-  // put in place
-  RM$1.cats.happening[type] = cattype;
-
-  // add properties.aliases
-  if (properties.aliases) {
-    properties.aliases.forEach(function (alias) {
-      add_alias('happening', type, alias);
-    });
-  }
-}
-
-function add_edge(type, from, to, props, persist) {
-  var edge = {};
-
-  // check from and to
-  // check type against from and to interfaces
-  // publish in dagoba + persist
-
-  edge = convert_props(props);
-  edge._in = to;
-  edge._out = from;
-  edge.type = type;
-  edge.label = type;
-
-  // THINK: if Dagoba supported proper subgraphs, we could have RM.facts and RM.G and keep them fully in sync, instead of limiting RM.G to just the "viewable" facts. we'll need a new RM.GG or something for the currently viewable subgraph. this would also help with all the duplicate node warning messages, cut down on allocations, and allow a pipeline based around building new graphs (or extending/syncing the main graph from the factbase). so facts_to_graph would take a graph and some facts and put them together, or something. or as you add new facts they're automatically ramified into the graph. or fizzlemorts.
-
-  add_to_graph('edge', edge);
-  if (persist) add_to_server_facts('edge', edge);
-}
-
-// find all the paths between them, and their attached bits
-
-
-// SET UP CATEGORIES AND EDGES
-
-new_thing_type('person', {});
-new_thing_type('org', { cc: ['org'] });
-new_thing_type('place', { cc: ['place', 'event'] });
-new_thing_type('event', { cc: ['event', 'outcome'], timerange: true }); // already has start and end, so... ?
-new_thing_type('outcome', { cc: ['outcome'], aliases: ['artwork', 'session'] }); // local vs ubiquitous outcomes -- they're structurally different
-
-new_action_type('pass', { aliases: [] });
-new_action_type('join', { aliases: [] });
-new_action_type('leave', { aliases: [] });
-new_action_type('create', { aliases: [] });
-new_action_type('attend', { aliases: ['participate in'] });
-new_action_type('manage', { aliases: ['run', 'lead', 'facilitate', 'coordinate', 'organize'] });
-new_action_type('assist', { aliases: ['help', 'host', 'contribute'] });
-new_action_type('present', { aliases: [] });
-new_action_type('represent', { aliases: [] });
-new_action_type('fund', { aliases: [] });
-new_action_type('inspire', { aliases: [] });
-new_action_type('invite', { aliases: [] });
-
-new_effect_type('inspire', { aliases: ['influenced'] });
-new_effect_type('convince', { aliases: ['ask'] });
-new_effect_type('introduce', { aliases: ['meet'] });
-
-new_happening_type('conversation', { aliases: [] });
-new_happening_type('experience', { aliases: ['see', 'hear', 'watch', 'attend'] });
-
-// MODEL HELPERS
-
-var loading = true; // TODO: fix this
-
-function add_to_server_facts(type, live_item) {
-  if (loading) return undefined;
-
-  /*
-    data model:
-   user: id
-   action: add/remove/edit
-   type: node/edge
-   tags: [...]
-   [maybe other stats can live here?]
-   data:
-     node: {id, name, type, cat...}
-     edge: {_in, _out, type, label}
-    */
-
-  // var item = JSON.parse(JSON.stringify(live_item))
-  var item = Object.keys(live_item).reduce(function (acc, key) {
-    if (['_in', '_out'].indexOf(key) !== -1) return acc;
-    acc[key] = live_item[key];
-    return acc;
-  }, {});
-
-  if (type === 'edge') {
-    item._out = live_item._out._id;
-    item._in = live_item._in._id;
-  }
-
-  // FIXME: present splash page of some kind
-
-  var fact = { email: state.email,
-    action: 'add',
-    type: type,
-    tags: RM$1.tags,
-    data: item
-  };
-
-  send_data_to_server(fact);
-}
-
-function add_to_graph(type, item) {
-  if (type === 'node') {
-    // TODO: this is kind of a hack, but also kind of not
-    if (!item._id) item._id = get_new_id();
-    RM$1.G.addVertex(item);
-  }
-
-  if (type === 'edge') {
-    RM$1.G.addEdge(item);
-  }
-}
-
-function get_new_id() {
-  // TODO: swap this out for maybe a mongo_id implementation
-  return ("" + Math.random()).slice(2);
-}
-
-function send_data_to_server(data, cb) {
-  var url = 'http://ripplemap.io:8888';
-
-  if (safe_mode === 'daring') {
-    url = 'http://localhost:8888';
-  } else if (safe_mode) {
-    return console.log(RM$1.G);
-  }
-
-  fetch(url, { method: 'post',
-    body: JSON.stringify(data)
-  }).then(function (response) {
-    return response.json();
-  }).then(function (result) {
-    if (cb) cb(result);
+function set_minus(xs, ys) {
+  return xs.filter(function (x) {
+    return ys.indexOf(x) === -1;
   });
 }
 
-function get_facts_from_server(cb) {
-  var url = 'http://ripplemap.io:8888';
+function showtags() {
+  // generate current tags
+  // hoverable span for highlight, plus clickable for remove
+  var tagwrapper = ['<span class="tag">', '</span>'];
+  var tagstr = state.tags.map(function (tag) {
+    return tagwrapper[0] + tag + tagwrapper[1];
+  }).join(', ');
+  set_el('tagnames', tagstr);
 
-  // local shunt for airplane mode
-  if (safe_mode === 'local') return cb(JSON.parse(localStorage['DAGOBA::ripmapdata']));
-
-  if (safe_mode === 'daring') {
-    url = 'http://localhost:8888';
-  }
-
-  fetch(url, {
-    method: 'get'
-  }).then(function (response) {
-    return response.json();
-  }).then(function (data) {
-    cb(data);
-  }).catch(function (err) {
-    console.log('lalalal', err);
-  });
+  // generate select box
+  var unused = set_minus(Object.keys(state.tagkeys), state.tags).sort();
+  var optionstr = '<option>' + unused.join('</option><option>') + '</option>';
+  set_el('othertags', optionstr);
 }
 
-function convert_props(props) {
-  if (typeof props !== 'object') return {};
-
-  if (Array.isArray(props)) return {};
-
-  return clone(props);
-}
-
-function new_sentence() {
-  var slots = [{ key: 'subject', type: 'word', cat: 'thing' }, { key: 'verb', type: 'word', cat: 'action' }, { key: 'object', type: 'word', cat: 'thing' }, { key: 'date', type: 'date' }];
-  return { slots: slots, filled: [] };
-}
-
-function new_conversation() {
-  var sentence = new_sentence();
-  return { sentences: [sentence], current: sentence };
-}
-
-function render_all$1() {
-  render$1();
-  render_conversation(RM$1.conversation);
+function render_all() {
+  render();
+  render_conversation(conversation);
   showtags();
 }
 
-// INIT
+/*global Dagoba */
+
+let G = Dagoba.graph();
+function addtag(tag) {
+  state.tags.push(tag);
+  G = Dagoba.graph();
+  fact_to_graph(state.facts);
+  render_all();
+}
+
+function removetag(tag) {
+  var index = state.tags.indexOf(tag);
+  if (index === -1) return undefined;
+
+  state.tags.splice(index, 1);
+  G = Dagoba.graph();
+  fact_to_graph(state.facts);
+  render_all();
+}
+
+// function reset_graph() {
+//   G = Dagoba.graph()
+// }
 
 function add_data(cb) {
   get_facts_from_server(function (facts) {
-    cb(fact_to_graph$1(capture_facts(facts)));
+    cb(fact_to_graph(capture_facts(facts)));
   });
 }
 
 function capture_facts(facts) {
-  RM$1.facts = facts;
+  state.facts = facts;
   return facts;
 }
 
-function fact_to_graph$1(facts) {
+function fact_to_graph(facts) {
   /*
     data model:
    user: id
@@ -1593,7 +1743,7 @@ function fact_to_graph$1(facts) {
     */
 
   var tree = factor_facts(filter_facts(facts));
-  RM$1.tagkeys = get_tagkeys(facts);
+  state.tagkeys = get_tagkeys(facts);
 
   tree.nodes.add.forEach(function (node) {
     var fun = window['add_' + node.cat]; // FIXME: ugh erk yuck poo
@@ -1607,7 +1757,8 @@ function fact_to_graph$1(facts) {
   });
 
   tree.nodes.edit.forEach(function (node) {
-    RM$1.graph.edit(node); //////
+    // FIXME: what on earth is this??? should it be G.edit?
+    // RM.graph.edit(node) //////
   });
 }
 
@@ -1623,7 +1774,7 @@ function get_tagkeys(facts) {
 
 function filter_facts(facts) {
   facts = facts.filter(function (fact) {
-    return !!set_intersect(fact.tags, RM$1.tags).length; // THINK: this implies no empty tag arrays (so 'plain' as default?)
+    return !!set_intersect(fact.tags, state.tags).length; // THINK: this implies no empty tag arrays (so 'plain' as default?)
   });
 
   return facts;
@@ -1654,54 +1805,33 @@ function set_intersect(xs, ys) {
   });
 }
 
-function set_minus(xs, ys) {
-  return xs.filter(function (x) {
-    return ys.indexOf(x) === -1;
-  });
-}
-
-function showtags() {
-  // generate current tags
-  // hoverable span for highlight, plus clickable for remove
-  var tagwrapper = ['<span class="tag">', '</span>'];
-  var tagstr = RM$1.tags.map(function (tag) {
-    return tagwrapper[0] + tag + tagwrapper[1];
-  }).join(', ');
-  set_el('tagnames', tagstr);
-
-  // generate select box
-  var unused = set_minus(Object.keys(RM$1.tagkeys), RM$1.tags).sort();
-  var optionstr = '<option>' + unused.join('</option><option>') + '</option>';
-  set_el('othertags', optionstr);
-}
-
 function init$$1() {
   if (window.location.host === "127.0.0.1") {
-    if (window.location.hash) safe_mode = window.location.hash.slice(1);else safe_mode = true;
+    if (window.location.hash) state.safe_mode = window.location.hash.slice(1);else state.safe_mode = true;
   }
 
   if (window.location.search) {
-    query = window.location.search.substr(1).split('&').reduce(function (acc, pair) {
+    state.query = window.location.search.substr(1).split('&').reduce(function (acc, pair) {
       var p = pair.split('=');
       acc[p[0]] = p[1];
       return acc;
     }, {});
-    if (query.tag) RM$1.tags = [query.tag];else if (query.tags) RM$1.tags = query.tags.split('|');
+    if (state.query.tag) state.tags = [state.query.tag];else if (state.query.tags) state.tags = state.query.tags.split('|');
   }
 
-  RM$1.G = Dagoba.graph();
+  // G = Dagoba.graph()
 
   init$1();
 
   function cb() {
-    render_all$1();
-    loading = false; // TODO: get rid of this somehow
+    render_all();
+    state.loading = false; // TODO: get rid of this somehow
   }
 
   add_data(cb);
 
   setTimeout(function () {
-    render$1();
+    render();
   }, 111);
 }
 

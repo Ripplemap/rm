@@ -1,6 +1,11 @@
 // this does some dom things
 
 import state from 'state'
+import {G, addtag, removetag} from 'graph'
+import {conversation, join_conversation} from 'convo'
+import {error} from 'fun'
+import {persist} from 'net'
+import {render} from 'render'
 
 export {set_el, append_el}
 
