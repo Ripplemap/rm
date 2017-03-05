@@ -601,9 +601,6 @@ function login(e) {
 var highlight_fun;
 var highlight_target;
 
-el('sentences').addEventListener('mouseover', activate_highlighter);
-el('sentences').addEventListener('mouseout', deactivate_highlighter);
-
 function activate_highlighter() {
   highlight_fun = el('sentences').addEventListener('mousemove', highlighter);
 }
@@ -657,15 +654,15 @@ function highlight(o_or_f) {
 
 // INTERACTIONS & DOM BINDINGS
 
-el('tagnames').addEventListener('click', function (ev) {
+function click_tagnames(ev) {
   ev.preventDefault();
   var target = ev.target;
   var tag = target.innerText;
   if (!tag) return undefined;
   removetag(tag);
-});
+}
 
-el('tagnames').addEventListener('mouseover', function (ev) {
+function mouseover_tagnames(ev) {
   var target = ev.target;
   var tag = target.innerText;
 
@@ -677,16 +674,16 @@ el('tagnames').addEventListener('mouseover', function (ev) {
   highlight(function (v) {
     return ~v.tags.indexOf(tag);
   });
-});
+}
 
-el('tagnames').addEventListener('mouseout', function (ev) {
+function mouseout_tagnames(ev) {
   if (!highlight_target) return undefined;
 
   highlight_target = false;
   highlight();
-});
+}
 
-document.addEventListener('keydown', function (ev) {
+function global_keydown(ev) {
   // TODO: clean this up (prevent span hijacking)
   if (ev.target.tagName === 'SPAN' || ev.target.tagName === 'INPUT' || ev.target.tagName === 'SELECT' || ev.target.tagName === 'TEXTAREA') return true;
 
@@ -740,14 +737,14 @@ document.addEventListener('keydown', function (ev) {
     state.admin_mode = !state.admin_mode;
     render();
   }
-});
+}
 
-el('addtag').addEventListener('submit', function (ev) {
+function submit_addtag(ev) {
   ev.preventDefault();
   addtag(el('othertags').value);
-});
+}
 
-el('sentences').addEventListener('keyup', function (ev) {
+function keyup_sentences(ev) {
   // var key = ev.keyCode || ev.which
   var span = ev.target;
   var type = span.classList.contains('edge') ? 'edge' : 'cat';
@@ -804,9 +801,9 @@ el('sentences').addEventListener('keyup', function (ev) {
     // rerender the graph
     render(0);
   }
-});
+}
 
-el('sentences').addEventListener('click', function (ev) {
+function click_sentences(ev) {
   var target = ev.target;
   if (target.nodeName !== 'BUTTON') return true;
 
@@ -824,15 +821,15 @@ el('sentences').addEventListener('click', function (ev) {
 
   persist();
   render();
-});
+}
 
-el('the-conversation').addEventListener('submit', function (ev) {
+function submit_convo(ev) {
   ev.preventDefault();
 
   whatsnext(G, join_conversation());
 
   return false;
-});
+}
 
 const ctx = el('ripples').getContext('2d');
 
@@ -1816,7 +1813,25 @@ function set_intersect(xs, ys) {
   });
 }
 
+///////////////////////// DOM GLUE ///////////////////////////////
+
+
 el('login').addEventListener('submit', login);
+
+el('addtag').addEventListener('submit', submit_addtag);
+
+el('the-conversation').addEventListener('submit', submit_convo);
+
+el('sentences').addEventListener('mouseover', activate_highlighter);
+el('sentences').addEventListener('mouseout', deactivate_highlighter);
+el('sentences').addEventListener('keyup', keyup_sentences);
+el('sentences').addEventListener('click', click_sentences);
+
+el('tagnames').addEventListener('click', click_tagnames);
+el('tagnames').addEventListener('mouseover', mouseover_tagnames);
+el('tagnames').addEventListener('mouseout', mouseout_tagnames);
+
+document.addEventListener('keydown', global_keydown);
 
 ///////////////////// END DOM GLUE ///////////////////////////////
 

@@ -7,7 +7,7 @@ import {error} from 'fun'
 import {persist} from 'net'
 import {render, whatsnext} from 'render'
 
-export {login, set_el, append_el}
+export {set_el, append_el}
 
 export const el = function() {
   const els = {}
@@ -32,7 +32,7 @@ function append_el(el_id, val) {
 
 // LOGIN/ORG/TAG STUFF
 
-function login(e) {
+export function login(e) {
   e.preventDefault()
   state.email = el('email').value
   el('login').classList.add('hide')
@@ -43,14 +43,11 @@ function login(e) {
 
 var highlight_fun, highlight_target
 
-el('sentences').addEventListener('mouseover', activate_highlighter)
-el('sentences').addEventListener('mouseout', deactivate_highlighter)
-
-function activate_highlighter() {
+export function activate_highlighter() {
   highlight_fun = el('sentences').addEventListener('mousemove', highlighter)
 }
 
-function deactivate_highlighter() {
+export function deactivate_highlighter() {
   el('sentences').removeEventListener('mousemove', highlight_fun)
 }
 
@@ -99,15 +96,15 @@ function highlight(o_or_f) {
 
 // INTERACTIONS & DOM BINDINGS
 
-el('tagnames').addEventListener('click', function(ev) {
+export function click_tagnames(ev) {
   ev.preventDefault()
   var target = ev.target
   var tag = target.innerText
   if(!tag) return undefined
   removetag(tag)
-})
+}
 
-el('tagnames').addEventListener('mouseover', function(ev) {
+export function mouseover_tagnames(ev) {
   var target = ev.target
   var tag = target.innerText
 
@@ -119,17 +116,17 @@ el('tagnames').addEventListener('mouseover', function(ev) {
 
   highlight_target = tag
   highlight(function(v) { return ~v.tags.indexOf(tag) })
-})
+}
 
-el('tagnames').addEventListener('mouseout', function(ev) {
+export function mouseout_tagnames(ev) {
   if(!highlight_target)
     return undefined
 
   highlight_target = false
   highlight()
-})
+}
 
-document.addEventListener('keydown', function(ev) {
+export function global_keydown(ev) {
   // TODO: clean this up (prevent span hijacking)
   if( ev.target.tagName === 'SPAN'
    || ev.target.tagName === 'INPUT'
@@ -188,14 +185,14 @@ document.addEventListener('keydown', function(ev) {
     state.admin_mode = !state.admin_mode
     render()
   }
-})
+}
 
-el('addtag').addEventListener('submit', function(ev) {
+export function submit_addtag(ev) {
   ev.preventDefault()
   addtag(el('othertags').value)
-})
+}
 
-el('sentences').addEventListener('keyup', function(ev) {
+export function keyup_sentences(ev) {
   // var key = ev.keyCode || ev.which
   var span = ev.target
   var type = span.classList.contains('edge') ? 'edge' : 'cat'
@@ -255,9 +252,9 @@ el('sentences').addEventListener('keyup', function(ev) {
     render(0)
   }
 
-})
+}
 
-el('sentences').addEventListener('click', function(ev) {
+export function click_sentences(ev) {
   var target = ev.target
   if(target.nodeName !== 'BUTTON')
     return true
@@ -277,12 +274,12 @@ el('sentences').addEventListener('click', function(ev) {
 
   persist()
   render()
-})
+}
 
-el('the-conversation').addEventListener('submit', function(ev) {
+export function submit_convo(ev) {
   ev.preventDefault()
 
   whatsnext(G, join_conversation())
 
   return false
-})
+}
