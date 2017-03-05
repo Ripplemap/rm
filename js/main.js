@@ -5,6 +5,44 @@ import state from 'state'
 
 
 
+
+
+
+///////////////////////// DOM GLUE ///////////////////////////////
+
+
+
+
+
+dom.el('login').addEventListener('submit', dom.login)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////////////////// END DOM GLUE ///////////////////////////////
+
+
+
+
+
+
+
+
+
+
 // package and expose some functionality for the view side,
 // and create outward-facing bindings to spin everything up.
 
@@ -42,16 +80,7 @@ import state from 'state'
 // INIT
 
 
-
-
-
-/////////////////////////////
-
-
-
-
-
-
+// TODO: break this up a little so the logic is clearer
 
 function init() {
   if(window.location.host === "127.0.0.1") {

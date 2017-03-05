@@ -1,21 +1,12 @@
 import {G} from 'graph'
 import {eq, prop, clone, truncate, push_it, pipe} from 'fun'
 import * as dom from 'dom'
-import {conversation} from 'convo'
+import {convo as conversation} from 'convo'
 import {cats} from 'model'
 import state from 'state'
 
-export {init, render, render_conversation, showtags, render_all}
+export {init, render, render_all, whatsnext}
 
-
-const all_edges        = true  // awkward... :(
-const admin_mode       = false // yep another hack w00t
-const my_maxyear       = 2017  // total hackery...
-const my_minyear       = 2008  // hack hack hack
-const show_labels      = false // yup
-const current_year     = 2017  // more hacks
-const filter_sentences = false // awkward... :(
-const ring_radius      = 40    // lalala
 
 const ctx = dom.el('ripples').getContext('2d')
 
@@ -62,7 +53,7 @@ function init() {
 
 function render() {
   // TODO: cloning is inefficient: make lazy subgraphs
-  var env = {data: Dagoba.clone(G), params: {my_maxyear: my_maxyear, my_minyear: my_minyear}, shapes: [], ctx: ctx}
+  var env = {data: Dagoba.clone(G), params: {my_maxyear: state.my_maxyear, my_minyear: state.my_minyear}, shapes: [], ctx: ctx}
 
   viz_pipe(env)
   word_pipe(env)
@@ -181,8 +172,8 @@ function set_year(env) {
 
   // env.params.minyear = minyear
   // env.params.maxyear = maxyear
-  env.params.minyear = my_minyear
-  env.params.maxyear = my_maxyear
+  env.params.minyear = state.my_minyear
+  env.params.maxyear = state.my_maxyear
 
   return env
 }
@@ -223,7 +214,7 @@ function set_coords(env) {
     if(node.x) return node
 
     var offset = node.year - env.params.my_minyear + 1
-    var radius = offset * ring_radius // HACK: remove this!
+    var radius = offset * state.ring_radius // HACK: remove this!
 
     var nabes = years[node.year]
     // var gnode = G.vertexIndex[node._id]
@@ -384,8 +375,8 @@ function filter_by_year(env) {
   var min = env.params.my_minyear
 
   // hack hack hack
-  if(current_year < max)
-    max = current_year
+  if(state.current_year < max)
+    max = state.current_year
 
   // TODO: do this in Dagoba so we can erase edges automatically
   env.data.V = env.data.V.filter(function(node) {
@@ -404,8 +395,8 @@ function filter_by_year(env) {
 
 function add_rings(env) {
   for(var i = env.params.minyear; i <= env.params.maxyear; i++) {
-    var color = i === current_year ? '#999' : '#ccc'
-    var radius = ring_radius * (i - env.params.my_minyear + 1)
+    var color = i === state.current_year ? '#999' : '#ccc'
+    var radius = state.ring_radius * (i - env.params.my_minyear + 1)
     env.shapes.unshift({shape: 'circle', x: 0, y: 0, r: radius, stroke: color, fill: 'white', line: 1, type: 'ring', year: i})
   }
   return env
@@ -415,7 +406,7 @@ function add_ring_labels(env) {
   var labels = []
 
   env.shapes.filter(eq('type', 'ring')).forEach(function(shape) {
-    var fill = shape.year === current_year ? '#999' : '#ccc'
+    var fill = shape.year === state.current_year ? '#999' : '#ccc'
     var label = {shape: 'text', str: shape.year, x: -15, y: -shape.r - 5, fill: fill, font: "18px Raleway" }
     labels.push(label)
   })
@@ -426,14 +417,14 @@ function add_ring_labels(env) {
 
 function copy_edges(env) {
   env.data.E.forEach(function(edge) {
-    if(!all_edges && !(edge._out.year === current_year || edge._in.year === current_year)) // HACK: remove this
+    if(!state.all_edges && !(edge._out.year === state.current_year || edge._in.year === state.current_year)) // HACK: remove this
       return undefined
 
     var label = edge.label || "777"
     var color = str_to_color(label)
 
-    // function str_to_color(str) { return 'hsl' + (show_labels?'a':'') + '(' + str_to_num(str) + ',100%,40%' + (show_labels?',0.3':'') + ')';}
-    function str_to_color(str) { return 'hsla' + '(' + str_to_num(str) + ',30%,40%,0.' + (show_labels?'3':'7') + ')' }
+    // function str_to_color(str) { return 'hsl' + (state.show_labels?'a':'') + '(' + str_to_num(str) + ',100%,40%' + (state.show_labels?',0.3':'') + ')';}
+    function str_to_color(str) { return 'hsla' + '(' + str_to_num(str) + ',30%,40%,0.' + (state.show_labels?'3':'7') + ')' }
     function str_to_num(str) { return char_to_num(str, 0) + char_to_num(str, 1) + char_to_num(str, 2) }
     function char_to_num(char, index) { return (char.charCodeAt(index) % 20) * 20 }
 
@@ -446,16 +437,16 @@ function copy_edges(env) {
 function copy_nodes(env) {
   env.shapes = env.shapes.concat.apply(env.shapes, env.data.V.map(function(node) {
     // HACK: move this elsewhere
-    if(!all_edges) {
+    if(!state.all_edges) {
       var ghost = !node._in.concat(node._out)
                        .map(e => [e._in.year, e._out.year])
                        .reduce((acc, t) => acc.concat(t), [])
-                       .filter(y => y === current_year).length
+                       .filter(y => y === state.current_year).length
       if(ghost)
         return []
     }
 
-    // var this_year = all_edges || node.year === current_year
+    // var this_year = state.all_edges || node.year === state.current_year
     // var color =  'hsla(0,0%,20%,0.' + (this_year ? '99' : '3') + ')'
 
     // Person: Blue
@@ -513,7 +504,7 @@ function add_node_labels(env) {
 }
 
 function add_edge_labels(env) {
-  if(!show_labels)
+  if(!state.show_labels)
     return env
 
   var labels = []
@@ -544,7 +535,7 @@ function draw_it(env) {
 
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
-  // el('maxyear').textContent = 1900 + current_year
+  // el('maxyear').textContent = 1900 + state.current_year
   return env
 }
 
@@ -651,10 +642,10 @@ function filter_actions(env) {
     return action
   })
 
-  if(!filter_sentences) return env
+  if(!state.filter_sentences) return env
 
   env.params.actions = env.params.actions.filter(function(action) {
-    return action.year === current_year
+    return action.year === state.current_year
   })
 
   return env
@@ -720,7 +711,7 @@ function write_sentences(env) {
       else
         data = {id1: thing._in._id, id2: thing._out._id}
 
-      if(!admin_mode)
+      if(!state.admin_mode)
         innerwords += template(classes, data, word)
       else
         innerwords += admin_template(thing, type, cat, word)
@@ -821,7 +812,7 @@ function render_conversation(conversation) {
 
 
   // do the DOM
-  dom.set_el('conversation', prelude + inputs + submit_button)
+  dom.set_el('the-conversation', prelude + inputs + submit_button)
 
   // wiring... /sigh
   var catnames = Object.keys(cats)

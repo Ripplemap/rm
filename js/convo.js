@@ -5,16 +5,17 @@ import {render} from 'render'
 import {error} from 'fun'
 
 
-export let conversation = new_conversation()
+export let convo = new_conversation()
 export {join_conversation}
 
 function join_conversation(conversation) {
+  var conversation = conversation || convo
+
   var wants = conversation.current.slots[0].key
   var value = dom.el(wants).value
 
-  var convo = fulfill_desire(conversation, value)
+  convo = fulfill_desire(conversation, value)
 
-  conversation = convo
   return convo
 }
 
@@ -33,6 +34,8 @@ function new_conversation() {
 }
 
 function fulfill_desire(conversation, value) {
+  var conversation = conversation || convo
+
   var sentence = give_word(conversation.current, value)
 
   // TODO: allow multi-sentence conversations

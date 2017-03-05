@@ -2,12 +2,12 @@
 
 import state from 'state'
 import {G, addtag, removetag} from 'graph'
-import {conversation, join_conversation} from 'convo'
+import {join_conversation} from 'convo'
 import {error} from 'fun'
 import {persist} from 'net'
-import {render} from 'render'
+import {render, whatsnext} from 'render'
 
-export {set_el, append_el}
+export {login, set_el, append_el}
 
 export const el = function() {
   const els = {}
@@ -32,12 +32,12 @@ function append_el(el_id, val) {
 
 // LOGIN/ORG/TAG STUFF
 
-el('login').addEventListener('submit', function(e) {
+function login(e) {
   e.preventDefault()
   state.email = el('email').value
   el('login').classList.add('hide')
   el('storytime').classList.remove('hide')
-})
+}
 
 // SOME HIGHLIGHTING OR SOMETHING
 
@@ -157,35 +157,35 @@ document.addEventListener('keydown', function(ev) {
 
   if(key === larro || key === darro || key === key_p) {
     ev.preventDefault()
-    if(current_year <= my_minyear) return false
-    current_year--
+    if(state.current_year <= state.my_minyear) return false
+    state.current_year--
     render()
   }
 
   if(key === rarro || key === uarro || key === key_n) {
     ev.preventDefault()
-    if(current_year >= my_maxyear) return false
-    current_year++
+    if(state.current_year >= state.my_maxyear) return false
+    state.current_year++
     render()
   }
 
   if(key === key_f) {
-    filter_sentences = !filter_sentences
+    state.filter_sentences = !state.filter_sentences
     render()
   }
 
   if(key === key_e) {
-    all_edges = !all_edges
+    state.all_edges = !state.all_edges
     render()
   }
 
   if(key === key_l) {
-    show_labels = !show_labels
+    state.show_labels = !state.show_labels
     render()
   }
 
   if(key === tilde) {
-    admin_mode = !admin_mode
+    state.admin_mode = !state.admin_mode
     render()
   }
 })
@@ -282,7 +282,7 @@ el('sentences').addEventListener('click', function(ev) {
 el('the-conversation').addEventListener('submit', function(ev) {
   ev.preventDefault()
 
-  whatsnext(graph, join_conversation(conversation))
+  whatsnext(G, join_conversation())
 
   return false
 })

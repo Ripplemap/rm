@@ -9,6 +9,15 @@ state.query = {};
 state.safe_mode = false;
 state.loading = true; // TODO: fix this
 
+state.all_edges = true; // awkward... :(
+state.admin_mode = false; // yep another hack w00t
+state.my_maxyear = 2017; // total hackery...
+state.my_minyear = 2008; // hack hack hack
+state.show_labels = false; // yup
+state.current_year = 2017; // more hacks
+state.filter_sentences = false; // awkward... :(
+state.ring_radius = 40; // lalala
+
 function add_to_server_facts(type, live_item) {
   if (state.loading) return undefined;
 
@@ -465,14 +474,15 @@ function convert_props(props) {
   return clone(props);
 }
 
-let conversation = new_conversation();
+let convo = new_conversation();
 function join_conversation(conversation) {
+  var conversation = conversation || convo;
+
   var wants = conversation.current.slots[0].key;
   var value = el(wants).value;
 
-  var convo = fulfill_desire(conversation, value);
+  convo = fulfill_desire(conversation, value);
 
-  conversation = convo;
   return convo;
 }
 
@@ -487,6 +497,8 @@ function new_conversation() {
 }
 
 function fulfill_desire(conversation, value) {
+  var conversation = conversation || convo;
+
   var sentence = give_word(conversation.current, value);
 
   // TODO: allow multi-sentence conversations
@@ -577,12 +589,12 @@ function append_el(el_id, val) {
 
 // LOGIN/ORG/TAG STUFF
 
-el('login').addEventListener('submit', function (e) {
+function login(e) {
   e.preventDefault();
   state.email = el('email').value;
   el('login').classList.add('hide');
   el('storytime').classList.remove('hide');
-});
+}
 
 // SOME HIGHLIGHTING OR SOMETHING
 
@@ -697,35 +709,35 @@ document.addEventListener('keydown', function (ev) {
 
   if (key === larro || key === darro || key === key_p) {
     ev.preventDefault();
-    if (current_year <= my_minyear) return false;
-    current_year--;
+    if (state.current_year <= state.my_minyear) return false;
+    state.current_year--;
     render();
   }
 
   if (key === rarro || key === uarro || key === key_n) {
     ev.preventDefault();
-    if (current_year >= my_maxyear) return false;
-    current_year++;
+    if (state.current_year >= state.my_maxyear) return false;
+    state.current_year++;
     render();
   }
 
   if (key === key_f) {
-    filter_sentences = !filter_sentences;
+    state.filter_sentences = !state.filter_sentences;
     render();
   }
 
   if (key === key_e) {
-    all_edges = !all_edges;
+    state.all_edges = !state.all_edges;
     render();
   }
 
   if (key === key_l) {
-    show_labels = !show_labels;
+    state.show_labels = !state.show_labels;
     render();
   }
 
   if (key === tilde) {
-    admin_mode = !admin_mode;
+    state.admin_mode = !state.admin_mode;
     render();
   }
 });
@@ -817,19 +829,10 @@ el('sentences').addEventListener('click', function (ev) {
 el('the-conversation').addEventListener('submit', function (ev) {
   ev.preventDefault();
 
-  whatsnext(graph, join_conversation(conversation));
+  whatsnext(G, join_conversation());
 
   return false;
 });
-
-const all_edges$1 = true; // awkward... :(
-const admin_mode$1 = false; // yep another hack w00t
-const my_maxyear$1 = 2017; // total hackery...
-const my_minyear$1 = 2008; // hack hack hack
-const show_labels$1 = false; // yup
-const current_year$1 = 2017; // more hacks
-const filter_sentences$1 = false; // awkward... :(
-const ring_radius = 40; // lalala
 
 const ctx = el('ripples').getContext('2d');
 
@@ -853,7 +856,7 @@ function init$1() {
 
 function render() {
   // TODO: cloning is inefficient: make lazy subgraphs
-  var env = { data: Dagoba.clone(G), params: { my_maxyear: my_maxyear$1, my_minyear: my_minyear$1 }, shapes: [], ctx: ctx };
+  var env = { data: Dagoba.clone(G), params: { my_maxyear: state.my_maxyear, my_minyear: state.my_minyear }, shapes: [], ctx: ctx };
 
   viz_pipe(env);
   word_pipe(env);
@@ -958,8 +961,8 @@ function set_year(env) {
 
   // env.params.minyear = minyear
   // env.params.maxyear = maxyear
-  env.params.minyear = my_minyear$1;
-  env.params.maxyear = my_maxyear$1;
+  env.params.minyear = state.my_minyear;
+  env.params.maxyear = state.my_maxyear;
 
   return env;
 }
@@ -1000,7 +1003,7 @@ function set_coords(env) {
     if (node.x) return node;
 
     var offset = node.year - env.params.my_minyear + 1;
-    var radius = offset * ring_radius; // HACK: remove this!
+    var radius = offset * state.ring_radius; // HACK: remove this!
 
     var nabes = years[node.year];
     // var gnode = G.vertexIndex[node._id]
@@ -1165,7 +1168,7 @@ function filter_by_year(env) {
   var min = env.params.my_minyear;
 
   // hack hack hack
-  if (current_year$1 < max) max = current_year$1;
+  if (state.current_year < max) max = state.current_year;
 
   // TODO: do this in Dagoba so we can erase edges automatically
   env.data.V = env.data.V.filter(function (node) {
@@ -1183,8 +1186,8 @@ function filter_by_year(env) {
 
 function add_rings(env) {
   for (var i = env.params.minyear; i <= env.params.maxyear; i++) {
-    var color = i === current_year$1 ? '#999' : '#ccc';
-    var radius = ring_radius * (i - env.params.my_minyear + 1);
+    var color = i === state.current_year ? '#999' : '#ccc';
+    var radius = state.ring_radius * (i - env.params.my_minyear + 1);
     env.shapes.unshift({ shape: 'circle', x: 0, y: 0, r: radius, stroke: color, fill: 'white', line: 1, type: 'ring', year: i });
   }
   return env;
@@ -1194,7 +1197,7 @@ function add_ring_labels(env) {
   var labels = [];
 
   env.shapes.filter(eq('type', 'ring')).forEach(function (shape) {
-    var fill = shape.year === current_year$1 ? '#999' : '#ccc';
+    var fill = shape.year === state.current_year ? '#999' : '#ccc';
     var label = { shape: 'text', str: shape.year, x: -15, y: -shape.r - 5, fill: fill, font: "18px Raleway" };
     labels.push(label);
   });
@@ -1205,15 +1208,15 @@ function add_ring_labels(env) {
 
 function copy_edges(env) {
   env.data.E.forEach(function (edge) {
-    if (!all_edges$1 && !(edge._out.year === current_year$1 || edge._in.year === current_year$1)) // HACK: remove this
+    if (!state.all_edges && !(edge._out.year === state.current_year || edge._in.year === state.current_year)) // HACK: remove this
       return undefined;
 
     var label = edge.label || "777";
     var color = str_to_color(label);
 
-    // function str_to_color(str) { return 'hsl' + (show_labels?'a':'') + '(' + str_to_num(str) + ',100%,40%' + (show_labels?',0.3':'') + ')';}
+    // function str_to_color(str) { return 'hsl' + (state.show_labels?'a':'') + '(' + str_to_num(str) + ',100%,40%' + (state.show_labels?',0.3':'') + ')';}
     function str_to_color(str) {
-      return 'hsla' + '(' + str_to_num(str) + ',30%,40%,0.' + (show_labels$1 ? '3' : '7') + ')';
+      return 'hsla' + '(' + str_to_num(str) + ',30%,40%,0.' + (state.show_labels ? '3' : '7') + ')';
     }
     function str_to_num(str) {
       return char_to_num(str, 0) + char_to_num(str, 1) + char_to_num(str, 2);
@@ -1231,12 +1234,12 @@ function copy_edges(env) {
 function copy_nodes(env) {
   env.shapes = env.shapes.concat.apply(env.shapes, env.data.V.map(function (node) {
     // HACK: move this elsewhere
-    if (!all_edges$1) {
-      var ghost = !node._in.concat(node._out).map(e => [e._in.year, e._out.year]).reduce((acc, t) => acc.concat(t), []).filter(y => y === current_year$1).length;
+    if (!state.all_edges) {
+      var ghost = !node._in.concat(node._out).map(e => [e._in.year, e._out.year]).reduce((acc, t) => acc.concat(t), []).filter(y => y === state.current_year).length;
       if (ghost) return [];
     }
 
-    // var this_year = all_edges || node.year === current_year
+    // var this_year = state.all_edges || node.year === state.current_year
     // var color =  'hsla(0,0%,20%,0.' + (this_year ? '99' : '3') + ')'
 
     // Person: Blue
@@ -1293,7 +1296,7 @@ function add_node_labels(env) {
 }
 
 function add_edge_labels(env) {
-  if (!show_labels$1) return env;
+  if (!state.show_labels) return env;
 
   var labels = [];
 
@@ -1323,7 +1326,7 @@ function draw_it(env) {
 
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
-  // el('maxyear').textContent = 1900 + current_year
+  // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
@@ -1423,10 +1426,10 @@ function filter_actions(env) {
     return action;
   });
 
-  if (!filter_sentences$1) return env;
+  if (!state.filter_sentences) return env;
 
   env.params.actions = env.params.actions.filter(function (action) {
-    return action.year === current_year$1;
+    return action.year === state.current_year;
   });
 
   return env;
@@ -1487,7 +1490,7 @@ function write_sentences(env) {
 
       if (type !== 'edge') data = { id: thing._id || '' };else data = { id1: thing._in._id, id2: thing._out._id };
 
-      if (!admin_mode$1) innerwords += template(classes, data, word);else innerwords += admin_template(thing, type, cat, word);
+      if (!state.admin_mode) innerwords += template(classes, data, word);else innerwords += admin_template(thing, type, cat, word);
     });
 
     var sentence_classes = 'sentence';
@@ -1527,6 +1530,14 @@ function write_sentences(env) {
 
 // FORM BUILDER & FRIENDS
 
+function whatsnext(graph, conversation) {
+  // TODO: incorporate graph knowledge (graph is the whole world, or the relevant subgraph)
+  // THINK: what is a conversation?
+  // are we currently in a sentence? then find the highest weighted unfilled 'port'
+
+  render_conversation(conversation);
+}
+
 function get_cat_dat(cat, q) {
   var substrRegex = new RegExp(q, 'i');
   var frontRegex = new RegExp('^' + q, 'i');
@@ -1543,7 +1554,7 @@ function get_cat_dat(cat, q) {
   return nodes;
 }
 
-function render_conversation(conversation$$1) {
+function render_conversation(conversation) {
   var typeahead_params = { hint: true, highlight: true, minLength: 1 };
   function typeahead_source(cat) {
     return { name: 'states', source: function (q, cb) {
@@ -1556,7 +1567,7 @@ function render_conversation(conversation$$1) {
   var submit_button = '<input type="submit" style="position: absolute; left: -9999px">';
 
   // special case the first step
-  var sentence = conversation$$1.current;
+  var sentence = conversation.current;
 
   sentence.filled.forEach(function (slot, i) {
     prelude += inject_value(slot, slot.value, i) + ' ';
@@ -1576,7 +1587,7 @@ function render_conversation(conversation$$1) {
   prelude += input;
 
   // do the DOM
-  set_el('conversation', prelude + inputs + submit_button);
+  set_el('the-conversation', prelude + inputs + submit_button);
 
   // wiring... /sigh
   var catnames = Object.keys(cats);
@@ -1689,7 +1700,7 @@ function showtags() {
 
 function render_all() {
   render();
-  render_conversation(conversation);
+  render_conversation(convo);
   showtags();
 }
 
@@ -1804,6 +1815,40 @@ function set_intersect(xs, ys) {
     return ys.indexOf(x) !== -1;
   });
 }
+
+el('login').addEventListener('submit', login);
+
+///////////////////// END DOM GLUE ///////////////////////////////
+
+
+// package and expose some functionality for the view side,
+// and create outward-facing bindings to spin everything up.
+
+
+// init network load
+// expose rendering functions
+// create dom hooks on demand as html is rendered
+
+
+// TODO: partition incoming bleep bloops by action
+// TODO: build edit functions
+// TODO: build remove functions
+// TODO: ask user for email address
+// TODO: show current tags
+// TODO: allow changing of tags
+// TODO: allow multitag views
+// TODO: add all tags on server
+// TODO: try to get an additional compaction in
+
+// TODO: consolidate like-named nodes
+// TODO: consolidate email addresses on server
+// TODO: copy tags into url
+
+
+// INIT
+
+
+// TODO: break this up a little so the logic is clearer
 
 function init$$1() {
   if (window.location.host === "127.0.0.1") {
