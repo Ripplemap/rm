@@ -2,16 +2,56 @@ import json from 'rollup-plugin-json'
 import babel from 'rollup-plugin-babel'
 import includePaths from 'rollup-plugin-includepaths'
 
+import postcss from 'rollup-plugin-postcss'
+import nodeResolve from 'rollup-plugin-node-resolve'
+
+// post css plugins:
+import simplevars from 'postcss-simple-vars';
+import nested from 'postcss-nested';
+import cssnext from 'postcss-cssnext';
+import cssnano from 'cssnano';
+
 var includePathOptions = { include:    {}
                          , paths:      ['js']
                          , external:   []
                          , extensions: ['.js', '.json', '.html']
                          }
 
-export default { entry:     'main.js'
-               , dest:      'ripplemap.js' // equivalent to --output
-               , format:    'cjs'
-               , plugins:   [ includePaths(includePathOptions), json(), babel() ]
-               , sourceMap: true
+export default { entry:     './src/main.js'
+               , dest:      './build/bundle.js' // equivalent to --output
+               , format:    'cjs',
+
+                plugins: [
+                  includePaths(includePathOptions),
+                  nodeResolve({jsnext: true}),
+                  postcss({
+                    plugins: [simplevars(), nested(), cssnano(), cssnext({warnForDuplicates: false,})],
+                    extensions: ['.css']
+                  }),
+                  json(),
+                  babel({
+                    babelrc: false,
+                    presets: [ "es2015-rollup"],
+                    plugins: [['transform-react-jsx', { pragma:'h' }], ["transform-class-properties"]],
+                    // exclude: 'node_modules/**',
+                  }),
+                ],
+                  sourceMap: true
+
+
+              //  , plugins:   [ includePaths(includePathOptions),
+              //     nodeResolve()
+              //     , json(), 
+              //     , postcss({
+              //         plugins:    [simplevars(), nested(), cssnano(), cssnext({warnForDuplicates: false,})]
+              //       , extensions: ['.css']
+              //     }),
+              //     babel({
+              //         babelrc:  false
+              //       , presets:  [ "es2015-rollup"]
+              //       , plugins:  [['transform-react-jsx', { pragma:'h' }], ["transform-class-properties"]],
+              //     }),
+              //    ]
+              //  , sourceMap: true
                // , treeshake : false
                }

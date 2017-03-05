@@ -1,6 +1,6 @@
 /*global Dagoba */
 
-import state from 'state'
+import state from './state'
 import {get_facts_from_server} from 'net'
 import {add_edge} from 'model'
 import {render_all} from 'render'

@@ -1,0 +1,9 @@
+/**
+*
+*/
+
+.Ripplemap {
+  display: flex;
+  flex: 2;
+  background: linear-gradient(135deg, #502561 0%,#fd5d62 100%);
+}

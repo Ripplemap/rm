@@ -1,0 +1,48 @@
+/**
+*
+*/
+$tabText: rgb(160, 160, 160);
+$primaryRed: rgb(255, 89, 97);
+
+.Tab {
+  height: 110px;
+  margin-bottom: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: #efefef;
+  cursor: pointer;
+  border: 0;
+  color: $tabText;
+  font-size: 15px;
+  text-transform: uppercase;
+  outline: none;
+
+  &:hover {
+    background-color: #eaeaea;
+  }
+
+  &:active {
+    background-color: #dddddd;
+  }
+
+  &.selected {
+    background-color: #ffffff;
+  }
+
+}
+
+.tab-icon {
+  font-size: 3rem;
+  padding: 1rem;
+  color: rgb(251,141,148);
+
+  &.selected {
+    color: $primaryRed;
+  }
+}
+
+
+
