@@ -12,26 +12,27 @@ import state from 'state'
 
 
 
+function do_the_glue() {
+
+  dom.el('login').addEventListener('submit', dom.login)
+
+  dom.el('addtag').addEventListener('submit', dom.submit_addtag)
+
+  dom.el('the-conversation').addEventListener('submit', dom.submit_convo)
+
+  dom.el('sentences').addEventListener('mouseover', dom.activate_highlighter)
+  dom.el('sentences').addEventListener('mouseout', dom.deactivate_highlighter)
+  dom.el('sentences').addEventListener('keyup', dom.keyup_sentences)
+  dom.el('sentences').addEventListener('click', dom.click_sentences)
+
+  dom.el('tagnames').addEventListener('click', dom.click_tagnames)
+  dom.el('tagnames').addEventListener('mouseover', dom.mouseover_tagnames)
+  dom.el('tagnames').addEventListener('mouseout', dom.mouseout_tagnames)
 
 
-dom.el('login').addEventListener('submit', dom.login)
+  document.addEventListener('keydown', dom.global_keydown)
 
-dom.el('addtag').addEventListener('submit', dom.submit_addtag)
-
-dom.el('the-conversation').addEventListener('submit', dom.submit_convo)
-
-dom.el('sentences').addEventListener('mouseover', dom.activate_highlighter)
-dom.el('sentences').addEventListener('mouseout', dom.deactivate_highlighter)
-dom.el('sentences').addEventListener('keyup', dom.keyup_sentences)
-dom.el('sentences').addEventListener('click', dom.click_sentences)
-
-dom.el('tagnames').addEventListener('click', dom.click_tagnames)
-dom.el('tagnames').addEventListener('mouseover', dom.mouseover_tagnames)
-dom.el('tagnames').addEventListener('mouseout', dom.mouseout_tagnames)
-
-
-document.addEventListener('keydown', dom.global_keydown)
-
+}
 
 
 
@@ -88,6 +89,7 @@ document.addEventListener('keydown', dom.global_keydown)
 // TODO: break this up a little so the logic is clearer
 
 function init() {
+  do_the_glue()
   if(window.location.host === "127.0.0.1") {
     if(window.location.hash)
       state.safe_mode = window.location.hash.slice(1)

@@ -1816,22 +1816,25 @@ function set_intersect(xs, ys) {
 ///////////////////////// DOM GLUE ///////////////////////////////
 
 
-el('login').addEventListener('submit', login);
+function do_the_glue() {
 
-el('addtag').addEventListener('submit', submit_addtag);
+  el('login').addEventListener('submit', login);
 
-el('the-conversation').addEventListener('submit', submit_convo);
+  el('addtag').addEventListener('submit', submit_addtag);
 
-el('sentences').addEventListener('mouseover', activate_highlighter);
-el('sentences').addEventListener('mouseout', deactivate_highlighter);
-el('sentences').addEventListener('keyup', keyup_sentences);
-el('sentences').addEventListener('click', click_sentences);
+  el('the-conversation').addEventListener('submit', submit_convo);
 
-el('tagnames').addEventListener('click', click_tagnames);
-el('tagnames').addEventListener('mouseover', mouseover_tagnames);
-el('tagnames').addEventListener('mouseout', mouseout_tagnames);
+  el('sentences').addEventListener('mouseover', activate_highlighter);
+  el('sentences').addEventListener('mouseout', deactivate_highlighter);
+  el('sentences').addEventListener('keyup', keyup_sentences);
+  el('sentences').addEventListener('click', click_sentences);
 
-document.addEventListener('keydown', global_keydown);
+  el('tagnames').addEventListener('click', click_tagnames);
+  el('tagnames').addEventListener('mouseover', mouseover_tagnames);
+  el('tagnames').addEventListener('mouseout', mouseout_tagnames);
+
+  document.addEventListener('keydown', global_keydown);
+}
 
 ///////////////////// END DOM GLUE ///////////////////////////////
 
@@ -1866,6 +1869,7 @@ document.addEventListener('keydown', global_keydown);
 // TODO: break this up a little so the logic is clearer
 
 function init$$1() {
+  do_the_glue();
   if (window.location.host === "127.0.0.1") {
     if (window.location.hash) state.safe_mode = window.location.hash.slice(1);else state.safe_mode = true;
   }
