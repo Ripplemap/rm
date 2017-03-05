@@ -397,7 +397,7 @@ function add_rings(env) {
   for(var i = env.params.minyear; i <= env.params.maxyear; i++) {
     var color = i === state.current_year ? '#999' : '#ccc'
     var radius = state.ring_radius * (i - env.params.my_minyear + 1)
-    env.shapes.unshift({shape: 'circle', x: 0, y: 0, r: radius, stroke: color, fill: 'white', line: 1, type: 'ring', year: i})
+    env.shapes.unshift({shape: 'circle', x: 0, y: 0, r: radius, stroke: color, fill: 'rgba(0, 0, 0, 0)', line: 1, type: 'ring', year: i})
   }
   return env
 }
