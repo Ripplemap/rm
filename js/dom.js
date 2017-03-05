@@ -3,7 +3,7 @@
 import state from 'state'
 import {G, addtag, removetag} from 'graph'
 import {join_conversation} from 'convo'
-import {error} from 'fun'
+import {error, noop} from 'fun'
 import {persist} from 'net'
 import {render, whatsnext} from 'render'
 
@@ -11,11 +11,13 @@ export {set_el, append_el}
 
 export const el = function() {
   const els = {}
+  const default_el = {addEventListener: noop}
+
   return function(el_id) {
     // NOTE: removing caching for now to deal with vdom
     // if(els[el_id])
     //   return els[el_id]
-    els[el_id] = document.getElementById(el_id) || {}
+    els[el_id] = document.getElementById(el_id) || default_el
     return els[el_id]
   }
 }()

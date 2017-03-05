@@ -87,7 +87,7 @@ function do_the_glue() {
 // TODO: break this up a little so the logic is clearer
 
 function init() {
-  // do_the_glue()
+  do_the_glue()
 
   if(window.location.host === "127.0.0.1") {
     if(window.location.hash)
