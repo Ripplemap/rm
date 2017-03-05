@@ -1,12 +1,15 @@
 // this does some dom things
 
+import state from 'state'
+
 export {set_el, append_el}
 
 export const el = function() {
   const els = {}
   return function(el_id) {
-    if(els[el_id])
-      return els[el_id]
+    // NOTE: removing caching for now to deal with vdom
+    // if(els[el_id])
+    //   return els[el_id]
     els[el_id] = document.getElementById(el_id) || {}
     return els[el_id]
   }
@@ -22,15 +25,11 @@ function append_el(el_id, val) {
 
 
 
- //// hey! add a state component for email!
-
-
-
 // LOGIN/ORG/TAG STUFF
 
 el('login').addEventListener('submit', function(e) {
   e.preventDefault()
-  RM.email = el('email').value
+  state.email = el('email').value
   el('login').classList.add('hide')
   el('storytime').classList.remove('hide')
 })
@@ -275,7 +274,7 @@ el('sentences').addEventListener('click', function(ev) {
   render()
 })
 
-el('conversation').addEventListener('submit', function(ev) {
+el('the-conversation').addEventListener('submit', function(ev) {
   ev.preventDefault()
 
   whatsnext(graph, join_conversation(conversation))
