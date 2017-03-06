@@ -1,0 +1,14 @@
+$primaryRed: rgb(255, 89, 97);
+
+.Header {
+  border-bottom: 2px solid $primaryRed;
+  color: $primaryRed;
+  font-size: 1.6rem;
+  margin: 3rem 0;
+  width: 100%;
+  text-transform: uppercase;
+
+  &.large {
+    font-size: 25px;
+  }
+}
