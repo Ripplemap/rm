@@ -4,7 +4,7 @@ import * as dom from 'dom' // just for effects
 import state from 'state'
 
 
-
+export {init}
 
 
 
@@ -124,4 +124,4 @@ function init() {
   }, 111)
 }
 
-init()
+// init()
