@@ -12,7 +12,7 @@ export {init}
 
 
 
-function do_the_glue() {
+export function do_the_glue() {
 
   dom.el('login').addEventListener('submit', dom.login)
 

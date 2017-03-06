@@ -13,7 +13,11 @@ import Story from './Views/Story/index';
  */
 class Sidebar extends Component {
   state = {
-    currentView: 'legend'
+    currentView: 'home'
+  }
+
+  componentDidMount() {
+    window.do_the_glue()
   }
 
   changeView = (view_id) => {
