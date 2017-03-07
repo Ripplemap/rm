@@ -33,7 +33,10 @@ function removetag(tag) {
 
 function add_data(cb) {
   get_facts_from_server(function(facts) {
-    cb(fact_to_graph(capture_facts(facts)))
+    if(Array.isArray(facts))
+      cb(fact_to_graph(capture_facts(facts)))
+    else
+      cb(facts) // already a graph, from localStorage
   })
 }
 

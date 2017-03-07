@@ -13,7 +13,7 @@ import {do_the_glue, init as rm_init} from 'Ripplemap/main'
 init()
 
 function init() {
+  rm_init()
   window.do_the_glue = do_the_glue
   render(<Sidebar />, document.getElementById('sidebar'))
-  rm_init()
 }
