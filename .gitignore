@@ -1,6 +1,7 @@
 node_modules
 .DS_Store
 ripplemap.js.map
+old
 
 build/bundle.js
 build/bundle.js.map
