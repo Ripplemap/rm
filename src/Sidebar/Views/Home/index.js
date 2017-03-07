@@ -49,7 +49,7 @@ const Home = () => {
           <p>
             Add a tag:
             <form id="addtag" action="">
-              <select id="othertags" id="" name=""></select>
+              <select id="othertags" name="othertags"></select>
               <input name="" type="submit" value="Go!" />
             </form>
           </p>
