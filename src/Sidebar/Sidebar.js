@@ -16,13 +16,13 @@ class Sidebar extends Component {
     currentView: 'home'
   }
 
-  componentDidMount() {
+  componentDidUpdate() {
     window.do_the_glue()
   }
 
   changeView = (view_id) => {
     this.setState({
-      currentView: view_id 
+      currentView: view_id
     })
   }
 

@@ -31,7 +31,7 @@ export function do_the_glue() {
 
   document.addEventListener('keydown', dom.global_keydown)
 
-  render()
+  render_all()
 }
 
 
