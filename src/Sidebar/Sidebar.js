@@ -21,7 +21,8 @@ class Sidebar extends Component {
   }
 
   componentDidUpdate() {
-    window.do_the_glue()
+    window.render_all()
+    // window.do_the_glue()
   }
 
   changeView = (view_id) => {

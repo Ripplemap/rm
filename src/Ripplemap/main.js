@@ -4,7 +4,7 @@ import * as dom from 'dom' // just for effects
 import state from 'state'
 
 
-export {init}
+export {init, render_all}
 
 
 
