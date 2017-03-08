@@ -34,7 +34,7 @@ class Sidebar extends Component {
   renderSelectedView = () => {
     switch(this.state.currentView){
       case 'home':
-        return <Home />
+        return <Home changeView={this.changeView} />
       case 'story':
         return <Story />
       case 'legend':

@@ -3,7 +3,7 @@ import './styles.css'
 import Header from '../../../UiKit/Header/index';
 import Button from '../../../UiKit/Button/index';
 
-const Home = () => {
+const Home = ({changeView}) => {
   return (
     <div>
 
@@ -15,7 +15,7 @@ const Home = () => {
       {/* Add a story CTA */}
       <section class="Home__cta-addstory">
         <p>We'd love to hear your stories!</p>
-        <Button>Add a story ▶</Button>
+        <Button onClick={() => changeView('story')}>Add a story ▶</Button>
       </section>
 
       {/* Recently Added Stories */}
