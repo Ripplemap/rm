@@ -16,6 +16,10 @@ class Sidebar extends Component {
     currentView: 'home'
   }
 
+  componentDidMount() {
+    window.do_the_glue()
+  }
+
   componentDidUpdate() {
     window.do_the_glue()
   }
