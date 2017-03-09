@@ -521,6 +521,15 @@ function add_edge_labels(env) {
 
 // RENDERING
 
+// tees: please rename this.
+// this grabs an array of id's and add's event listeners (for the nodes /edges)
+function make_elements_actionable(arr, exception, cb) {
+  arr.forEach(id => {
+    if (id !== exception || !exception) 
+      console.log('event listener added for', id)
+      document.getElementById(id).addEventListener('click', cb)
+  })
+}
 
 // experimental svg mode functions...
 function clear_it_svg(env) {
@@ -531,7 +540,8 @@ function clear_it_svg(env) {
 
 function draw_it_svg(env) {
   // tees: create an array of element id's to loop over and add mouse over events too.
-  let svg_ids = []
+  let circle_nodes = []
+  let edges = []
 
   env.shapes.forEach(function(node) {
     env.svg.body += draw_shape(node)
@@ -540,13 +550,8 @@ function draw_it_svg(env) {
 /// inject the svg node here
   document.getElementById('ripplemap-mount').innerHTML = env.svg.head + env.svg.body + env.svg.tail
 
-  // tees: add event listeners to the nodes (not the ripples)
-  svg_ids.forEach(shape_id => {
-    console.log(shape_id);
-    if (shape_id !== "circle_450_450") {
-      document.getElementById(shape_id).addEventListener('mouseover', () => {console.log(shape_id, 'was moused over');})
-    }
-  })
+  make_elements_actionable(edges, null, () => { console.log('moused over an edge!') })
+  make_elements_actionable(circle_nodes, 'circle_450_450', () => {console.log('moused over a node!');})
 
   return env
 
@@ -575,7 +580,7 @@ function draw_it_svg(env) {
     stroke_color = stroke_color || '#eef'
 
     let u_id = `circle_${x}_${y}`
-    svg_ids.push(u_id)
+    circle_nodes.push(u_id)
 
     return `<circle id="${u_id}" cx="${x}" cy="${y}" r="${radius}" fill="${fill_color}" stroke-width="${line_width}" stroke="${stroke_color}"/>`
   }
@@ -585,8 +590,11 @@ function draw_it_svg(env) {
     line_width = line_width || 0.5
     if(fromx * fromy * tox * toy * 0 !== 0)
       return ''
+    
+    let u_id = `line_${fromx}_${fromy}`
+    edges.push(u_id)
 
-    return `<line x1="${fromx}" y1="${fromy}" x2="${tox}" y2="${toy}" stroke-width="${line_width}" stroke="${stroke_color}"/>`
+    return `<line id="${u_id}" x1="${fromx}" y1="${fromy}" x2="${tox}" y2="${toy}" stroke-width="5" stroke="${stroke_color}"/>`
   }
 
   function draw_text(x, y, str, font, fill_color, font_size) {
