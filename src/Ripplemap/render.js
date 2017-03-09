@@ -530,12 +530,23 @@ function clear_it_svg(env) {
 }
 
 function draw_it_svg(env) {
+  // tees: create an array of element id's to loop over and add mouse over events too.
+  let svg_ids = []
+
   env.shapes.forEach(function(node) {
     env.svg.body += draw_shape(node)
   })
 
 /// inject the svg node here
   document.getElementById('ripplemap-mount').innerHTML = env.svg.head + env.svg.body + env.svg.tail
+
+  // tees: add event listeners to the nodes (not the ripples)
+  svg_ids.forEach(shape_id => {
+    console.log(shape_id);
+    if (shape_id !== "circle_450_450") {
+      document.getElementById(shape_id).addEventListener('mouseover', () => {console.log(shape_id, 'was moused over');})
+    }
+  })
 
   return env
 
@@ -563,7 +574,10 @@ function draw_it_svg(env) {
     line_width = line_width || 2
     stroke_color = stroke_color || '#eef'
 
-    return `<circle id="test" cx="${x}" cy="${y}" r="${radius}" fill="${fill_color}" stroke-width="${line_width}" stroke="${stroke_color}"/>`
+    let u_id = `circle_${x}_${y}`
+    svg_ids.push(u_id)
+
+    return `<circle id="${u_id}" cx="${x}" cy="${y}" r="${radius}" fill="${fill_color}" stroke-width="${line_width}" stroke="${stroke_color}"/>`
   }
 
   function draw_line(fromx, fromy, tox, toy, stroke_color, line_width) {
