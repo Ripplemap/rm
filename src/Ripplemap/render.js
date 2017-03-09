@@ -524,7 +524,7 @@ function add_edge_labels(env) {
 
 // experimental svg mode functions...
 function clear_it_svg(env) {
-  env.svg.head = `<svg viewBox="0 0 1000 1000" style="height:1000px" xmlns="http://www.w3.org/2000/svg">`
+  env.svg.head = `<svg viewBox="0 0 900 900" style="height:900px" xmlns="http://www.w3.org/2000/svg">`
   env.svg.tail = `</svg>`
   return env
 }
@@ -563,7 +563,7 @@ function draw_it_svg(env) {
     line_width = line_width || 2
     stroke_color = stroke_color || '#eef'
 
-    return `<circle cx="${x}" cy="${y}" r="${radius}" fill="${fill_color}" stroke-width="${line_width}" stroke="${stroke_color}"/>`
+    return `<circle id="test" cx="${x}" cy="${y}" r="${radius}" fill="${fill_color}" stroke-width="${line_width}" stroke="${stroke_color}"/>`
   }
 
   function draw_line(fromx, fromy, tox, toy, stroke_color, line_width) {
