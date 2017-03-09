@@ -39,8 +39,8 @@ function init() {
                  , add_node_labels
                  , add_edge_labels
                    // rendering:
-                 , clear_it
-                 , draw_it
+                 , clear_it_svg
+                 , draw_it_svg
                  , draw_metadata
                  )
 
@@ -53,7 +53,7 @@ function init() {
 
 function render() {
   // TODO: cloning is inefficient: make lazy subgraphs
-  var env = {data: Dagoba.clone(G), params: {my_maxyear: state.my_maxyear, my_minyear: state.my_minyear}, shapes: [], ctx: ctx}
+  var env = {data: Dagoba.clone(G), params: {my_maxyear: state.my_maxyear, my_minyear: state.my_minyear}, shapes: [], ctx: ctx, svg: {head: '', body: '', tail: ''}}
 
   viz_pipe(env)
   word_pipe(env)
@@ -521,6 +521,116 @@ function add_edge_labels(env) {
 
 // RENDERING
 
+
+// experimental svg mode functions...
+function clear_it_svg(env) {
+  env.svg.head = `<svg viewBox="0 0 1000 1000" style="height:1000px" xmlns="http://www.w3.org/2000/svg">`
+  env.svg.tail = `</svg>`
+  return env
+}
+
+function draw_it_svg(env) {
+  env.shapes.forEach(function(node) {
+    env.svg.body += draw_shape(node)
+  })
+
+/// inject the svg node here
+  document.getElementById('ripplemap-mount').innerHTML = env.svg.head + env.svg.body + env.svg.tail
+
+  return env
+
+
+
+  function draw_shape(node) {
+    var cx = 450
+    var cy = 450
+
+    if(node.shape === 'circle')
+      return draw_circle(cx + node.x, cy + node.y, node.r, node.stroke, node.fill, node.line)
+
+    if(node.shape === 'line')
+      return draw_line(cx + node.x1, cy + node.y1, cx + node.x2, cy + node.y2, node.stroke, node.line)
+
+    if(node.shape === 'text')
+      return draw_text(cx + node.x, cy + node.y, node.str, node.font, node.fill)
+
+    if(node.shape === 'angle_text')
+      return draw_angle_text(cx + node.x1, cy + node.y1, cx + node.x2, cy + node.y2, node.str, node.font, node.fill)
+  }
+
+  function draw_circle(x, y, radius, stroke_color, fill_color, line_width) {
+    fill_color = fill_color || '#444444'
+    line_width = line_width || 2
+    stroke_color = stroke_color || '#eef'
+
+    return `<circle cx="${x}" cy="${y}" r="${radius}" fill="${fill_color}" stroke-width="${line_width}" stroke="${stroke_color}"/>`
+  }
+
+  function draw_line(fromx, fromy, tox, toy, stroke_color, line_width) {
+    stroke_color = stroke_color || '#eef'
+    line_width = line_width || 0.5
+    if(fromx * fromy * tox * toy * 0 !== 0)
+      return ''
+
+    return `<line x1="${fromx}" y1="${fromy}" x2="${tox}" y2="${toy}" stroke-width="${line_width}" stroke="${stroke_color}"/>`
+  }
+
+  function draw_text(x, y, str, font, fill_color, font_size) {
+    fill_color = fill_color || '#000'
+    font = font || "14px raleway"
+    if(isNaN(x)) return ''
+    x = x || 0
+    y = y || 0
+
+    return `<text x="${x}" y="${y}" font-family="${font}" fill="${fill_color}" font-size="${font_size}">${str}</text>`
+  }
+
+  function draw_angle_text(x1, y1, x2, y2, str, font, fill_color) {
+    return ''
+
+    ctx.fillstyle = fill_color || '337'
+    ctx.font = font || "14px sans-serif"
+
+    // modified from http://phrogz.net/tmp/canvas_rotated_text.html
+
+    var padding = 5
+    var dx = x2 - x1
+    var dy = y2 - y1
+    var len = math.sqrt(dx*dx+dy*dy)
+    var avail = len - 2*padding
+    var pad = 1/2
+    var x = x1
+    var y = y1
+
+    var texttodraw = str
+    if (env.measuretext && ctx.measuretext(texttodraw).width > avail){
+      while (texttodraw && ctx.measuretext(texttodraw+"…").width > avail) texttodraw = texttodraw.slice(0, -1)
+      texttodraw += "…"
+    }
+
+    // keep text upright
+    var angle = math.atan2(dy, dx)
+    if (angle < -math.pi/2 || angle > math.pi/2){
+      x = x2
+      y = y2
+      dx *= -1
+      dy *= -1
+      angle -= math.pi
+    }
+
+    ctx.save()
+    ctx.textalign = 'center'
+    ctx.translate(x+dx*pad, y+dy*pad)
+    ctx.rotate(angle)
+    ctx.filltext(texttodraw, 0, -3)
+    ctx.restore()
+  }
+
+}
+
+
+/////////////////////////////////
+
 function clear_it(env) {
   env.ctx.clearRect(0, 0, 1000, 1000)
   return env
@@ -560,35 +670,35 @@ function draw_shape(ctx, node) {
 }
 
 function draw_circle(ctx, x, y, radius, stroke_color, fill_color, line_width) {
-  ctx.beginPath()
-  ctx.arc(x, y, radius, 0, Math.PI*2, false)
-  ctx.fillStyle = fill_color || '#444444'
+  ctx.beginpath()
+  ctx.arc(x, y, radius, 0, math.pi*2, false)
+  ctx.fillstyle = fill_color || '#444444'
   ctx.fill()
-  ctx.lineWidth = line_width || 2
-  ctx.strokeStyle = stroke_color || '#eef'
+  ctx.linewidth = line_width || 2
+  ctx.strokestyle = stroke_color || '#eef'
   ctx.stroke()
 }
 
 function draw_line(ctx, fromx, fromy, tox, toy, stroke_color, line_width) {
-  var path=new Path2D()
-  path.moveTo(fromx, fromy)
-  path.lineTo(tox, toy)
-  ctx.strokeStyle = stroke_color || '#eef'
-  ctx.lineWidth = line_width || 0.5
+  var path=new path2d()
+  path.moveto(fromx, fromy)
+  path.lineto(tox, toy)
+  ctx.strokestyle = stroke_color || '#eef'
+  ctx.linewidth = line_width || 0.5
   ctx.stroke(path)
 }
 
 function draw_text(ctx, x, y, str, font, fill_color) {
-  ctx.fillStyle = fill_color || '#000'
-  ctx.font = font || "14px Raleway"
+  ctx.fillstyle = fill_color || '#000'
+  ctx.font = font || "14px raleway"
   if(isNaN(x)) return undefined
   x = x || 0
   y = y || 0
-  ctx.fillText(str, x, y)
+  ctx.filltext(str, x, y)
 }
 
 function draw_angle_text(ctx, x1, y1, x2, y2, str, font, fill_color) {
-  ctx.fillStyle = fill_color || '337'
+  ctx.fillstyle = fill_color || '337'
   ctx.font = font || "14px sans-serif"
 
   // modified from http://phrogz.net/tmp/canvas_rotated_text.html
@@ -596,33 +706,33 @@ function draw_angle_text(ctx, x1, y1, x2, y2, str, font, fill_color) {
   var padding = 5
   var dx = x2 - x1
   var dy = y2 - y1
-  var len = Math.sqrt(dx*dx+dy*dy)
+  var len = math.sqrt(dx*dx+dy*dy)
   var avail = len - 2*padding
   var pad = 1/2
   var x = x1
   var y = y1
 
-  var textToDraw = str
-  if (ctx.measureText && ctx.measureText(textToDraw).width > avail){
-    while (textToDraw && ctx.measureText(textToDraw+"…").width > avail) textToDraw = textToDraw.slice(0, -1)
-    textToDraw += "…"
+  var texttodraw = str
+  if (ctx.measuretext && ctx.measuretext(texttodraw).width > avail){
+    while (texttodraw && ctx.measuretext(texttodraw+"…").width > avail) texttodraw = texttodraw.slice(0, -1)
+    texttodraw += "…"
   }
 
-  // Keep text upright
-  var angle = Math.atan2(dy, dx)
-  if (angle < -Math.PI/2 || angle > Math.PI/2){
+  // keep text upright
+  var angle = math.atan2(dy, dx)
+  if (angle < -math.pi/2 || angle > math.pi/2){
     x = x2
     y = y2
     dx *= -1
     dy *= -1
-    angle -= Math.PI
+    angle -= math.pi
   }
 
   ctx.save()
-  ctx.textAlign = 'center'
+  ctx.textalign = 'center'
   ctx.translate(x+dx*pad, y+dy*pad)
   ctx.rotate(angle)
-  ctx.fillText(textToDraw, 0, -3)
+  ctx.filltext(texttodraw, 0, -3)
   ctx.restore()
 }
 
