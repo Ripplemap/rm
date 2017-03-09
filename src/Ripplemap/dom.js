@@ -6,6 +6,8 @@ import {join_conversation} from 'convo'
 import {error, noop} from 'fun'
 import {persist} from 'net'
 import {render, whatsnext} from 'render'
+import {init} from './main';
+import {classMaker} from '../utils';
 
 export {set_el, append_el}
 
@@ -285,3 +287,52 @@ export function submit_convo(ev) {
 
   return false
 }
+
+
+
+// --- tees' non react - legend hack thing to avoid styling selectors. --- //
+// BEWARE! HE has no idea what he's doing 🙀
+
+// this is the equivalent of the react component "legendItem"... so class styles are
+// in that css file (uikit/legenditem/styles.css)
+const eventNouns = [
+  {name: 'Event',        color: '#FF1E3A'},
+  {name: 'Individual',   color: '#00A3D8'},
+  {name: 'Group',        color: '#00AE57'},
+  {name: 'Project',      color: '#FCB0DB'},
+  {name: 'Outcome',      color: '#FFE98F'},
+];
+
+
+let eventButtonstimesCalled = 0
+function testThing(){console.log('him im a button')}
+
+export function eventButtons (){
+  // lol. see `render_all` for more fun
+  eventButtonstimesCalled++
+  if (eventButtonstimesCalled > 1) return
+
+  // where to shove this test thingy -- i put this in the `story` component
+  var mount = document.getElementById('testarea');
+
+  // pretend i'm doing react
+  eventNouns.map(button => {
+    mount.innerHTML += `
+      <div class="legendItemBox">
+        <button id="btn_noun_${button.name}" class="legendItem">
+          <div class="legendCircle" style="background: ${button.color}"/>
+          <span class="legendText">${button.name}</span>
+        </button>
+      </div>
+    `;
+
+    // add event listeners to the button just made
+    // call a function on click that chooses an item from the select dropdown.
+    // this is only attaching to the last item in the .map call...
+    var x = document.getElementById(`btn_noun_${button.name}`)
+    x.addEventListener('click', testThing)
+    console.log('hiiii', x);
+
+  });
+};
+

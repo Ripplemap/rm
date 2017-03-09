@@ -1,14 +1,23 @@
-$primaryRed: rgb(255, 89, 97);
+.legendItemBox {
+  display: flex;
+  align-items: center;
+  margin: 1rem 0;
+}
 
-.Header {
-  border-bottom: 2px solid $primaryRed;
-  color: $primaryRed;
-  font-size: 1.6rem;
-  margin: 3rem 0;
-  width: 100%;
-  text-transform: uppercase;
+.legendCircle {
+  display: block;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  margin-right: 12rem;
+}
 
-  &.large {
-    font-size: 25px;
-  }
+.legendText {
+  padding-left: 2rem;
+}
+
+.legendItem {
+  outline: none;
+  border: 0;
+  background: none;
 }

@@ -945,4 +945,7 @@ function render_all() {
   render()
   render_conversation(conversation)
   showtags()
+
+  dom.eventButtons() // lol I don't know where to put this 
+
 }

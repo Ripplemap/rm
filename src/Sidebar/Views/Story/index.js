@@ -42,6 +42,8 @@ const Story = () => {
 
         <div id="sentences"> </div>
 
+        <div id="testarea"/>
+
     </div>
   );
 };
