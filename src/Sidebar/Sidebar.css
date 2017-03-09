@@ -1,0 +1,37 @@
+/**
+*
+*/
+
+$primaryRed: rgb(255, 89, 97);
+$primaryBg: rgb(255);
+$TabBg: rgb(238, 233, 239);
+
+
+.Sidebar {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  /*width: 500px;*/
+}
+
+.Sidebar__container {
+  flex-grow: 1;
+  justify-content: center;
+  padding: 1rem 4rem;
+  max-height: 100vh;
+  overflow-y: scroll;
+}
+
+.Sidebar__header {
+  font-size: 30px;
+  color: $primaryRed;
+  font-weight: 100;
+  text-transform: uppercase;
+  align-content: center;
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.Sidebar__viewbox {
+
+}

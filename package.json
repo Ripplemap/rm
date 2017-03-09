@@ -5,13 +5,27 @@
   "main": "index.js",
   "repository": "git@github.com:Ripplemap/rm.git",
   "author": "dann",
+  "scripts": {
+    "dev": "./node_modules/.bin/rollup -c -w"
+  },
   "license": "MIT",
   "devDependencies": {
-    "rollup-plugin-json": "^2.1.0"
-  },
-  "dependencies": {
+    "babel-plugin-transform-class-properties": "^6.23.0",
+    "babel-plugin-transform-react-jsx": "^6.23.0",
+    "babel-preset-es2015-rollup": "^3.0.0",
+    "cssnano": "^3.10.0",
+    "postcss-cssnext": "^2.9.0",
+    "postcss-nested": "^1.0.0",
+    "postcss-simple-vars": "^3.0.0",
+    "rollup": "^0.41.4",
     "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-json": "^2.1.0",
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "rollup-plugin-postcss": "^0.2.0",
     "rollup-plugin-includepaths": "^0.1.8",
     "rollup-watch": "^3.2.2"
+  },
+  "dependencies": {
+    "preact": "^7.2.0"
   }
 }

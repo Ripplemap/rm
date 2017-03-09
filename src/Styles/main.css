@@ -1,0 +1,50 @@
+/**
+*
+*/
+
+/* Variables */
+$primaryRed: rgb(255, 89, 97);
+$primaryBg: rgb(255);
+$tabText: rgb(180, 163, 183);
+$TabBg: rgb(238, 233, 239);
+
+/* General Layout */
+html {
+  font-size: 62.5%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Raleway", Arial, Helvetica, sans-serif;
+  font-size: 1.3rem;
+  max-height: 100vh;
+}
+
+.App {
+  display: flex;
+  min-height: 100vh;
+  background: $primaryBg;
+}
+
+#sidebar {
+  display: flex;
+  flex: 1;
+}
+
+#ripplemap-mount {
+  display: flex;
+  flex: 2;
+  background: linear-gradient(135deg, #502561 0%,#fd5d62 100%);
+  justify-content: center;
+}
+
+
+
+/* HTML ELEMENTS */
+
+input {
+  width: 100% !important;
+  padding: 1rem;
+  border: 1px solid #777;
+}

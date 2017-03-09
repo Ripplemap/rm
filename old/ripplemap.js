@@ -1,6 +1,23 @@
 'use strict';
 
-const state = {};
+function __$styleInject(css, returnValue) {
+  if (typeof document === 'undefined') {
+    return returnValue;
+  }
+  css = css || '';
+  var head = document.head || document.getElementsByTagName('head')[0];
+  var style = document.createElement('style');
+  style.type = 'text/css';
+  if (style.styleSheet){
+    style.styleSheet.cssText = css;
+  } else {
+    style.appendChild(document.createTextNode(css));
+  }
+  head.appendChild(style);
+  return returnValue;
+}
+
+var state = {};
 state.tags = []; // THINK: default to ['plain']?
 state.facts = [];
 state.tagkeys = {};
@@ -75,7 +92,7 @@ function debounce(func, wait, immediate) {
   return function () {
     var context = this,
         args = arguments;
-    var later = function () {
+    var later = function later() {
       timeout = null;
       if (!immediate) func.apply(context, args);
     };
@@ -187,11 +204,29 @@ function pipe() {
   return magic_pipe;
 }
 
-function error(mess) {
+function error$1(mess) {
   console.log(arguments, mess);
 }
 
-const cats = {}; // ripplemap categories
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+  return typeof obj;
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+};
+
+var cats = {}; // ripplemap categories
+/* INTERFACES FOR RIPPLE MODEL
+ *
+ * There are four categories: Thing, Action, Effect, and Happening
+ *
+ * Each category has multiple types associated with it. Each node has a category and type.
+ *
+ * Each node also tracks its cron, the adding user, and some type of 'confidence interval' (later)
+ *
+ * Each edge has a type, which is its label. Nodes expect edges of certain types.
+ *
+ */
+
 cats.thing = {};
 cats.action = {};
 cats.effect = {};
@@ -201,10 +236,10 @@ function get_node(catstr, typestr, props) {
   var node = convert_props(props);
 
   var cat = cats[catstr];
-  if (!cat) return error('that is not a valid cat', catstr);
+  if (!cat) return error$1('that is not a valid cat', catstr);
 
   var type = cat[typestr];
-  if (!type) return error('that is not a valid ' + catstr + ' type', typestr);
+  if (!type) return error$1('that is not a valid ' + catstr + ' type', typestr);
 
   // TODO: check props again the cattype's property list
 
@@ -220,10 +255,10 @@ function add_alias(catstr, typestr, alias) {
 
   // add an alias to anything
   var cat = cats[catstr];
-  if (!cat) return error('Invalid cat', catstr);
+  if (!cat) return error$1('Invalid cat', catstr);
 
   var type = cat[typestr];
-  if (!type) return error('That is not a valid thing type', typestr);
+  if (!type) return error$1('That is not a valid thing type', typestr);
 
   // add alias
   type.aliases.push(alias);
@@ -265,7 +300,7 @@ function new_thing_type(type, properties) {
 
   // does this type exist already?
   var cattype = cats.thing[type];
-  if (cattype) return error('That thing type already exists', type);
+  if (cattype) return error$1('That thing type already exists', type);
 
   // manually create
   // THINK: should we copy properties here?
@@ -299,7 +334,7 @@ function new_action_type(type, properties) {
 
   // does this type exist already?
   var cattype = cats.action[type];
-  if (cattype) return error('That action type already exists', type);
+  if (cattype) return error$1('That action type already exists', type);
 
   // manually create
   // THINK: should we copy properties here?
@@ -333,7 +368,7 @@ function new_effect_type(type, properties) {
 
   // does this type exist already?
   var cattype = cats.effect[type];
-  if (cattype) return error('That effect type already exists', type);
+  if (cattype) return error$1('That effect type already exists', type);
 
   // manually create
   // THINK: should we copy properties here?
@@ -371,7 +406,7 @@ function new_happening_type(type, properties) {
 
   // does this type exist already?
   var cattype = cats.happening[type];
-  if (cattype) return error('That happening type already exists', type);
+  if (cattype) return error$1('That happening type already exists', type);
 
   // manually create
   // THINK: should we copy properties here?
@@ -420,6 +455,11 @@ function add_edge(type, from, to, props, persist$$1) {
   if (persist$$1) add_to_server_facts('edge', edge);
 }
 
+// find all the paths between them, and their attached bits
+
+
+// SET UP CATEGORIES AND EDGES
+
 new_thing_type('person', {});
 new_thing_type('org', { cc: ['org'] });
 new_thing_type('place', { cc: ['place', 'event'] });
@@ -467,14 +507,14 @@ function get_new_id() {
 }
 
 function convert_props(props) {
-  if (typeof props !== 'object') return {};
+  if ((typeof props === 'undefined' ? 'undefined' : _typeof(props)) !== 'object') return {};
 
   if (Array.isArray(props)) return {};
 
   return clone(props);
 }
 
-let convo = new_conversation();
+var convo = new_conversation();
 function join_conversation(conversation) {
   var conversation = conversation || convo;
 
@@ -539,7 +579,7 @@ function fulfill_desire(conversation, value) {
 
 function give_word(sentence, value) {
   var slot = sentence.slots.shift();
-  if (!slot) return error('This sentence is finished');
+  if (!slot) return error$1('This sentence is finished');
 
   // TODO: check this logic modularly
   if (slot.type === 'word') {
@@ -568,8 +608,8 @@ function give_word(sentence, value) {
 
 // this does some dom things
 
-const el = function () {
-  const els = {};
+var el = function () {
+  var els = {};
   return function (el_id) {
     // NOTE: removing caching for now to deal with vdom
     // if(els[el_id])
@@ -615,8 +655,10 @@ function highlighter(e) {
       if (highlight_target === t) return undefined;
 
       highlight_target = t;
-      var ids = [].slice.call(t.children).map(node => node.dataset.id).filter(Boolean);
-      var fun = function (v) {
+      var ids = [].slice.call(t.children).map(function (node) {
+        return node.dataset.id;
+      }).filter(Boolean);
+      var fun = function fun(v) {
         return ~ids.indexOf(v._id);
       };
       // ids.forEach(id => G.v(id).run()[0].highlight = true)
@@ -810,7 +852,7 @@ function click_sentences(ev) {
   var id = target.getAttribute('data-id');
   var node = G.vertexIndex[id];
 
-  if (!node) return error('That node does not exist');
+  if (!node) return error$1('That node does not exist');
 
   if (node.cat === 'action') {
     // remove "sentence"
@@ -831,7 +873,7 @@ function submit_convo(ev) {
   return false;
 }
 
-const ctx = el('ripples').getContext('2d');
+var ctx = el('ripples').getContext('2d');
 
 var viz_pipe;
 var word_pipe;
@@ -916,7 +958,7 @@ function likenamed(g) {
 
 /// modularize this:
 
-let clusters = [['AMC', 'amc', 'Allied Media Conference', 'allied media conference', 'Allied media Conference'], ['AMP', 'amp', 'Allied Media Projects', 'allied media projects'], ['AMC2016 Coordinators Weekend', 'AMC 2016 Coordinators Meeting'], ['jayy dodd', 'jayy']];
+var clusters = [['AMC', 'amc', 'Allied Media Conference', 'allied media conference', 'Allied media Conference'], ['AMP', 'amp', 'Allied Media Projects', 'allied media projects'], ['AMC2016 Coordinators Weekend', 'AMC 2016 Coordinators Meeting'], ['jayy dodd', 'jayy']];
 
 function cluster(g) {
   clusters.map(function (names) {
@@ -1232,7 +1274,13 @@ function copy_nodes(env) {
   env.shapes = env.shapes.concat.apply(env.shapes, env.data.V.map(function (node) {
     // HACK: move this elsewhere
     if (!state.all_edges) {
-      var ghost = !node._in.concat(node._out).map(e => [e._in.year, e._out.year]).reduce((acc, t) => acc.concat(t), []).filter(y => y === state.current_year).length;
+      var ghost = !node._in.concat(node._out).map(function (e) {
+        return [e._in.year, e._out.year];
+      }).reduce(function (acc, t) {
+        return acc.concat(t);
+      }, []).filter(function (y) {
+        return y === state.current_year;
+      }).length;
       if (ghost) return [];
     }
 
@@ -1387,8 +1435,9 @@ function draw_angle_text(ctx, x1, y1, x2, y2, str, font, fill_color) {
 
   var textToDraw = str;
   if (ctx.measureText && ctx.measureText(textToDraw).width > avail) {
-    while (textToDraw && ctx.measureText(textToDraw + "…").width > avail) textToDraw = textToDraw.slice(0, -1);
-    textToDraw += "…";
+    while (textToDraw && ctx.measureText(textToDraw + "…").width > avail) {
+      textToDraw = textToDraw.slice(0, -1);
+    }textToDraw += "…";
   }
 
   // Keep text upright
@@ -1554,7 +1603,7 @@ function get_cat_dat(cat, q) {
 function render_conversation(conversation) {
   var typeahead_params = { hint: true, highlight: true, minLength: 1 };
   function typeahead_source(cat) {
-    return { name: 'states', source: function (q, cb) {
+    return { name: 'states', source: function source(q, cb) {
         cb(get_cat_dat(cat, q));
       } };
   }
@@ -1703,7 +1752,7 @@ function render_all() {
 
 /*global Dagoba */
 
-let G = Dagoba.graph();
+var G = Dagoba.graph();
 function addtag(tag) {
   state.tags.push(tag);
   G = Dagoba.graph();
@@ -1816,22 +1865,25 @@ function set_intersect(xs, ys) {
 ///////////////////////// DOM GLUE ///////////////////////////////
 
 
-el('login').addEventListener('submit', login);
+function do_the_glue() {
 
-el('addtag').addEventListener('submit', submit_addtag);
+  el('login').addEventListener('submit', login);
 
-el('the-conversation').addEventListener('submit', submit_convo);
+  el('addtag').addEventListener('submit', submit_addtag);
 
-el('sentences').addEventListener('mouseover', activate_highlighter);
-el('sentences').addEventListener('mouseout', deactivate_highlighter);
-el('sentences').addEventListener('keyup', keyup_sentences);
-el('sentences').addEventListener('click', click_sentences);
+  el('the-conversation').addEventListener('submit', submit_convo);
 
-el('tagnames').addEventListener('click', click_tagnames);
-el('tagnames').addEventListener('mouseover', mouseover_tagnames);
-el('tagnames').addEventListener('mouseout', mouseout_tagnames);
+  el('sentences').addEventListener('mouseover', activate_highlighter);
+  el('sentences').addEventListener('mouseout', deactivate_highlighter);
+  el('sentences').addEventListener('keyup', keyup_sentences);
+  el('sentences').addEventListener('click', click_sentences);
 
-document.addEventListener('keydown', global_keydown);
+  el('tagnames').addEventListener('click', click_tagnames);
+  el('tagnames').addEventListener('mouseover', mouseover_tagnames);
+  el('tagnames').addEventListener('mouseout', mouseout_tagnames);
+
+  document.addEventListener('keydown', global_keydown);
+}
 
 ///////////////////// END DOM GLUE ///////////////////////////////
 
@@ -1866,6 +1918,7 @@ document.addEventListener('keydown', global_keydown);
 // TODO: break this up a little so the logic is clearer
 
 function init$$1() {
+  do_the_glue();
   if (window.location.host === "127.0.0.1") {
     if (window.location.hash) state.safe_mode = window.location.hash.slice(1);else state.safe_mode = true;
   }

@@ -1,10 +1,10 @@
-import {add_data} from 'graph'
+import {add_data} from './graph'
 import {init as render_init, render, render_all} from 'render'
 import * as dom from 'dom' // just for effects
 import state from 'state'
 
 
-
+export {init, render_all}
 
 
 
@@ -12,26 +12,27 @@ import state from 'state'
 
 
 
+export function do_the_glue() {
 
+  dom.el('login').addEventListener('submit', dom.login)
 
-dom.el('login').addEventListener('submit', dom.login)
+  dom.el('addtag').addEventListener('submit', dom.submit_addtag)
 
-dom.el('addtag').addEventListener('submit', dom.submit_addtag)
+  dom.el('the-conversation').addEventListener('submit', dom.submit_convo)
 
-dom.el('the-conversation').addEventListener('submit', dom.submit_convo)
+  dom.el('sentences').addEventListener('mouseover', dom.activate_highlighter)
+  dom.el('sentences').addEventListener('mouseout', dom.deactivate_highlighter)
+  dom.el('sentences').addEventListener('keyup', dom.keyup_sentences)
+  dom.el('sentences').addEventListener('click', dom.click_sentences)
 
-dom.el('sentences').addEventListener('mouseover', dom.activate_highlighter)
-dom.el('sentences').addEventListener('mouseout', dom.deactivate_highlighter)
-dom.el('sentences').addEventListener('keyup', dom.keyup_sentences)
-dom.el('sentences').addEventListener('click', dom.click_sentences)
+  dom.el('tagnames').addEventListener('click', dom.click_tagnames)
+  dom.el('tagnames').addEventListener('mouseover', dom.mouseover_tagnames)
+  dom.el('tagnames').addEventListener('mouseout', dom.mouseout_tagnames)
 
-dom.el('tagnames').addEventListener('click', dom.click_tagnames)
-dom.el('tagnames').addEventListener('mouseover', dom.mouseover_tagnames)
-dom.el('tagnames').addEventListener('mouseout', dom.mouseout_tagnames)
+  document.addEventListener('keydown', dom.global_keydown)
 
-
-document.addEventListener('keydown', dom.global_keydown)
-
+  render_all()
+}
 
 
 
@@ -88,7 +89,9 @@ document.addEventListener('keydown', dom.global_keydown)
 // TODO: break this up a little so the logic is clearer
 
 function init() {
-  if(window.location.host === "127.0.0.1") {
+  // do_the_glue()
+
+  if(window.location.host.slice(0, 9) === "127.0.0.1") {
     if(window.location.hash)
       state.safe_mode = window.location.hash.slice(1)
     else
@@ -123,4 +126,4 @@ function init() {
   }, 111)
 }
 
-init()
+// init()

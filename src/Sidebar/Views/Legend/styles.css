@@ -1,0 +1,18 @@
+.Legend {}
+
+/*.Legend__nodes_edges {
+  display: flex;
+  justify-content: center; 
+}*/
+
+.Legend__columns{
+  display: flex;
+  justify-content: space-between;
+}
+
+.Legend__column {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  /*margin: 0 5%;*/
+}

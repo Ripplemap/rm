@@ -1,0 +1,34 @@
+$primaryRed: rgb(255, 89, 97);
+$primaryRedDarken: rgb(235, 49, 37);
+
+
+.Button {
+  display: flex;
+  flex: 1;
+  background: none;
+  border: 2px solid $primaryRed;
+  border-radius: 5px;
+  outline: none;
+  justify-content: center;
+  width: 100%;
+  padding: 1rem;
+  margin: 3rem 0;
+  color: $primaryRed;
+  font-size: 1.8rem;
+  text-transform: uppercase;
+
+
+  &:hover {
+    border: 2px solid $primaryRedDarken;
+    box-shadow: 1px 2px 1px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    border: 2px solid red;;
+    box-shadow: none; 
+  }
+
+  &.large {
+    font-size: 25px;
+  }
+}
