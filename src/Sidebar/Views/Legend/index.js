@@ -27,6 +27,7 @@ class Legend extends Component {
   state = {
     currentFilters: [],
   }
+  
 
   toggleFilter = (filter) => {
     let cur_filters = this.state.currentFilters
@@ -71,6 +72,9 @@ class Legend extends Component {
   } 
 
   render() {
+    // attach filters to access from ripple map
+    window.currentFilters = this.state.currentFilters
+    
     return (
       <div class="Legend">
 
