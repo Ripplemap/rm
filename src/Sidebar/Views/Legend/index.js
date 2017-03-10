@@ -6,20 +6,21 @@ import Button from '../../../UiKit/Button'
 
 
 // Data to loop over for the legend keys
+// not sure what the filter_keys are for all the data
 const LegendNodes = [
-  {name: 'Event', color: '#FF1E3A', selected: 'grey'},
-  {name: 'Individual', color: '#00A3D8', selected: 'grey'},
-  {name: 'Group', color: '#00AE57', selected: 'grey'},
-  {name: 'Project', color: '#FCB0DB', selected: 'grey'},
-  {name: 'Outcome', color: '#FFE98F', selected: 'grey'},
+  {name: 'Event', color: '#FF1E3A', selected: 'grey', filter_key: 'event',},
+  {name: 'Individual', color: '#00A3D8', selected: 'grey', filter_key: 'person',},
+  {name: 'Group', color: '#00AE57', selected: 'grey', filter_key: 'group',},
+  {name: 'Project', clor: '#FCB0DB', selected: 'grey', filter_key: 'project',},
+  {name: 'Outcome', color: '#FFE98F', selected: 'grey', filter_key: 'outcome',},
 ]
 
 const LegendEdges = [
-  {name: 'Participated', },
-  {name: 'Lead',},
-  {name: 'Inspired',},
-  {name: 'Organized',},
-  {name: 'Met',},
+  {name: 'Participated', filter_key: 'participated' },
+  {name: 'Lead', filter_key: 'lead'},
+  {name: 'Inspired', filter_key: 'inspired'},
+  {name: 'Organized', filter_key: 'organized'},
+  {name: 'Met', filter_key: 'met'},
 ]
 
 

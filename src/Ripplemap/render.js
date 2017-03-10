@@ -41,6 +41,7 @@ function init() {
                  , add_edge_labels
                    // rendering:
                  , clear_it_svg
+                 , filter_nodes
                  , draw_it_svg
                  , draw_metadata
                  )
@@ -532,6 +533,12 @@ function add_edge_labels(env) {
 function clear_it_svg(env) {
   env.svg.head = `<svg viewBox="0 0 900 900" style="height:900px" xmlns="http://www.w3.org/2000/svg">`
   env.svg.tail = `</svg>`
+  return env
+}
+
+function filter_nodes(env) {
+  console.log('env is', env)
+  // loop through env.data
   return env
 }
 

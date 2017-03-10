@@ -2,7 +2,8 @@ import { h, render } from 'preact';
 import './styles.css'
 
 const LegendItem = (props) => {
-  let filter_is_on = props.currentFilters.indexOf(props.name)
+  console.log(props)
+  let filter_is_on = props.currentFilters.indexOf(props.filter_key)
   console.log(filter_is_on)
 
   const containerStyles = {
@@ -29,7 +30,7 @@ const LegendItem = (props) => {
   return (
     <div style={containerStyles}>
       <div style={circleStyles}/>
-      <span onClick={() => props.toggleFilter(props.name)} style={textStyles}>{props.children}</span>
+      <span onClick={() => props.toggleFilter(props.filter_key)} style={textStyles}>{props.children}</span>
     </div>
   );
 }
