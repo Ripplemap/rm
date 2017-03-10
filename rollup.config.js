@@ -35,6 +35,7 @@ export default { sourceMap: true
                                   , presets: [ "es2015-rollup"]
                                   , plugins: [ ['transform-react-jsx', { pragma:'h' }]
                                              , ["transform-class-properties"]
+                                             , ['transform-object-rest-spread']
                                              ]
                                   // exclude: 'node_modules/**',
                                   })
