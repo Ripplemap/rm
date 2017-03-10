@@ -1,6 +1,6 @@
 import { h, render, Component } from 'preact';
-import './TabBar.css'
-import Tab from './Tab/Tab';
+import './tabBar.css'
+import Tab from './tab/tab';
 
 /**
  * List to iterate over and generate tab commponents with.

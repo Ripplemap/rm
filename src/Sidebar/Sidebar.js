@@ -1,12 +1,12 @@
 import { h, render, Component } from 'preact';
-import './Sidebar.css'
-import TabBar from './TabBar/TabBar';
-import Home from './Views/Home/index';
-import About from './Views/About/index';
-import YourSelection from './Views/YourSelection/index';
-import Current from './Views/Current/index';
-import Legend from './Views/Legend/index';
-import Story from './Views/Story/index';
+import './sidebar.css'
+import TabBar from './tabBar/tabBar';
+import Home from './views/home/index';
+import About from './views/about/index';
+import YourSelection from './views/yourSelection/index';
+import Current from './views/current/index';
+import Legend from './views/legend/index';
+import Story from './views/story/index';
 
 /**
  * Sidebar layout and state
