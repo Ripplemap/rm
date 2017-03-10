@@ -4,6 +4,7 @@ import * as dom from 'dom'
 import {convo as conversation} from 'convo'
 import {cats} from 'model'
 import state from 'state'
+import {isDate} from '../utils';
 
 export {init, render, render_all, whatsnext}
 
@@ -649,13 +650,17 @@ function draw_it_svg(env) {
   }
 
   function draw_text(node, x, y, str, font, fill_color, font_size) {
-    fill_color = fill_color || '#000'
-    font = font || "14px raleway"
+    console.log('the string going into draw_text is', str)
+    fill_color = '#fff'
+    font = "Archivo Narrow"
+    font_size = '16px'
     if(isNaN(x)) return ''
     x = x || 0
     y = y || 0
-
-    return `<text x="${x}" y="${y}" font-family="${font}" fill="${fill_color}" font-size="${font_size}">${str}</text>`
+    if (isDate(str)) {
+      return `<text x="${x}" y="${y}" font-family="${font}" fill="#999" letter-spacing="1px" font-size="${font_size}">${str}</text>`
+    }
+    return `<text x="${x}" y="${y}" font-family="${font}" fill="${fill_color}" letter-spacing="1px" font-size="${font_size}">${str}</text>`
   }
 
   function draw_angle_text(node, x1, y1, x2, y2, str, font, fill_color) {
