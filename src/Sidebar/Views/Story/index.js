@@ -24,8 +24,9 @@ const Story = () => {
         <hr style="clear:both" />
 
         <div id="controls">
-          <p>
-            Currently viewing tags: <span id="tagnames"></span>
+          <p id="tag-box">
+            Currently viewing tags: 
+            <div id="tagnames"></div>
           </p>
           <p>
             Add a tag:

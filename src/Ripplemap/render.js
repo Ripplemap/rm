@@ -1121,6 +1121,7 @@ function showtags() {
   // hoverable span for highlight, plus clickable for remove
   var tagwrapper = ['<span class="tag">', '</span>']
   var tagstr = state.tags.map(function(tag) { return tagwrapper[0] + tag + tagwrapper[1] }).join(', ')
+  console.log(tagstr);
   dom.set_el('tagnames', tagstr)
 
   // generate select box

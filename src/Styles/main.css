@@ -59,3 +59,30 @@ input {
 .hide {
   display: none;
 }
+
+
+/* ========= Tags =========== */
+
+/*Tag box in top right*/
+
+#tag-box {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  top:0;
+  right: 0;
+  margin: 1rem;
+  color: #dfdfdf;
+  opacity: 0.5;
+  text-align: right;
+  max-width: 150px;
+}
+
+#tagnames {
+  margin-top: 1rem;
+}
+
+.tag {
+  /*display: block;*/
+  text-align: right;
+}
