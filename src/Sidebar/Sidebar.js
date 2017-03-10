@@ -29,6 +29,8 @@ class Sidebar extends Component {
     this.setState({
       currentView: view_id
     })
+    // on transitioning to different component sub views... run glue?
+    window.do_the_glue()
   }
 
   renderSelectedView = () => {
