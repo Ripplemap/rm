@@ -87,7 +87,10 @@ function sg_compact(g) {
         return undefined
 
       var edge = {_in: oo[0]._id, _out: oo[1]._id, label: other.name || ""}
-      edges.push(edge)
+
+      if(!edges.some(x => x._in === edge._in && x._out === edge._out))
+        edges.push(edge)
+
       newg.addVertex(node)
     })
   })
@@ -521,16 +524,6 @@ function add_edge_labels(env) {
 
 // RENDERING
 
-// tees: please rename this.
-// this grabs an array of id's and add's event listeners (for the nodes /edges)
-function make_elements_actionable(arr, exception, cb) {
-  arr.forEach(id => {
-    if (id !== exception || !exception) 
-      console.log('event listener added for', id)
-      document.getElementById(id).addEventListener('click', cb)
-  })
-}
-
 // experimental svg mode functions...
 function clear_it_svg(env) {
   env.svg.head = `<svg viewBox="0 0 900 900" style="height:900px" xmlns="http://www.w3.org/2000/svg">`
@@ -547,14 +540,30 @@ function draw_it_svg(env) {
     env.svg.body += draw_shape(node)
   })
 
-/// inject the svg node here
+  // inject the svg node
   document.getElementById('ripplemap-mount').innerHTML = env.svg.head + env.svg.body + env.svg.tail
 
-  make_elements_actionable(edges, null, () => { console.log('moused over an edge!') })
-  make_elements_actionable(circle_nodes, 'circle_450_450', () => {console.log('moused over a node!');})
+  // add listeners
+  make_elements_actionable(edges, null, () => { console.log('clicked an edge!') })
+  make_elements_actionable(circle_nodes, 'circle_450_450', () => {console.log('clicked a node!')})
 
-  return env
+  // dom.highlight(function(v) { return ~v.tags.indexOf(tag) })
 
+
+
+  return env // <----- hey look, the function ends here!
+
+
+
+  // tees: please rename this.
+  // this grabs an array of id's and add's event listeners (for the nodes /edges)
+  function make_elements_actionable(arr, exception, cb) {
+    arr.forEach(id => {
+      console.log('event listener added for', id)
+      if (id !== exception || !exception)
+        document.getElementById(id).addEventListener('click', cb)
+    })
+  }
 
 
   function draw_shape(node) {
@@ -590,8 +599,8 @@ function draw_it_svg(env) {
     line_width = line_width || 0.5
     if(fromx * fromy * tox * toy * 0 !== 0)
       return ''
-    
-    let u_id = `line_${fromx}_${fromy}`
+
+    let u_id = `line_${fromx}_${fromy}_${tox}_${toy}`
     edges.push(u_id)
 
     return `<line id="${u_id}" x1="${fromx}" y1="${fromy}" x2="${tox}" y2="${toy}" stroke-width="5" stroke="${stroke_color}"/>`
@@ -609,6 +618,8 @@ function draw_it_svg(env) {
 
   function draw_angle_text(x1, y1, x2, y2, str, font, fill_color) {
     return ''
+
+    // TODO: write this function
 
     ctx.fillstyle = fill_color || '337'
     ctx.font = font || "14px sans-serif"

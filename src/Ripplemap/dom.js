@@ -70,7 +70,7 @@ function highlighter(e) {
   }
 }
 
-function highlight(o_or_f) {
+export function highlight(o_or_f) {
   var current = G.v({highlight: true}).run()
   current.forEach(function(node) {
     // node.highlight = false
