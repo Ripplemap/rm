@@ -3,6 +3,4 @@ node_modules
 ripplemap.js.map
 old
 
-build/bundle.js
-build/bundle.js.map
 npm-debug.log
