@@ -48,3 +48,14 @@ input {
   padding: 1rem;
   border: 1px solid #777;
 }
+
+
+/* Decorations */
+
+.highlight {
+  background-color: #ffff66;
+}
+
+.hide {
+  display: none;
+}
