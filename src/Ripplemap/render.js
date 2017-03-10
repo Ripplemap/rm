@@ -650,7 +650,6 @@ function draw_it_svg(env) {
   }
 
   function draw_text(node, x, y, str, font, fill_color, font_size) {
-    console.log('the string going into draw_text is', str)
     fill_color = '#fff'
     font = "Archivo Narrow"
     font_size = '16px'
