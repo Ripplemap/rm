@@ -537,8 +537,16 @@ function clear_it_svg(env) {
 }
 
 function filter_nodes(env) {
+  // this does not work yet 
   console.log('env is', env)
-  // loop through env.data
+  if (!window.currentFilters) return env              // no filters? return
+
+  window.currentFilters.forEach(cur_filter => {     // loop over current filters strings
+    env.data.E.filter(event => {                    // if a string matches E data, filter it.
+      return event === cur_filter
+    })
+  })
+
   return env
 }
 
@@ -595,20 +603,6 @@ function draw_it_svg(env) {
   return env // <----- hey look, the function ends here!
 
 
-
-  // tees: please rename this.
-  // this grabs an array of id's and add's event listeners (for the nodes /edges)
-  // make_elements_actionable(edges, null, () => { console.log('clicked an edge!') })
-  // make_elements_actionable(circle_nodes, 'circle_450_450', () => {console.log('clicked a node!')})
-
-  // function make_elements_actionable(xs, cb, action='click', exceptions=[]) {
-  //   xs.forEach(id => {
-  //     console.log(`${action} listener added for ${id}`)
-
-  //     if(!exceptions.includes(id))
-  //       dom.el(id).addEventListener('click', cb)
-  //   })
-  // }
 
 
   function draw_shape(node) {

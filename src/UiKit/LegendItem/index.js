@@ -2,9 +2,7 @@ import { h, render } from 'preact';
 import './styles.css'
 
 const LegendItem = (props) => {
-  console.log(props)
   let filter_is_on = props.currentFilters.indexOf(props.filter_key)
-  console.log(filter_is_on)
 
   const containerStyles = {
     display: 'flex',
