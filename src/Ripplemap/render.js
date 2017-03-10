@@ -1,5 +1,5 @@
 import {G} from 'graph'
-import {eq, prop, clone, truncate, push_it, pipe} from 'fun'
+import {unique, eq, prop, clone, truncate, push_it, pipe} from 'fun'
 import * as dom from 'dom'
 import {convo as conversation} from 'convo'
 import {cats} from 'model'
@@ -425,13 +425,14 @@ function copy_edges(env) {
 
     var label = edge.label || "777"
     var color = str_to_color(label)
+    var id    = edge._in._id + '-' + edge._out._id
 
     // function str_to_color(str) { return 'hsl' + (state.show_labels?'a':'') + '(' + str_to_num(str) + ',100%,40%' + (state.show_labels?',0.3':'') + ')';}
     function str_to_color(str) { return 'hsla' + '(' + str_to_num(str) + ',30%,40%,0.' + (state.show_labels?'3':'7') + ')' }
     function str_to_num(str) { return char_to_num(str, 0) + char_to_num(str, 1) + char_to_num(str, 2) }
     function char_to_num(char, index) { return (char.charCodeAt(index) % 20) * 20 }
 
-    var line = {shape: 'line', x1: edge._in.x, y1: edge._in.y, x2: edge._out.x, y2: edge._out.y, stroke: color, type: 'edge', label: label}
+    var line = {shape: 'line', _id: id, x1: edge._in.x, y1: edge._in.y, x2: edge._out.x, y2: edge._out.y, stroke: color, type: 'edge', label: label}
     env.shapes.push(line)
   })
   return env
@@ -469,6 +470,7 @@ function copy_nodes(env) {
     var color = 'hsla(' + hues[node.type] + ',80%,50%,0.99)'
 
     var shape = { shape: 'circle'
+                , _id: node._id
                 , x: node.x
                 , y: node.y
                 , r: node.r
@@ -480,6 +482,7 @@ function copy_nodes(env) {
       return shape
 
     var highlight = { shape: 'circle'
+                    , _id: node._id
                     , x: node.x
                     , y: node.y
                     , r: node.r + 12
@@ -533,7 +536,7 @@ function clear_it_svg(env) {
 
 function draw_it_svg(env) {
   // tees: create an array of element id's to loop over and add mouse over events too.
-  let circle_nodes = []
+  let nodes = []
   let edges = []
 
   env.shapes.forEach(function(node) {
@@ -544,8 +547,38 @@ function draw_it_svg(env) {
   document.getElementById('ripplemap-mount').innerHTML = env.svg.head + env.svg.body + env.svg.tail
 
   // add listeners
-  make_elements_actionable(edges, null, () => { console.log('clicked an edge!') })
-  make_elements_actionable(circle_nodes, 'circle_450_450', () => {console.log('clicked a node!')})
+  function highlight_edge(e) {
+    let id = e.target.id
+    let ids = id.split('-')
+    if(!ids[0]) return undefined
+
+    var fun = function(v) {return ~ids.indexOf(v._id)}
+    dom.highlight(fun)
+  }
+
+  let edge_click = highlight_edge
+  let edge_hover = highlight_edge
+
+  let good_edges = edges.filter(id => true)
+  good_edges.map(id => dom.el(id).addEventListener('click', edge_click))
+  good_edges.map(id => dom.el(id).addEventListener('mouseover', edge_hover))
+
+
+  function highlight_node(e) {
+    let id = e.target.id
+    if(!id) return undefined
+
+    let ids = G.v(id).both().both().run().map(x => x._id).filter(unique)
+    var fun = function(v) {return ~ids.indexOf(v._id)}
+    dom.highlight(fun)
+  }
+
+  let node_click = highlight_node
+  let node_hover = highlight_node
+
+  let good_nodes = nodes.filter(id => true)
+  good_nodes.map(id => dom.el(id).addEventListener('click', node_click))
+  good_nodes.map(id => dom.el(id).addEventListener('mouseover', node_hover))
 
   // dom.highlight(function(v) { return ~v.tags.indexOf(tag) })
 
@@ -557,13 +590,17 @@ function draw_it_svg(env) {
 
   // tees: please rename this.
   // this grabs an array of id's and add's event listeners (for the nodes /edges)
-  function make_elements_actionable(arr, exception, cb) {
-    arr.forEach(id => {
-      console.log('event listener added for', id)
-      if (id !== exception || !exception)
-        document.getElementById(id).addEventListener('click', cb)
-    })
-  }
+  // make_elements_actionable(edges, null, () => { console.log('clicked an edge!') })
+  // make_elements_actionable(circle_nodes, 'circle_450_450', () => {console.log('clicked a node!')})
+
+  // function make_elements_actionable(xs, cb, action='click', exceptions=[]) {
+  //   xs.forEach(id => {
+  //     console.log(`${action} listener added for ${id}`)
+
+  //     if(!exceptions.includes(id))
+  //       dom.el(id).addEventListener('click', cb)
+  //   })
+  // }
 
 
   function draw_shape(node) {
@@ -571,42 +608,47 @@ function draw_it_svg(env) {
     var cy = 450
 
     if(node.shape === 'circle')
-      return draw_circle(cx + node.x, cy + node.y, node.r, node.stroke, node.fill, node.line)
+      return draw_circle(node, cx + node.x, cy + node.y, node.r, node.stroke, node.fill, node.line)
 
     if(node.shape === 'line')
-      return draw_line(cx + node.x1, cy + node.y1, cx + node.x2, cy + node.y2, node.stroke, node.line)
+      return draw_line(node, cx + node.x1, cy + node.y1
+                           , cx + node.x2, cy + node.y2, node.stroke, node.line)
 
     if(node.shape === 'text')
-      return draw_text(cx + node.x, cy + node.y, node.str, node.font, node.fill)
+      return draw_text(node, cx + node.x, cy + node.y, node.str, node.font, node.fill)
 
     if(node.shape === 'angle_text')
-      return draw_angle_text(cx + node.x1, cy + node.y1, cx + node.x2, cy + node.y2, node.str, node.font, node.fill)
+      return draw_angle_text( node, cx + node.x1, cy + node.y1
+                                  , cx + node.x2, cy + node.y2
+                                  , node.str, node.font, node.fill
+                            )
   }
 
-  function draw_circle(x, y, radius, stroke_color, fill_color, line_width) {
+  function draw_circle(node, x, y, radius, stroke_color, fill_color, line_width) {
     fill_color = fill_color || '#444444'
     line_width = line_width || 2
     stroke_color = stroke_color || '#eef'
 
-    let u_id = `circle_${x}_${y}`
-    circle_nodes.push(u_id)
+    let u_id = `${node._id}`
+    nodes.push(u_id)
 
-    return `<circle id="${u_id}" cx="${x}" cy="${y}" r="${radius}" fill="${fill_color}" stroke-width="${line_width}" stroke="${stroke_color}"/>`
+    return `<circle id="${u_id}" class="${node.type || 'node'}" cx="${x}" cy="${y}" r="${radius}" fill="${fill_color}" stroke-width="${line_width}" stroke="${stroke_color}"/>`
   }
 
-  function draw_line(fromx, fromy, tox, toy, stroke_color, line_width) {
+  function draw_line(node, fromx, fromy, tox, toy, stroke_color, line_width) {
     stroke_color = stroke_color || '#eef'
     line_width = line_width || 0.5
+
     if(fromx * fromy * tox * toy * 0 !== 0)
       return ''
 
-    let u_id = `line_${fromx}_${fromy}_${tox}_${toy}`
+    let u_id = `${node._id}`
     edges.push(u_id)
 
-    return `<line id="${u_id}" x1="${fromx}" y1="${fromy}" x2="${tox}" y2="${toy}" stroke-width="5" stroke="${stroke_color}"/>`
+    return `<line id="${u_id}" class="${node.type}" x1="${fromx}" y1="${fromy}" x2="${tox}" y2="${toy}" stroke-width="5" stroke="${stroke_color}"/>`
   }
 
-  function draw_text(x, y, str, font, fill_color, font_size) {
+  function draw_text(node, x, y, str, font, fill_color, font_size) {
     fill_color = fill_color || '#000'
     font = font || "14px raleway"
     if(isNaN(x)) return ''
@@ -616,7 +658,7 @@ function draw_it_svg(env) {
     return `<text x="${x}" y="${y}" font-family="${font}" fill="${fill_color}" font-size="${font_size}">${str}</text>`
   }
 
-  function draw_angle_text(x1, y1, x2, y2, str, font, fill_color) {
+  function draw_angle_text(node, x1, y1, x2, y2, str, font, fill_color) {
     return ''
 
     // TODO: write this function
