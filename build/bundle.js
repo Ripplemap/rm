@@ -1495,13 +1495,16 @@ var Legend = function (_Component) {
       if (filter_exists !== -1) {
         cur_filters.splice(filter_exists, 1);
         _this.setState({ currentFilters: cur_filters });
-        return;
+      } else {
+        // otherwise add it.
+        _this.setState(_extends({}, _this.state, {
+          currentFilters: [].concat(toConsumableArray(_this.state.currentFilters), [filter])
+        }));
       }
 
-      // otherwise add it.
-      _this.setState(_extends({}, _this.state, {
-        currentFilters: [].concat(toConsumableArray(_this.state.currentFilters), [filter])
-      }));
+      // FIXME: this is leaking into the global space
+      window.filter_poo = _this.state.currentFilters;
+      window.rm_render();
     }, _this.renderNodes = function () {
       return LegendNodes.map(function (node) {
         return h(
@@ -1532,9 +1535,6 @@ var Legend = function (_Component) {
   createClass(Legend, [{
     key: 'render',
     value: function render$$1() {
-      // attach filters to access from ripple map
-      window.currentFilters = this.state.currentFilters;
-
       return h(
         'div',
         { 'class': 'Legend' },
@@ -1559,13 +1559,7 @@ var Legend = function (_Component) {
               null,
               'Edges'
             ),
-            this.renderEdges(),
-            h(
-              Button,
-              null,
-              h('icon', { 'class': 'fa fa-eye-slash', style: { paddingRight: '1rem' } }),
-              'Hide all '
-            )
+            this.renderEdges()
           )
         ),
         h(
@@ -1575,6 +1569,40 @@ var Legend = function (_Component) {
             Header,
             null,
             ' Years '
+          )
+        ),
+        h(
+          'section',
+          { 'class': 'Legend__keys' },
+          h(
+            Header,
+            null,
+            ' Keys '
+          ),
+          h(
+            'p',
+            null,
+            '\'\u2190\' for previous year'
+          ),
+          h(
+            'p',
+            null,
+            '\'\u2192\' for next year'
+          ),
+          h(
+            'p',
+            null,
+            '\'e\' toggles recent connections'
+          ),
+          h(
+            'p',
+            null,
+            '\'f\' toggles filter stories by year'
+          ),
+          h(
+            'p',
+            null,
+            '\'l\' for legend edges'
           )
         )
       );
@@ -2603,18 +2631,26 @@ function init$2() {
   // TODO: consider a workflow for managing this tripartite pipeline, so we can auto-cache etc
   viz_pipe = pipe(mod('data', sg_compact), mod('data', likenamed), mod('data', cluster), mod('data', Dagoba.cloneflat)
   // layout:
-  , set_year, data_to_graph, add_fakes, set_coords, set_score, minimize_edge_length, remove_fakes, unique_y_pos, filter_by_year
+  , set_year, data_to_graph, add_fakes, set_coords, set_score, minimize_edge_length, remove_fakes, unique_y_pos, filter_by_year, filter_nodes
   // shapes:
   , add_rings, add_ring_labels, copy_edges, copy_nodes, add_node_labels, add_edge_labels
   // rendering:
-  , clear_it_svg, filter_nodes, draw_it_svg, draw_metadata);
+  , clear_it_svg, draw_it_svg, draw_metadata);
 
   word_pipe = pipe(get_actions, filter_actions, make_sentences, write_sentences);
 }
 
 function render$1() {
   // TODO: cloning is inefficient: make lazy subgraphs
-  var env = { data: Dagoba.clone(G), params: { my_maxyear: state.my_maxyear, my_minyear: state.my_minyear }, shapes: [], ctx: ctx, svg: { head: '', body: '', tail: '' } };
+  var env = { data: Dagoba.clone(G),
+    svg: { head: '', body: '', tail: '' },
+    params: { my_maxyear: state.my_maxyear,
+      my_minyear: state.my_minyear,
+      filters: window.filter_poo
+    },
+    shapes: [],
+    ctx: ctx
+  };
 
   viz_pipe(env);
   word_pipe(env);
@@ -2941,6 +2977,25 @@ function filter_by_year(env) {
     }
     return true;
   });
+
+  return env;
+}
+
+function filter_nodes(env) {
+  var filters = env.params.filters;
+
+  if (!filters) return env;
+
+  // TODO: do this in Dagoba so we can erase edges automatically
+  env.data.V = env.data.V.filter(function (node) {
+    // yuckyuckyuck
+    if (filters.includes(node.type)) {
+      env.params.graph.removeVertex(node);
+      return false;
+    }
+    return true;
+  });
+
   return env;
 }
 
@@ -3087,22 +3142,6 @@ function add_edge_labels(env) {
 function clear_it_svg(env) {
   env.svg.head = '<svg viewBox="0 0 900 900" style="height:900px" xmlns="http://www.w3.org/2000/svg">';
   env.svg.tail = '</svg>';
-  return env;
-}
-
-function filter_nodes(env) {
-  // this does not work yet
-  console.log('env is', env);
-  if (!window.currentFilters) return env; // no filters? return
-
-  window.currentFilters.forEach(function (cur_filter) {
-    // loop over current filters strings
-    env.data.E.filter(function (event) {
-      // if a string matches E data, filter it.
-      return event === cur_filter;
-    });
-  });
-
   return env;
 }
 
@@ -3271,13 +3310,15 @@ function draw_it_svg(env) {
   }
 }
 
+/////////////////////////////////
+
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// SENTENCE STRUCTURES
+// CANVAS FUNCTIONS
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -3642,7 +3683,7 @@ function get_tagkeys(facts) {
   var keys = {};
   facts.forEach(function (fact) {
     ~(fact.tags || []).forEach(function (tag) {
-      keys[tag] = true;
+      if (tag) keys[tag] = true;
     });
   });
   return keys;
@@ -3663,7 +3704,7 @@ function factor_facts(facts) {
     // var list = branch[fact.action] || []
     // if(!branch[fact.action])
     //   branch[fact.action] = list
-    var list = tree[fact.type + 's'][fact.action]; // TODO: error handling
+    var list = tree[fact.type + 's'][fact.action] || []; // TODO: error handling
 
     // var item = clone(fact.data)
     var item = fact.data; // THINK: is mutating here okay?
@@ -3680,6 +3721,9 @@ function set_intersect(xs, ys) {
     return ys.indexOf(x) !== -1;
   });
 }
+
+///////////////////////// DOM GLUE ///////////////////////////////
+
 
 function do_the_glue() {
 
@@ -3752,6 +3796,9 @@ function init$1() {
   }
 
   // G = Dagoba.graph()
+
+  // FIXME: leaking into the global space
+  window.rm_render = render_all;
 
   init$2();
 
