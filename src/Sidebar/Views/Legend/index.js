@@ -28,7 +28,7 @@ class Legend extends Component {
   state = {
     currentFilters: [],
   }
-  
+
 
   toggleFilter = (filter) => {
     let cur_filters = this.state.currentFilters
@@ -50,9 +50,9 @@ class Legend extends Component {
 
   renderNodes = () => {
     return LegendNodes.map(node => (
-      <LegendItem 
-        {...node} 
-        size="15px" 
+      <LegendItem
+        {...node}
+        size="15px"
         toggleFilter={this.toggleFilter}
         currentFilters = {this.state.currentFilters}
       >
@@ -62,7 +62,7 @@ class Legend extends Component {
 
   renderEdges = () => {
     return LegendEdges.map(node => (
-      <LegendItem 
+      <LegendItem
         {...node}
         currentFilters = {this.state.currentFilters}
         toggleFilter={this.toggleFilter}
@@ -70,12 +70,12 @@ class Legend extends Component {
         / {node.name}
       </LegendItem>
     ))
-  } 
+  }
 
   render() {
     // attach filters to access from ripple map
     window.currentFilters = this.state.currentFilters
-    
+
     return (
       <div class="Legend">
 
@@ -98,6 +98,16 @@ class Legend extends Component {
         <section class="Legend__years">
           <Header> Years </Header>
           {/* TODO: year slider */}
+        </section>
+
+        {/* Keys Section */}
+        <section class="Legend__keys">
+          <Header> Keys </Header>
+          <p>'←' for previous year</p>
+          <p>'→' for next year</p>
+          <p>'e' toggles recent connections</p>
+          <p>'f' toggles filter stories by year</p>
+          <p>'l' for legend edges</p>
         </section>
 
       </div>
