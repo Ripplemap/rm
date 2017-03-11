@@ -32,6 +32,7 @@ function init() {
                  , remove_fakes
                  , unique_y_pos
                  , filter_by_year
+                 , filter_nodes
                    // shapes:
                  , add_rings
                  , add_ring_labels
@@ -41,7 +42,6 @@ function init() {
                  , add_edge_labels
                    // rendering:
                  , clear_it_svg
-                 , filter_nodes
                  , draw_it_svg
                  , draw_metadata
                  )
@@ -55,7 +55,15 @@ function init() {
 
 function render() {
   // TODO: cloning is inefficient: make lazy subgraphs
-  var env = {data: Dagoba.clone(G), params: {my_maxyear: state.my_maxyear, my_minyear: state.my_minyear}, shapes: [], ctx: ctx, svg: {head: '', body: '', tail: ''}}
+  var env = { data: Dagoba.clone(G)
+            , svg: {head: '', body: '', tail: ''}
+            , params: { my_maxyear: state.my_maxyear
+                      , my_minyear: state.my_minyear
+                      , filters: window.filter_poo
+                      }
+            , shapes: []
+            , ctx: ctx
+            }
 
   viz_pipe(env)
   word_pipe(env)
@@ -126,7 +134,6 @@ function likenamed(g) {
 
   return g
 }
-
 
 
 /// modularize this:
@@ -392,6 +399,25 @@ function filter_by_year(env) {
     }
     return true
   })
+
+  return env
+}
+
+function filter_nodes(env) {
+  let filters = env.params.filters
+
+  if(!filters) return env
+
+  // TODO: do this in Dagoba so we can erase edges automatically
+  env.data.V = env.data.V.filter(function(node) {
+    // yuckyuckyuck
+    if(filters.includes(node.type)) {
+      env.params.graph.removeVertex(node)
+      return false
+    }
+    return true
+  })
+
   return env
 }
 
@@ -533,20 +559,6 @@ function add_edge_labels(env) {
 function clear_it_svg(env) {
   env.svg.head = `<svg viewBox="0 0 900 900" style="height:900px" xmlns="http://www.w3.org/2000/svg">`
   env.svg.tail = `</svg>`
-  return env
-}
-
-function filter_nodes(env) {
-  // this does not work yet
-  console.log('env is', env)
-  if (!window.currentFilters) return env              // no filters? return
-
-  window.currentFilters.forEach(cur_filter => {     // loop over current filters strings
-    env.data.E.filter(event => {                    // if a string matches E data, filter it.
-      return event === cur_filter
-    })
-  })
-
   return env
 }
 

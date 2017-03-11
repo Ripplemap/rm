@@ -38,14 +38,18 @@ class Legend extends Component {
     if (filter_exists !== -1) {
       cur_filters.splice(filter_exists, 1)
       this.setState({currentFilters: cur_filters})
-      return
+    }
+    else {
+      // otherwise add it.
+      this.setState({
+        ...this.state,
+        currentFilters: [...this.state.currentFilters, filter]
+      })
     }
 
-    // otherwise add it.
-    this.setState({
-      ...this.state,
-      currentFilters: [...this.state.currentFilters, filter]
-    })
+    // FIXME: this is leaking into the global space
+    window.filter_poo = this.state.currentFilters
+    window.rm_render()
   }
 
   renderNodes = () => {
@@ -73,9 +77,6 @@ class Legend extends Component {
   }
 
   render() {
-    // attach filters to access from ripple map
-    window.currentFilters = this.state.currentFilters
-
     return (
       <div class="Legend">
 
@@ -90,7 +91,7 @@ class Legend extends Component {
           <section class="Legend__column" style={{paddingLeft: '10px'}}>
             <Header>Edges</Header>
             {this.renderEdges()}
-            <Button><icon class="fa fa-eye-slash" style={{paddingRight: '1rem'}} />Hide all </Button>
+            {/* <Button><icon class="fa fa-eye-slash" style={{paddingRight: '1rem'}} />Hide all </Button> */}
           </section>
         </section>
 

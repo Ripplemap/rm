@@ -112,6 +112,9 @@ function init() {
 
   // G = Dagoba.graph()
 
+  // FIXME: leaking into the global space
+  window.rm_render = render_all
+
   render_init()
 
   function cb() {
