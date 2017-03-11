@@ -1467,7 +1467,11 @@ var LegendItem = function LegendItem(props) {
   );
 };
 
-var LegendNodes = [{ name: 'Event', color: '#FF1E3A', selected: 'grey', filter_key: 'event' }, { name: 'Individual', color: '#00A3D8', selected: 'grey', filter_key: 'person' }, { name: 'Group', color: '#00AE57', selected: 'grey', filter_key: 'group' }, { name: 'Project', clor: '#FCB0DB', selected: 'grey', filter_key: 'project' }, { name: 'Outcome', color: '#FFE98F', selected: 'grey', filter_key: 'outcome' }];
+// Data to loop over for the legend keys
+// not sure what the filter_keys are for all the data
+var LegendNodes = [{ name: 'Event', color: '#FF1E3A', selected: 'grey', filter_key: 'event' }, { name: 'Individual', color: '#00A3D8', selected: 'grey', filter_key: 'person' }, { name: 'Group', color: '#00AE57', selected: 'grey', filter_key: 'org' },
+// {name: 'Place', clor: '#FCB0DB', selected: 'grey', filter_key: 'place',},
+{ name: 'Outcome', color: '#FFE98F', selected: 'grey', filter_key: 'outcome' }];
 
 var LegendEdges = [{ name: 'Participated', filter_key: 'participated' }, { name: 'Lead', filter_key: 'lead' }, { name: 'Inspired', filter_key: 'inspired' }, { name: 'Organized', filter_key: 'organized' }, { name: 'Met', filter_key: 'met' }];
 
@@ -3721,9 +3725,6 @@ function set_intersect(xs, ys) {
     return ys.indexOf(x) !== -1;
   });
 }
-
-///////////////////////// DOM GLUE ///////////////////////////////
-
 
 function do_the_glue() {
 

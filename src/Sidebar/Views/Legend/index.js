@@ -10,8 +10,8 @@ import Button from '../../../UiKit/Button'
 const LegendNodes = [
   {name: 'Event', color: '#FF1E3A', selected: 'grey', filter_key: 'event',},
   {name: 'Individual', color: '#00A3D8', selected: 'grey', filter_key: 'person',},
-  {name: 'Group', color: '#00AE57', selected: 'grey', filter_key: 'group',},
-  {name: 'Project', clor: '#FCB0DB', selected: 'grey', filter_key: 'project',},
+  {name: 'Group', color: '#00AE57', selected: 'grey', filter_key: 'org',},
+  // {name: 'Place', clor: '#FCB0DB', selected: 'grey', filter_key: 'place',},
   {name: 'Outcome', color: '#FFE98F', selected: 'grey', filter_key: 'outcome',},
 ]
 
