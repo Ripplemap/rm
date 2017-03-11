@@ -84,7 +84,8 @@ function get_tagkeys(facts) {
   var keys = {}
   facts.forEach(function(fact) {
     ~(fact.tags||[]).forEach(function(tag) {
-      keys[tag] = true
+      if(tag)
+        keys[tag] = true
     })
   })
   return keys
@@ -105,7 +106,7 @@ function factor_facts(facts) {
     // var list = branch[fact.action] || []
     // if(!branch[fact.action])
     //   branch[fact.action] = list
-    var list = tree[fact.type+'s'][fact.action] // TODO: error handling
+    var list = tree[fact.type+'s'][fact.action] || [] // TODO: error handling
 
     // var item = clone(fact.data)
     var item = fact.data // THINK: is mutating here okay?
