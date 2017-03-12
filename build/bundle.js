@@ -1307,15 +1307,6 @@ var Home = function Home(_ref) {
           } },
         'Add a story \u25B6'
       )
-    ),
-    h(
-      'section',
-      { 'class': 'Home__recent' },
-      h(
-        Header,
-        null,
-        'Recently Added Stories'
-      )
     )
   );
 };
@@ -1387,7 +1378,9 @@ var About = function About() {
   );
 };
 
-var YourSelection = function YourSelection() {
+var YourSelection = function YourSelection(_ref) {
+  var changeView = _ref.changeView;
+
   return h(
     'div',
     null,
@@ -1406,9 +1399,21 @@ var YourSelection = function YourSelection() {
       ),
       h(
         Button,
-        null,
+        { onClick: function onClick() {
+            return changeView('story');
+          } },
         'Add a story \u25B6'
       )
+    ),
+    h(
+      'h3',
+      null,
+      'Click any story to edit'
+    ),
+    h(
+      'div',
+      { id: 'sentences' },
+      ' '
     )
   );
 };
@@ -1421,6 +1426,16 @@ var Current = function Current() {
       Header,
       null,
       'Currently Showing'
+    ),
+    h(
+      'h3',
+      null,
+      'Click any story to edit'
+    ),
+    h(
+      'div',
+      { id: 'sentences' },
+      ' '
     )
   );
 };
@@ -1469,11 +1484,46 @@ var LegendItem = function LegendItem(props) {
 
 // Data to loop over for the legend keys
 // not sure what the filter_keys are for all the data
-var LegendNodes = [{ name: 'Event', color: '#FF1E3A', selected: 'grey', filter_key: 'event' }, { name: 'Individual', color: '#00A3D8', selected: 'grey', filter_key: 'person' }, { name: 'Group', color: '#00AE57', selected: 'grey', filter_key: 'org' },
-// {name: 'Place', clor: '#FCB0DB', selected: 'grey', filter_key: 'place',},
-{ name: 'Outcome', color: '#FFE98F', selected: 'grey', filter_key: 'outcome' }];
+var LegendNodes = [{
+  name: 'Event',
+  color: '#FF1E3A',
+  selected: 'grey',
+  filter_key: 'event'
+}, {
+  name: 'Individual',
+  color: '#00A3D8',
+  selected: 'grey',
+  filter_key: 'person'
+}, {
+  name: 'Group',
+  color: '#00AE57',
+  selected: 'grey',
+  filter_key: 'org'
+}, {
+  name: 'Outcome',
+  color: '#FFE98F',
+  selected: 'grey',
+  filter_key: 'outcome'
+}];
 
-var LegendEdges = [{ name: 'Participated', filter_key: 'participated' }, { name: 'Lead', filter_key: 'lead' }, { name: 'Inspired', filter_key: 'inspired' }, { name: 'Organized', filter_key: 'organized' }, { name: 'Met', filter_key: 'met' }];
+var LegendEdges = [{
+  name: 'Participated',
+  filter_key: 'participated'
+}, {
+  name: 'Lead',
+  filter_key: 'lead'
+}, {
+  name: 'Inspired',
+  filter_key: 'inspired'
+}, {
+  name: 'Organized',
+  filter_key: 'organized'
+}, {
+  name: 'Met',
+  filter_key: 'met'
+}];
+
+/* ----- Preact Jams ----- */
 
 var Legend = function (_Component) {
   inherits(Legend, _Component);
@@ -1500,7 +1550,6 @@ var Legend = function (_Component) {
         cur_filters.splice(filter_exists, 1);
         _this.setState({ currentFilters: cur_filters });
       } else {
-        // otherwise add it.
         _this.setState(_extends({}, _this.state, {
           currentFilters: [].concat(toConsumableArray(_this.state.currentFilters), [filter])
         }));
@@ -1668,42 +1717,13 @@ var Story = function Story() {
           ' to proceed. Reload the page to fix a mistake.'
         )
       )
-    ),
-    h('hr', { style: 'clear:both' }),
-    h(
-      'div',
-      { id: 'controls' },
-      h(
-        'p',
-        { id: 'tag-box' },
-        'Currently viewing tags:',
-        h('div', { id: 'tagnames' })
-      ),
-      h(
-        'p',
-        null,
-        'Add a tag:',
-        h(
-          'form',
-          { id: 'addtag', action: '' },
-          h('select', { id: 'othertags', name: 'othertags' }),
-          h('input', { name: '', type: 'submit', value: 'Go!' })
-        )
-      )
-    ),
-    h('hr', { style: 'clear:both' }),
-    h(
-      'h3',
-      null,
-      'Click any story to edit'
-    ),
-    h(
-      'div',
-      { id: 'sentences' },
-      ' '
     )
   );
 };
+
+/**
+ * Sidebar layout and state
+ */
 
 var Sidebar = function (_Component) {
   inherits(Sidebar, _Component);
@@ -1720,7 +1740,7 @@ var Sidebar = function (_Component) {
     }
 
     return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = Sidebar.__proto__ || Object.getPrototypeOf(Sidebar)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
-      currentView: 'story'
+      currentView: 'home'
     }, _this.changeView = function (view_id) {
       _this.setState({
         currentView: view_id
@@ -1729,18 +1749,25 @@ var Sidebar = function (_Component) {
       window.do_the_glue();
     }, _this.renderSelectedView = function () {
       switch (_this.state.currentView) {
+
         case 'home':
           return h(Home, { changeView: _this.changeView });
+
         case 'story':
           return h(Story, null);
+
         case 'legend':
           return h(Legend, null);
+
         case 'currently_showing':
           return h(Current, null);
+
         case 'your_selection':
-          return h(YourSelection, null);
+          return h(YourSelection, { changeView: _this.changeView });
+
         case 'about':
           return h(About, null);
+
         default:
           return h(Home, null);
       }
@@ -1781,7 +1808,7 @@ var Sidebar = function (_Component) {
   return Sidebar;
 }(Component);
 
-__$styleInject("html{font-size:62.5%}body{margin:0;padding:0;font-family:Fira Sans,Arial,Helvetica,sans-serif;font-size:13px;font-size:1.3rem;max-height:100vh}.App{display:flex;min-height:100vh;background:rgb(255)}#sidebar{display:flex;flex:1}#ripplemap-mount{display:flex;flex:2;background:linear-gradient(135deg,#502561,#fd5d62);justify-content:center}input{width:100%!important;padding:10px;padding:1rem;border:1px solid #777}.highlight{background-color:#ff6}.hide{display:none}#tag-box{position:fixed;display:flex;flex-direction:column;top:0;right:0;margin:10px;margin:1rem;color:#dfdfdf;opacity:.5;text-align:right;max-width:150px}#tagnames{margin-top:10px;margin-top:1rem}.tag{text-align:right}", undefined);
+__$styleInject("html{font-size:62.5%}body{margin:0;padding:0;font-family:Fira Sans,Arial,Helvetica,sans-serif;font-size:13px;font-size:1.3rem;max-height:100vh}.App{display:flex;min-height:100vh;background:rgb(255)}#sidebar{display:flex;flex:1}#ripplemap-mount{display:flex;flex:2;background:linear-gradient(135deg,#502561,#fd5d62);justify-content:center}input{padding:10px;padding:1rem;border:1px solid #777}.highlight{background-color:#ff6}.hide{display:none}#controls{max-width:200px;display:flex;flex-direction:column;position:fixed;top:0;right:0;margin:10px;margin:1rem;color:hsla(0, 0%, 100%, .9)}#addtag{align-self:flex-end}#btn_add_tag{background:hsla(0, 0%, 100%, .9);border:0;padding:5px;padding:.5rem;text-transform:uppercase;border-radius:2px;transition:all .1s ease;box-shadow:1px 2px 1px rgba(0, 0, 0, .32);outline:none}#btn_add_tag:hover{box-shadow:3px 3px 3px rgba(0, 0, 0, .42)}#btn_add_tag:active{box-shadow:1px 1px 1px rgba(0, 0, 0, .12)}#tag-box{display:flex;flex-direction:column;color:#dfdfdf;opacity:.5;text-align:right;align-self:flex-end;margin-bottom:0}#tagnames{margin-top:10px;margin-top:1rem}.tag{text-align:right}", undefined);
 
 var state = {};
 state.tags = []; // THINK: default to ['plain']?
@@ -3077,14 +3104,14 @@ function copy_nodes(env) {
     // Concept: Purple
     // Labels should be black
     // Connections should be grey
-    var hues = { outcome: '40'
+    var hues = { outcome: "hsla(48, 100%, 78%, 1)"
       // , action '20'
-      , person: '240',
-      event: '320',
-      org: '100'
+      , person: "hsla(195, 50%, 42%, 1)",
+      event: "hsla(353, 100%, 56%, 1)",
+      org: "hsla(150, 100%, 34%, 1)"
     };
 
-    var color = 'hsla(' + hues[node.type] + ',80%,50%,0.99)';
+    var color = hues[node.type];
 
     var shape = { shape: 'circle',
       _id: node._id,
@@ -3101,9 +3128,9 @@ function copy_nodes(env) {
       _id: node._id,
       x: node.x,
       y: node.y,
-      r: node.r + 12,
+      r: node.r + 5,
       line: 0.01,
-      fill: 'hsla(0, 80%, 50%, 0.20)'
+      fill: 'hsla(0, 80%, 100%, 0.95)'
     };
 
     return [highlight$$1, shape];
@@ -3314,15 +3341,13 @@ function draw_it_svg(env) {
   }
 }
 
-/////////////////////////////////
-
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// CANVAS FUNCTIONS
+// SENTENCE STRUCTURES
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
