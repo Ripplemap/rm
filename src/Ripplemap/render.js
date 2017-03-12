@@ -488,14 +488,14 @@ function copy_nodes(env) {
     // Concept: Purple
     // Labels should be black
     // Connections should be grey
-    var hues = { outcome: '40'
+      var hues = { outcome: "hsla(48, 100%, 78%, 1)"
                // , action '20'
-               , person: '240'
-               , event: '320'
-               , org: '100'
+                 , person: "hsla(195, 50%, 42%, 1)"
+                 , event: "hsla(353, 100%, 56%, 1)"
+                 , org: "hsla(150, 100%, 34%, 1)"
                }
 
-    var color = 'hsla(' + hues[node.type] + ',80%,50%,0.99)'
+      var color = hues[node.type]
 
     var shape = { shape: 'circle'
                 , _id: node._id
@@ -513,9 +513,9 @@ function copy_nodes(env) {
                     , _id: node._id
                     , x: node.x
                     , y: node.y
-                    , r: node.r + 12
+                    , r: node.r + 5
                     , line: 0.01
-                    , fill: 'hsla(0, 80%, 50%, 0.20)'
+                    , fill: 'hsla(0, 80%, 100%, 0.95)'
                     }
 
     return [highlight, shape]
