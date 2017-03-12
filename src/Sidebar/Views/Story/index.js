@@ -23,22 +23,6 @@ const Story = () => {
 
         <hr style="clear:both" />
 
-        <div id="controls">
-          <p id="tag-box">
-            Currently viewing tags: 
-            <div id="tagnames"></div>
-          </p>
-          <p>
-            Add a tag:
-            <form id="addtag" action="">
-              <select id="othertags" name="othertags"></select>
-              <input name="" type="submit" value="Go!" />
-            </form>
-          </p>
-        </div>
-
-        <hr style="clear:both" />
-
         <h3>Click any story to edit</h3>
 
         <div id="sentences"> </div>
