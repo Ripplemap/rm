@@ -8,9 +8,7 @@ const Story = () => {
 
         <div id="signup">
           <form id="login">
-            <p>
-              We'd love to hear your stories! Let's start with your contact info:
-            </p>
+            <p>We'd love to hear your stories! Let's start with your contact info:</p>
             <input name="email" id="email" type="text" placeholder="email" class="typeahead" />
           </form>
         </div>
@@ -20,12 +18,6 @@ const Story = () => {
           <form id="the-conversation"></form>
           <p><em>Use <em>Tab</em> to autocomplete and <em>Return</em> to proceed. Reload the page to fix a mistake.</em></p>
         </div>
-
-        <hr style="clear:both" />
-
-        <h3>Click any story to edit</h3>
-
-        <div id="sentences"> </div>
 
     </div>
   );

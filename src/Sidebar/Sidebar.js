@@ -35,18 +35,25 @@ class Sidebar extends Component {
 
   renderSelectedView = () => {
     switch(this.state.currentView){
+
       case 'home':
-        return <Home changeView={this.changeView} />
+        return (<Home changeView={this.changeView} />)
+
       case 'story':
         return <Story />
+
       case 'legend':
         return <Legend />
+
       case 'currently_showing':
-        return <Current />
+        return (<Current />)
+
       case 'your_selection':
-        return <YourSelection />
+        return (<YourSelection changeView={this.changeView}/>)
+
       case 'about':
         return <About />
+
       default:
         return <Home />
     }
