@@ -18,11 +18,6 @@ const Home = ({changeView}) => {
         <Button onClick={() => changeView('story')}>Add a story ▶</Button>
       </section>
 
-      {/* Recently Added Stories */}
-      <section class="Home__recent">
-        <Header>Recently Added Stories</Header>
-      </section>
-
     </div>
   );
 };

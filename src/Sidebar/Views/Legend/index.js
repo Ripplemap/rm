@@ -7,22 +7,56 @@ import Button from '../../../UiKit/Button'
 
 // Data to loop over for the legend keys
 // not sure what the filter_keys are for all the data
-const LegendNodes = [
-  {name: 'Event', color: '#FF1E3A', selected: 'grey', filter_key: 'event',},
-  {name: 'Individual', color: '#00A3D8', selected: 'grey', filter_key: 'person',},
-  {name: 'Group', color: '#00AE57', selected: 'grey', filter_key: 'org',},
-  // {name: 'Place', clor: '#FCB0DB', selected: 'grey', filter_key: 'place',},
-  {name: 'Outcome', color: '#FFE98F', selected: 'grey', filter_key: 'outcome',},
+const LegendNodes = [{
+        name: 'Event',
+        color: '#FF1E3A',
+        selected: 'grey',
+        filter_key: 'event',
+    },
+    {
+        name: 'Individual',
+        color: '#00A3D8',
+        selected: 'grey',
+        filter_key: 'person',
+    },
+    {
+        name: 'Group',
+        color: '#00AE57',
+        selected: 'grey',
+        filter_key: 'org',
+    },
+    {
+        name: 'Outcome',
+        color: '#FFE98F',
+        selected: 'grey',
+        filter_key: 'outcome',
+    },
 ]
 
-const LegendEdges = [
-  {name: 'Participated', filter_key: 'participated' },
-  {name: 'Lead', filter_key: 'lead'},
-  {name: 'Inspired', filter_key: 'inspired'},
-  {name: 'Organized', filter_key: 'organized'},
-  {name: 'Met', filter_key: 'met'},
+const LegendEdges = [{
+        name: 'Participated',
+        filter_key: 'participated'
+    },
+    {
+        name: 'Lead',
+        filter_key: 'lead'
+    },
+    {
+        name: 'Inspired',
+        filter_key: 'inspired'
+    },
+    {
+        name: 'Organized',
+        filter_key: 'organized'
+    },
+    {
+        name: 'Met',
+        filter_key: 'met'
+    },
 ]
 
+
+/* ----- Preact Jams ----- */
 
 class Legend extends Component {
   state = {
@@ -40,7 +74,6 @@ class Legend extends Component {
       this.setState({currentFilters: cur_filters})
     }
     else {
-      // otherwise add it.
       this.setState({
         ...this.state,
         currentFilters: [...this.state.currentFilters, filter]

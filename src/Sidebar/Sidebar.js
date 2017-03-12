@@ -13,7 +13,7 @@ import Story from './views/story/index';
  */
 class Sidebar extends Component {
   state = {
-    currentView: 'story'
+    currentView: 'home'
   }
 
   componentDidMount() {
