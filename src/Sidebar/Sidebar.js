@@ -22,7 +22,7 @@ class Sidebar extends Component {
 
   componentDidUpdate() {
     window.render_all()
-    // window.do_the_glue()
+    window.do_the_glue()
   }
 
   changeView = (view_id) => {
