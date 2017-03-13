@@ -670,7 +670,12 @@ function draw_it_svg(env) {
     let u_id = `${node._id}`
     edges.push(u_id)
 
-    return `<line id="${u_id}" class="${node.type}" x1="${fromx}" y1="${fromy}" x2="${tox}" y2="${toy}" stroke-width="5" stroke="${stroke_color}"/>`
+    /* return `<line id="${u_id}" class="${node.type}" x1="${fromx}" y1="${fromy}" x2="${tox}" y2="${toy}" stroke-width="5" stroke="${stroke_color}"/>`*/
+    return `
+      <g>
+        <line id="${u_id}" class= "${node.type}" x1="${fromx}" y1="${fromy}" x2="${tox}" y2="${toy}" stroke-width="5" stroke="${stroke_color}"/>
+        <line id="${u_id}" class= "${node.type}" x1="${fromx}" y1="${fromy}" x2="${tox}" y2="${toy}" stroke-width="20" stroke="rgba(0, 0, 0, 0)"/>
+      </g>`
   }
 
   function draw_text(node, x, y, str, font, fill_color, font_size) {
