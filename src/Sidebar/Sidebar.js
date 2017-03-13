@@ -5,7 +5,7 @@ import Home from './views/home/index';
 import About from './views/about/index';
 import YourSelection from './views/yourSelection/index';
 import Current from './views/current/index';
-import Legend from './views/legend/index';
+import Filters from './views/filters/index';
 import Story from './views/story/index';
 
 /**
@@ -42,13 +42,13 @@ class Sidebar extends Component {
       case 'story':
         return <Story />
 
-      case 'legend':
-        return <Legend />
+      case 'filters':
+        return <Filters />
 
-      case 'currently_showing':
+      case 'read_stories':
         return (<Current />)
 
-      case 'your_selection':
+      case 'selected_stories':
         return (<YourSelection changeView={this.changeView}/>)
 
       case 'about':
@@ -65,7 +65,8 @@ class Sidebar extends Component {
 
         {/* Render different views based on which section is selected*/}
         <section class="Sidebar__container">
-          <h3 class="Sidebar__header">AMC Ripple Map</h3>
+          <h3 class="Sidebar__header">AMC: Ripple Effect</h3>
+          <div class="Sidebar__subheading">A collaborative laboratory of media-based organizing strategies</div>
           {this.renderSelectedView()}
         </section>
 

@@ -28,10 +28,15 @@ $TabBg: rgb(238, 233, 239);
   font-weight: 100;
   text-transform: uppercase;
   align-content: center;
-  text-align: center;
-  margin-bottom: 4rem;
+  margin-bottom: 0;
 }
 
 .Sidebar__viewbox {
 
+}
+.Sidebar__subheading{
+  font-size: 1.4rem;
+  font-style: italic;
+  margin-bottom: 3rem;
+  
 }

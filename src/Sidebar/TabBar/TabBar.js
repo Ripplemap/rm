@@ -8,11 +8,11 @@ import Tab from './tab/tab';
 const tabs = [
   {name: "Home", id: "home", icon: "fa fa-home"},
   {name: "Add A Story", id: "story", icon: "fa fa-commenting-o"},
-  {name: "Filters / Legend", id: "legend", icon: "fa fa-map-marker"},
-  {name: "Currently Showing", id: "currently_showing", icon: "fa fa-eye"},
-  {name: "Your Selection", id: "your_selection", icon: "fa fa-commenting"},
+  {name: "Filters", id: "filters", icon: "fa fa-map-marker"},
+  {name: "Read Stories", id: "read_stories", icon: "fa fa-eye"},
+  {name: "Selected Stories", id: "selected_stories", icon: "fa fa-commenting"},
   {name: "About", id:"about", icon: "fa fa-clone"},
-]
+] 
 
 
 /**

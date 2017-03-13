@@ -9,12 +9,17 @@ const Home = ({changeView}) => {
 
       {/* General Welcome Message  */}
       <section class="Home__welcome">
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Veniam quidem voluptatem laudantium fuga iste nulla eligendi mollitia velit amet laborum, quia blanditiis rerum, eius nobis quod ipsam sit recusandae ratione!
+
       </section>
 
       {/* Add a story CTA */}
       <section class="Home__cta-addstory">
-        <p>We'd love to hear your stories!</p>
+
+        <p>Held every summer in Detroit, the Allied Media Conference brings together a vibrant and diverse community of people using media to incite change: filmmakers, radio producers, technologists, youth organizers, writers, entrepreneurs, musicians, dancers, and artists. This ripple map illustrates the many connections and outcomes that the AMC has fostered.</p>
+
+
+        <p class="Home__cta_text">We'd love to hear your stories!</p>
+
         <Button onClick={() => changeView('story')}>Add a story ▶</Button>
       </section>
 
