@@ -1482,8 +1482,7 @@ var LegendItem = function LegendItem(props) {
   );
 };
 
-// Data to loop over for the legend keys
-// not sure what the filter_keys are for all the data
+// TODO: find out if EDGES need to be filterable (like NODES are clickable to toggle)
 var LegendNodes = [{
   name: 'Event',
   color: '#FF1E3A',
@@ -1508,19 +1507,24 @@ var LegendNodes = [{
 
 var LegendEdges = [{
   name: 'Participated',
-  filter_key: 'participated'
+  filter_key: 'participated',
+  color: 'rgba(52, 73, 94, 0.7)'
 }, {
   name: 'Lead',
-  filter_key: 'lead'
+  filter_key: 'lead',
+  color: 'rgba(231, 76, 60, 0.7)'
 }, {
   name: 'Inspired',
-  filter_key: 'inspired'
+  filter_key: 'inspired',
+  color: 'rgba(241, 196, 15, 0.7)'
 }, {
   name: 'Organized',
-  filter_key: 'organized'
+  filter_key: 'organized',
+  color: "rgba(141, 196, 215, 0.7)"
 }, {
   name: 'Met',
-  filter_key: 'met'
+  filter_key: 'met',
+  color: 'rgba(102, 39, 239, 0.7)'
 }];
 
 /* ----- Preact Jams ----- */
@@ -1575,10 +1579,10 @@ var Legend = function (_Component) {
         return h(
           LegendItem,
           _extends({}, node, {
+            size: '15px',
             currentFilters: _this.state.currentFilters,
             toggleFilter: _this.toggleFilter
           }),
-          '/ ',
           node.name
         );
       });
@@ -1695,35 +1699,15 @@ var Story = function Story() {
         null,
         'Want to add something to the map?'
       ),
-      h('form', { id: 'the-conversation' }),
-      h(
-        'p',
-        null,
-        h(
-          'em',
-          null,
-          'Use ',
-          h(
-            'em',
-            null,
-            'Tab'
-          ),
-          ' to autocomplete and ',
-          h(
-            'em',
-            null,
-            'Return'
-          ),
-          ' to proceed. Reload the page to fix a mistake.'
-        )
-      )
+      h('form', { id: 'the-conversation' })
+    ),
+    h(
+      NextButton,
+      null,
+      'Next >'
     )
   );
 };
-
-/**
- * Sidebar layout and state
- */
 
 var Sidebar = function (_Component) {
   inherits(Sidebar, _Component);
@@ -1783,7 +1767,7 @@ var Sidebar = function (_Component) {
     key: 'componentDidUpdate',
     value: function componentDidUpdate() {
       window.render_all();
-      // window.do_the_glue()
+      window.do_the_glue();
     }
   }, {
     key: 'render',
@@ -2386,7 +2370,7 @@ function give_word(sentence, value) {
 
 var el = function () {
   var els = {};
-  var default_el = { addEventListener: noop };
+  var default_el = { addEventListener: noop, removeEventListener: noop };
 
   return function (el_id) {
     // NOTE: removing caching for now to deal with vdom
@@ -3055,24 +3039,27 @@ function add_ring_labels(env) {
 }
 
 function copy_edges(env) {
+  var hues = { "participate in": "rgba(52, 73, 94, 0.7)",
+    "inspire": "rgba(241, 196, 15, 0.7)",
+    "organize": "rgba(141, 196, 215, 0.7)",
+    "lead": "rgba(231, 76, 60, 0.7)",
+    "met": "rgba(102, 39, 239, 0.7)"
+  };
+
   env.data.E.forEach(function (edge) {
     if (!state.all_edges && !(edge._out.year === state.current_year || edge._in.year === state.current_year)) // HACK: remove this
       return undefined;
 
+    var color = hues[edge.label];
     var label = edge.label || "777";
-    var color = str_to_color(label);
     var id = edge._in._id + '-' + edge._out._id;
 
-    // function str_to_color(str) { return 'hsl' + (state.show_labels?'a':'') + '(' + str_to_num(str) + ',100%,40%' + (state.show_labels?',0.3':'') + ')';}
-    function str_to_color(str) {
-      return 'hsla' + '(' + str_to_num(str) + ',30%,40%,0.' + (state.show_labels ? '3' : '7') + ')';
-    }
-    function str_to_num(str) {
-      return char_to_num(str, 0) + char_to_num(str, 1) + char_to_num(str, 2);
-    }
-    function char_to_num(char, index) {
-      return char.charCodeAt(index) % 20 * 20;
-    }
+    // TODO: is this needed with hard baked colours? 
+    /* var color = str_to_color(label)*/
+    /* function str_to_color(str) { return 'hsl' + (state.show_labels?'a':'') + '(' + str_to_num(str) + ',100%,40%' + (state.show_labels?',0.3':'') + ')';}*/
+    /* function str_to_color(str) { return 'hsla' + '(' + str_to_num(str) + ',30%,40%,0.' + (state.show_labels?'3':'7') + ')' }*/
+    /* function str_to_num(str) { return char_to_num(str, 0) + char_to_num(str, 1) + char_to_num(str, 2) }*/
+    /* function char_to_num(char, index) { return (char.charCodeAt(index) % 20) * 20 }*/
 
     var line = { shape: 'line', _id: id, x1: edge._in.x, y1: edge._in.y, x2: edge._out.x, y2: edge._out.y, stroke: color, type: 'edge', label: label };
     env.shapes.push(line);
@@ -3280,7 +3267,8 @@ function draw_it_svg(env) {
     var u_id = '' + node._id;
     edges.push(u_id);
 
-    return '<line id="' + u_id + '" class="' + node.type + '" x1="' + fromx + '" y1="' + fromy + '" x2="' + tox + '" y2="' + toy + '" stroke-width="5" stroke="' + stroke_color + '"/>';
+    /* return `<line id="${u_id}" class="${node.type}" x1="${fromx}" y1="${fromy}" x2="${tox}" y2="${toy}" stroke-width="5" stroke="${stroke_color}"/>`*/
+    return '\n      <g>\n        <line class= "' + node.type + '" x1="' + fromx + '" y1="' + fromy + '" x2="' + tox + '" y2="' + toy + '" stroke-width="5" stroke="' + stroke_color + '"/>\n        <line id="' + u_id + '" class= "' + node.type + '" x1="' + fromx + '" y1="' + fromy + '" x2="' + tox + '" y2="' + toy + '" stroke-width="30" stroke="rgba(0, 0, 0, 0)"/>\n      </g>';
   }
 
   function draw_text(node, x, y, str, font, fill_color, font_size) {
