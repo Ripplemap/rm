@@ -200,13 +200,6 @@ var NON_DIMENSION_PROPS = {
 // DOM event types that do not bubble and should be attached via useCapture
 var NON_BUBBLING_EVENTS = { blur: 1, error: 1, focus: 1, load: 1, resize: 1, scroll: 1 };
 
-/** Create an Event handler function that sets a given state property.
- *	@param {Component} component	The component whose state should be updated
- *	@param {string} key				A dot-notated key path to update in the component's state
- *	@param {string} eventPath		A dot-notated key path to the value that should be retrieved from the Event or component
- *	@returns {function} linkedStateHandler
- *	@private
- */
 function createLinkedState(component, key, eventPath) {
 	var path = key.split('.');
 	return function (e) {
@@ -223,9 +216,6 @@ function createLinkedState(component, key, eventPath) {
 	};
 }
 
-/** Managed queue of dirty components to be re-rendered */
-
-// items/itemsOffline swap on each rerender() call (just a simple pool technique)
 var items = [];
 
 function enqueueRender(component) {
@@ -243,12 +233,6 @@ function rerender() {
 	}
 }
 
-/** Check if a VNode is a reference to a stateless functional component.
- *	A function component is represented as a VNode whose `nodeName` property is a reference to a function.
- *	If that function is not a Component (ie, has no `.render()` method on a prototype), it is considered a stateless functional component.
- *	@param {VNode} vnode	A VNode
- *	@private
- */
 function isFunctionalComponent(vnode) {
   var nodeName = vnode && vnode.nodeName;
   return nodeName && isFunction(nodeName) && !(nodeName.prototype && nodeName.prototype.render);
@@ -262,11 +246,6 @@ function buildFunctionalComponent(vnode, context) {
   return vnode.nodeName(getNodeProps(vnode), context || EMPTY);
 }
 
-/** Check if two nodes are equivalent.
- *	@param {Element} node
- *	@param {VNode} vnode
- *	@private
- */
 function isSameNodeType(node, vnode) {
 	if (isString(vnode)) {
 		return node instanceof Text;
@@ -430,7 +409,6 @@ var toConsumableArray = function (arr) {
   }
 };
 
-/** Removes a given DOM Node from its parent. */
 function removeNode(node) {
 	var p = node.parentNode;
 	if (p) p.removeChild(node);
@@ -513,8 +491,6 @@ function eventProxy(e) {
 	return this._listeners[e.type](options.event && options.event(e) || e);
 }
 
-/** DOM node pool, keyed on nodeName. */
-
 var nodes = {};
 
 function collectNode(node) {
@@ -535,7 +511,6 @@ function createNode(nodeName, isSvg) {
 	return node;
 }
 
-/** Queue of components that have been mounted and are awaiting componentDidMount */
 var mounts = [];
 
 /** Diff recursion count, used to track the end of the diff cycle. */
@@ -834,10 +809,6 @@ function diffAttributes(dom, attrs, old) {
 	}
 }
 
-/** Retains a pool of Components for re-use, keyed on component name.
- *	Note: since component names are not unique or even necessarily available, these are primarily a form of sharding.
- *	@private
- */
 var components = {};
 
 function collectComponent(component) {
@@ -862,12 +833,6 @@ function createComponent(Ctor, props, context) {
 	return inst;
 }
 
-/** Set a component's `props` (generally derived from JSX attributes).
- *	@param {Object} props
- *	@param {Object} [opts]
- *	@param {boolean} [opts.renderSync=false]	If `true` and {@link options.syncComponentUpdates} is `true`, triggers synchronous rendering.
- *	@param {boolean} [opts.render=true]			If `false`, no render will be triggered.
- */
 function setComponentProps(component, props, opts, context, mountAll) {
 	if (component._disable) return;
 	component._disable = true;
@@ -1123,16 +1088,6 @@ function unmountComponent(component, remove) {
 	if (component.componentDidUnmount) component.componentDidUnmount();
 }
 
-/** Base Component class, for the ES6 Class method of creating Components
- *	@public
- *
- *	@example
- *	class MyFoo extends Component {
- *		render(props, state) {
- *			return <div />;
- *		}
- *	}
- */
 function Component(props, context) {
 	/** @private */
 	this._dirty = true;
@@ -1218,21 +1173,6 @@ extend(Component.prototype, {
 	render: function render() {}
 });
 
-/** Render JSX into a `parent` Element.
- *	@param {VNode} vnode		A (JSX) VNode to render
- *	@param {Element} parent		DOM element to render into
- *	@param {Element} [merge]	Attempt to re-use an existing DOM tree rooted at `merge`
- *	@public
- *
- *	@example
- *	// render a div into <body>:
- *	render(<div id="hello">hello!</div>, document.body);
- *
- *	@example
- *	// render a "Thing" component into #foo:
- *	const Thing = ({ name }) => <span>{ name }</span>;
- *	render(<Thing name="one" />, document.querySelector('#foo'));
- */
 function render(vnode, parent, merge) {
   return diff(merge, vnode, {}, false, parent);
 }
@@ -1278,9 +1218,6 @@ var Tab = function Tab(_ref) {
   );
 };
 
-/**
- * List to iterate over and generate tab commponents with.
- */
 var tabs = [{ name: "Home", id: "home", icon: "fa fa-home" }, { name: "Add A Story", id: "story", icon: "fa fa-commenting-o" }, { name: "Filters / Legend", id: "legend", icon: "fa fa-map-marker" }, { name: "Currently Showing", id: "currently_showing", icon: "fa fa-eye" }, { name: "Your Selection", id: "your_selection", icon: "fa fa-commenting" }, { name: "About", id: "about", icon: "fa fa-clone" }];
 
 /**
@@ -1545,7 +1482,6 @@ var LegendItem = function LegendItem(props) {
   );
 };
 
-// TODO: find out if EDGES need to be filterable (like NODES are clickable to toggle)
 var LegendNodes = [{
   name: 'Event',
   color: '#FF1E3A',
@@ -1763,18 +1699,9 @@ var Story = function Story() {
         'Want to add something to the map?'
       ),
       h('form', { id: 'the-conversation' })
-    ),
-    h(
-      NextButton,
-      null,
-      'Next >'
     )
   );
 };
-
-/**
- * Sidebar layout and state
- */
 
 var Sidebar = function (_Component) {
   inherits(Sidebar, _Component);
@@ -2059,18 +1986,6 @@ function error$1(mess) {
 }
 
 var cats = {}; // ripplemap categories
-/* INTERFACES FOR RIPPLE MODEL
- *
- * There are four categories: Thing, Action, Effect, and Happening
- *
- * Each category has multiple types associated with it. Each node has a category and type.
- *
- * Each node also tracks its cron, the adding user, and some type of 'confidence interval' (later)
- *
- * Each edge has a type, which is its label. Nodes expect edges of certain types.
- *
- */
-
 cats.thing = {};
 cats.action = {};
 cats.effect = {};
@@ -2298,11 +2213,6 @@ function add_edge(type, from, to, props, persist$$1) {
   add_to_graph('edge', edge);
   if (persist$$1) add_to_server_facts('edge', edge);
 }
-
-// find all the paths between them, and their attached bits
-
-
-// SET UP CATEGORIES AND EDGES
 
 new_thing_type('person', {});
 new_thing_type('org', { cc: ['org'] });
@@ -3413,13 +3323,15 @@ function draw_it_svg(env) {
   }
 }
 
+/////////////////////////////////
+
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// SENTENCE STRUCTURES
+// CANVAS FUNCTIONS
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -3822,9 +3734,6 @@ function set_intersect(xs, ys) {
     return ys.indexOf(x) !== -1;
   });
 }
-
-///////////////////////// DOM GLUE ///////////////////////////////
-
 
 function do_the_glue() {
 

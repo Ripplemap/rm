@@ -20,7 +20,7 @@ const Story = () => {
 
       {/* TODO: give this a top-border */}
       {/* TODO: connect this to form submission */}
-      <NextButton>Next &gt;</NextButton>
+      {/* <NextButton>Next &gt;</NextButton> */}
 
     </div>
   );
