@@ -11,7 +11,7 @@ export {set_el, append_el}
 
 export const el = function() {
   const els = {}
-  const default_el = {addEventListener: noop}
+  const default_el = {addEventListener: noop, removeEventListener: noop}
 
   return function(el_id) {
     // NOTE: removing caching for now to deal with vdom
