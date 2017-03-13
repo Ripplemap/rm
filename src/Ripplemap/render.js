@@ -447,18 +447,27 @@ function add_ring_labels(env) {
 }
 
 function copy_edges(env) {
+  var hues = {  "participate in": "rgba(52, 73, 94, 0.7)"
+              , "inspire": "rgba(241, 196, 15, 0.7)"
+              , "organize": "rgba(141, 196, 215, 0.7)"
+              , "lead": "rgba(231, 76, 60, 0.7)"
+              , "met": "rgba(102, 39, 239, 0.7)"
+  }
+
   env.data.E.forEach(function(edge) {
     if(!state.all_edges && !(edge._out.year === state.current_year || edge._in.year === state.current_year)) // HACK: remove this
       return undefined
 
+    var color = hues[edge.label]
     var label = edge.label || "777"
-    var color = str_to_color(label)
     var id    = edge._in._id + '-' + edge._out._id
 
-    // function str_to_color(str) { return 'hsl' + (state.show_labels?'a':'') + '(' + str_to_num(str) + ',100%,40%' + (state.show_labels?',0.3':'') + ')';}
-    function str_to_color(str) { return 'hsla' + '(' + str_to_num(str) + ',30%,40%,0.' + (state.show_labels?'3':'7') + ')' }
-    function str_to_num(str) { return char_to_num(str, 0) + char_to_num(str, 1) + char_to_num(str, 2) }
-    function char_to_num(char, index) { return (char.charCodeAt(index) % 20) * 20 }
+    // TODO: is this needed with hard baked colours? 
+    /* var color = str_to_color(label)*/
+    /* function str_to_color(str) { return 'hsl' + (state.show_labels?'a':'') + '(' + str_to_num(str) + ',100%,40%' + (state.show_labels?',0.3':'') + ')';}*/
+    /* function str_to_color(str) { return 'hsla' + '(' + str_to_num(str) + ',30%,40%,0.' + (state.show_labels?'3':'7') + ')' }*/
+    /* function str_to_num(str) { return char_to_num(str, 0) + char_to_num(str, 1) + char_to_num(str, 2) }*/
+    /* function char_to_num(char, index) { return (char.charCodeAt(index) % 20) * 20 }*/
 
     var line = {shape: 'line', _id: id, x1: edge._in.x, y1: edge._in.y, x2: edge._out.x, y2: edge._out.y, stroke: color, type: 'edge', label: label}
     env.shapes.push(line)

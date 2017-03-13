@@ -4,9 +4,7 @@ import './styles.css'
 import LegendItem from '../../../UiKit/LegendItem';
 import Button from '../../../UiKit/Button'
 
-
-// Data to loop over for the legend keys
-// not sure what the filter_keys are for all the data
+// TODO: find out if EDGES need to be filterable (like NODES are clickable to toggle)
 const LegendNodes = [{
         name: 'Event',
         color: '#FF1E3A',
@@ -35,23 +33,28 @@ const LegendNodes = [{
 
 const LegendEdges = [{
         name: 'Participated',
-        filter_key: 'participated'
+        filter_key: 'participated',
+        color: 'rgba(52, 73, 94, 0.7)'
     },
     {
         name: 'Lead',
-        filter_key: 'lead'
+        filter_key: 'lead',
+        color: 'rgba(231, 76, 60, 0.7)'
     },
     {
         name: 'Inspired',
-        filter_key: 'inspired'
+        filter_key: 'inspired',
+        color: 'rgba(241, 196, 15, 0.7)'
     },
     {
         name: 'Organized',
-        filter_key: 'organized'
+        filter_key: 'organized',
+        color: "rgba(141, 196, 215, 0.7)"
     },
     {
         name: 'Met',
-        filter_key: 'met'
+        filter_key: 'met',
+        color: 'rgba(102, 39, 239, 0.7)'
     },
 ]
 
@@ -101,10 +104,11 @@ class Legend extends Component {
     return LegendEdges.map(node => (
       <LegendItem
         {...node}
+        size="15px"
         currentFilters = {this.state.currentFilters}
         toggleFilter={this.toggleFilter}
       >
-        / {node.name}
+        {node.name}
       </LegendItem>
     ))
   }
