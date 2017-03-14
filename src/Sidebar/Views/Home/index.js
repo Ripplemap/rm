@@ -20,7 +20,11 @@ const Home = ({changeView}) => {
 
         <p class="Home__cta_text">We'd love to hear your stories!</p>
 
-        <Button onClick={() => changeView('story')}>Add a story ▶</Button>
+        <Button onClick={() => changeView('story')}>
+          Add a story
+          <i class="fa fa-chevron-right pl_1" aria-hidden="true"></i>
+        </Button>
+
       </section>
 
     </div>
