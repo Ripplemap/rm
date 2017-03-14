@@ -202,6 +202,13 @@ var NON_DIMENSION_PROPS = {
 // DOM event types that do not bubble and should be attached via useCapture
 var NON_BUBBLING_EVENTS = { blur: 1, error: 1, focus: 1, load: 1, resize: 1, scroll: 1 };
 
+/** Create an Event handler function that sets a given state property.
+ *	@param {Component} component	The component whose state should be updated
+ *	@param {string} key				A dot-notated key path to update in the component's state
+ *	@param {string} eventPath		A dot-notated key path to the value that should be retrieved from the Event or component
+ *	@returns {function} linkedStateHandler
+ *	@private
+ */
 function createLinkedState(component, key, eventPath) {
 	var path = key.split('.');
 	return function (e) {
@@ -218,6 +225,9 @@ function createLinkedState(component, key, eventPath) {
 	};
 }
 
+/** Managed queue of dirty components to be re-rendered */
+
+// items/itemsOffline swap on each rerender() call (just a simple pool technique)
 var items = [];
 
 function enqueueRender(component) {
@@ -235,6 +245,12 @@ function rerender() {
 	}
 }
 
+/** Check if a VNode is a reference to a stateless functional component.
+ *	A function component is represented as a VNode whose `nodeName` property is a reference to a function.
+ *	If that function is not a Component (ie, has no `.render()` method on a prototype), it is considered a stateless functional component.
+ *	@param {VNode} vnode	A VNode
+ *	@private
+ */
 function isFunctionalComponent(vnode) {
   var nodeName = vnode && vnode.nodeName;
   return nodeName && isFunction(nodeName) && !(nodeName.prototype && nodeName.prototype.render);
@@ -248,6 +264,11 @@ function buildFunctionalComponent(vnode, context) {
   return vnode.nodeName(getNodeProps(vnode), context || EMPTY);
 }
 
+/** Check if two nodes are equivalent.
+ *	@param {Element} node
+ *	@param {VNode} vnode
+ *	@private
+ */
 function isSameNodeType(node, vnode) {
 	if (isString(vnode)) {
 		return node instanceof Text;
@@ -411,6 +432,7 @@ var toConsumableArray = function (arr) {
   }
 };
 
+/** Removes a given DOM Node from its parent. */
 function removeNode(node) {
 	var p = node.parentNode;
 	if (p) p.removeChild(node);
@@ -493,6 +515,8 @@ function eventProxy(e) {
 	return this._listeners[e.type](options.event && options.event(e) || e);
 }
 
+/** DOM node pool, keyed on nodeName. */
+
 var nodes = {};
 
 function collectNode(node) {
@@ -513,6 +537,7 @@ function createNode(nodeName, isSvg) {
 	return node;
 }
 
+/** Queue of components that have been mounted and are awaiting componentDidMount */
 var mounts = [];
 
 /** Diff recursion count, used to track the end of the diff cycle. */
@@ -811,6 +836,10 @@ function diffAttributes(dom, attrs, old) {
 	}
 }
 
+/** Retains a pool of Components for re-use, keyed on component name.
+ *	Note: since component names are not unique or even necessarily available, these are primarily a form of sharding.
+ *	@private
+ */
 var components = {};
 
 function collectComponent(component) {
@@ -835,6 +864,12 @@ function createComponent(Ctor, props, context) {
 	return inst;
 }
 
+/** Set a component's `props` (generally derived from JSX attributes).
+ *	@param {Object} props
+ *	@param {Object} [opts]
+ *	@param {boolean} [opts.renderSync=false]	If `true` and {@link options.syncComponentUpdates} is `true`, triggers synchronous rendering.
+ *	@param {boolean} [opts.render=true]			If `false`, no render will be triggered.
+ */
 function setComponentProps(component, props, opts, context, mountAll) {
 	if (component._disable) return;
 	component._disable = true;
@@ -1090,6 +1125,16 @@ function unmountComponent(component, remove) {
 	if (component.componentDidUnmount) component.componentDidUnmount();
 }
 
+/** Base Component class, for the ES6 Class method of creating Components
+ *	@public
+ *
+ *	@example
+ *	class MyFoo extends Component {
+ *		render(props, state) {
+ *			return <div />;
+ *		}
+ *	}
+ */
 function Component(props, context) {
 	/** @private */
 	this._dirty = true;
@@ -1175,11 +1220,26 @@ extend(Component.prototype, {
 	render: function render() {}
 });
 
+/** Render JSX into a `parent` Element.
+ *	@param {VNode} vnode		A (JSX) VNode to render
+ *	@param {Element} parent		DOM element to render into
+ *	@param {Element} [merge]	Attempt to re-use an existing DOM tree rooted at `merge`
+ *	@public
+ *
+ *	@example
+ *	// render a div into <body>:
+ *	render(<div id="hello">hello!</div>, document.body);
+ *
+ *	@example
+ *	// render a "Thing" component into #foo:
+ *	const Thing = ({ name }) => <span>{ name }</span>;
+ *	render(<Thing name="one" />, document.querySelector('#foo'));
+ */
 function render(vnode, parent, merge) {
   return diff(merge, vnode, {}, false, parent);
 }
 
-__$styleInject(".Sidebar{display:flex;flex:1;justify-content:space-between}.Sidebar__container{flex-grow:1;justify-content:center;padding:16px 64px;padding:1rem 4rem;max-height:100vh;overflow-y:scroll}.Sidebar__header{font-size:30px;color:#ff5961;font-weight:100;text-transform:uppercase;align-content:center;letter-spacing:1px;margin-bottom:0}.Sidebar__subheading{font-size:22.4px;font-size:1.4rem;font-style:italic;margin-bottom:48px;margin-bottom:3rem}", undefined);
+__$styleInject(".Sidebar{display:flex;flex:1;justify-content:space-between}.Sidebar__container{flex-grow:1;justify-content:center;padding:16px 32px;padding:1rem 2rem;max-height:100vh;overflow-y:scroll}.Sidebar__header{font-size:30px;color:#ff5961;font-weight:100;text-transform:uppercase;align-content:center;letter-spacing:1px;margin-bottom:0}.Sidebar__subheading{font-size:22.4px;font-size:1.4rem;font-style:italic;margin-bottom:48px;margin-bottom:3rem}", undefined);
 
 __$styleInject(".Tabbar{min-width:130px;max-width:130px;display:flex;flex-direction:column}.Tabbar__fillspace{background:#ede8ef;flex-grow:1}", undefined);
 
@@ -1220,6 +1280,9 @@ var Tab = function Tab(_ref) {
   );
 };
 
+/**
+ * List to iterate over and generate tab commponents with.
+ */
 var tabs = [{ name: "Home", id: "home", icon: "fa fa-home" }, { name: "Add A Story", id: "story", icon: "fa fa-commenting-o" }, { name: "Filters", id: "filters", icon: "fa fa-map-marker" }, { name: "Read Stories", id: "read_stories", icon: "fa fa-eye" }, { name: "Selected Stories", id: "selected_stories", icon: "fa fa-commenting" }, { name: "About", id: "about", icon: "fa fa-clone" }];
 
 /**
@@ -1544,6 +1607,18 @@ function error$1(mess) {
 
 var cats = {}; // ripplemap categories
 var adders = { thing: add_thing, action: add_action, edge: add_edge };
+/* INTERFACES FOR RIPPLE MODEL
+ *
+ * There are four categories: Thing, Action, Effect, and Happening
+ *
+ * Each category has multiple types associated with it. Each node has a category and type.
+ *
+ * Each node also tracks its cron, the adding user, and some type of 'confidence interval' (later)
+ *
+ * Each edge has a type, which is its label. Nodes expect edges of certain types.
+ *
+ */
+
 cats.thing = {};
 cats.action = {};
 cats.effect = {};
@@ -1772,6 +1847,11 @@ function add_edge(type, from, to, props, persist$$1) {
   if (persist$$1) add_to_server_facts('edge', edge);
 }
 
+// find all the paths between them, and their attached bits
+
+
+// SET UP CATEGORIES AND EDGES
+
 new_thing_type('person', {});
 new_thing_type('org', { cc: ['org'] });
 new_thing_type('place', { cc: ['place', 'event'] });
@@ -1958,6 +2038,8 @@ function set_el(el_id, val) {
   el(el_id).innerHTML = val;
 }
 
+// LOGIN/ORG/TAG STUFF
+
 
 
 // SOME HIGHLIGHTING OR SOMETHING
@@ -2037,6 +2119,8 @@ function submit_addtag(ev) {
   showtags();
 }
 
+// import {convo as conversation} from 'convo'
+// TODO: ask Tyler about this (and utils.js in general):
 var renderers = [];
 function add_renderer(f) {
   renderers.push(f);
@@ -2053,8 +2137,17 @@ function force_rerender() {
     renderers.forEach(function (f) {
       return f(state);
     });
+    // do_the_glue()
   });
 }
+
+///////////////////////// DOM GLUE ///////////////////////////////
+
+
+
+
+///////////////////// END DOM GLUE ///////////////////////////////
+
 
 // function render_all() {
 //   render()
@@ -2463,7 +2556,7 @@ function filter_nodes(env) {
 
 function add_rings(env) {
   for (var i = env.params.minyear; i <= env.params.maxyear; i++) {
-    var color = i === state.current_year ? '#999' : 'rgba(204, 204, 204, 0.6)';
+    var color = i === state.current_year ? 'rgba(0, 0, 0, 0.80)' : 'rgba(0, 0, 0, 0.3)';
     var radius = state.ring_radius * (i - env.params.my_minyear + 1);
     env.shapes.unshift({ shape: 'circle', x: 0, y: 0, r: radius, stroke: color, fill: 'rgba(0, 0, 0, 0)', line: 1, type: 'ring', year: i });
   }
@@ -2496,7 +2589,7 @@ function copy_edges(env) {
       return undefined;
 
     var color = hues[edge.label];
-    var label = edge.label || "777";
+    var label = edge.label || "#777";
     var id = edge._in._id + '-' + edge._out._id;
 
     // TODO: is this needed with hard baked colours?
@@ -2552,9 +2645,9 @@ function copy_nodes(env) {
       _id: node._id,
       x: node.x,
       y: node.y,
-      r: node.r,
+      r: node.r + 10,
       line: 0.01,
-      fill: 'hsla(0, 80%, 100%, 0.95)'
+      fill: 'rgba(255, 214, 0, 0.8)'
     };
 
     return [highlight$$1, shape];
@@ -2708,7 +2801,7 @@ function draw_it_svg(env) {
     edges.push(u_id);
 
     // TODO: highlight edge
-    return '\n      <g>\n        <line class= "' + node.type + '" x1="' + fromx + '" y1="' + fromy + '" x2="' + tox + '" y2="' + toy + '" stroke-width="2" stroke="' + stroke_color + '"/>\n        <line id="' + u_id + '" class= "' + node.type + '" x1="' + fromx + '" y1="' + fromy + '" x2="' + tox + '" y2="' + toy + '" stroke-width="30" stroke="rgba(0, 0, 0, 0)"/>\n      </g>';
+    return '\n      <g>\n        <line class= "' + node.type + '" x1="' + fromx + '" y1="' + fromy + '" x2="' + tox + '" y2="' + toy + '" stroke-width="2" stroke="' + stroke_color + '"/>\n        <line id="' + u_id + '" class= "' + node.type + '" x1="' + fromx + '" y1="' + fromy + '" x2="' + tox + '" y2="' + toy + '" stroke-width="15" stroke="rgba(0, 0, 0, 0)"/>\n      </g>';
   }
 
   function draw_text(node, x, y, str, font, fill_color, font_size) {
@@ -2769,15 +2862,13 @@ function draw_it_svg(env) {
   }
 }
 
-/////////////////////////////////
-
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// CANVAS FUNCTIONS
+// SENTENCE STRUCTURES
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -2899,8 +2990,6 @@ function write_sentences(env) {
     return ' ' + text + notes + button;
   }
 }
-
-// FORM BUILDER & FRIENDS
 
 function set_minus(xs, ys) {
   return xs.filter(function (x) {
@@ -3030,6 +3119,7 @@ var LegendItem = function LegendItem(props) {
   );
 };
 
+// TODO: find out if EDGES need to be filterable (like NODES are clickable to toggle)
 var LegendNodes = [{
   name: 'Event',
   color: '#f32938',
@@ -3108,7 +3198,9 @@ var Legend = function (_Component) {
 
       // FIXME: this is leaking into the global space
       window.filter_poo = _this.state.currentFilters;
-      window.rm_render();
+
+      // window.rm_render()
+      force_rerender();
     }, _this.renderNodes = function () {
       return LegendNodes.map(function (node) {
         return h(
@@ -3251,6 +3343,10 @@ var Story = function Story() {
   );
 };
 
+/**
+ * Sidebar layout and state
+ */
+
 var Sidebar = function (_Component) {
   inherits(Sidebar, _Component);
 
@@ -3304,6 +3400,9 @@ var Sidebar = function (_Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       // window.do_the_glue()
+
+      // FIXME: this is a huge horrid hacky hack
+      window.changeView = this.changeView.bind(this);
     }
   }, {
     key: 'componentDidUpdate',
@@ -3338,9 +3437,6 @@ var Sidebar = function (_Component) {
   }]);
   return Sidebar;
 }(Component);
-
-///////////////////// END DOM GLUE ///////////////////////////////
-
 
 // TODO: partition incoming bleep bloops by action
 // TODO: build edit functions
@@ -3411,6 +3507,8 @@ function tagglue() {
  *
  */
 
+// TODO: do we need h, Component below?
+
 init$1(); // engage the application
 
 var root = void 0;
@@ -3418,7 +3516,5 @@ var renderer = function renderer() {
   return root = render(h(Sidebar, null), document.getElementById('sidebar'), root);
 };
 
-// on_render(x => render(<Sidebar />, document.getElementById('sidebar'))) // connect the preact renderer
-// on_render((state) => co._component.render(state)) // connect the preact renderer
 add_renderer(renderer); // connect the preact renderer
 //# sourceMappingURL=bundle.js.map
