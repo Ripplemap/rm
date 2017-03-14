@@ -4,16 +4,18 @@ import Header from 'UiKit/Header/index'
 import {get_convo_html} from 'render'
 import state from 'state'
 import * as dom from 'dom'
+import Button from 'UiKit/Button/'
+import './styles.css'
 
 const Story = () => {
   return (
-    <div>
+    <div class="Story">
       <Header>Add a story</Header>
 
       <div id="signup" class={state.email ? 'hide' : ''}>
-        <form id="login" onSubmit={dom.login}>
+        <form id="login" onSubmit={dom.login} class="Story__form">
           <p>We'd love to hear your stories! Let's start with your contact info:</p>
-          <input name="email" id="email" type="text" placeholder="email" class="typeahead" />
+          <input name="email" id="email" type="text" placeholder="email" class="typeahead Story__input" />
         </form>
       </div>
 
@@ -25,10 +27,10 @@ const Story = () => {
         </form>
       </div>
 
-      {/* TODO: give this a top-border */}
-      {/* TODO: connect this to form submission */}
-      {/* <NextButton>Next &gt;</NextButton> */}
-
+      {/* TODO: hookup OnClick to a function */}
+      <Button type="submit" buttonStyle="next">Next
+        <i class="fa fa-chevron-right pl_1" aria-hidden="true"></i>
+     </Button>
     </div>
   )
 }
