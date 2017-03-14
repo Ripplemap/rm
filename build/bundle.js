@@ -1490,6 +1490,12 @@ function unique(v, k, list) {
   return list.indexOf(v) === k;
 }
 
+function prop(attr) {
+  return function (obj) {
+    return obj[attr];
+  };
+}
+
 function clone$1(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
@@ -1939,6 +1945,99 @@ function set_intersect(xs, ys) {
   });
 }
 
+var convo = new_conversation();
+function update_conversation(values, conversation) {
+  var conversation = conversation || convo;
+
+  var wants = conversation.current.slots[0].key;
+  var value = values && values[wants] || false;
+  // var value = dom.el(wants).value
+
+  convo = fulfill_desire(conversation, value);
+
+  return convo;
+}
+
+function new_sentence() {
+  var slots = [{ key: 'subject', type: 'word', cat: 'thing' }, { key: 'verb', type: 'word', cat: 'action' }, { key: 'object', type: 'word', cat: 'thing' }, { key: 'date', type: 'date' }];
+  return { slots: slots, filled: [] };
+}
+
+function new_conversation() {
+  var sentence = new_sentence();
+  return { sentences: [sentence], current: sentence };
+}
+
+function fulfill_desire(conversation, value) {
+  var conversation = conversation || convo;
+
+  var sentence = give_word(conversation.current, value);
+
+  // TODO: allow multi-sentence conversations
+
+
+  if (!sentence.slots.length) {
+    var subject, verb, object, date;
+    sentence.filled.forEach(function (slot) {
+      if (slot.type === 'gettype') {
+        var thing = add_thing(slot.value, { name: slot.name }, true);
+        if (slot.oldkey === 'subject') subject = thing;
+        if (slot.oldkey === 'object') object = thing;
+      } else if (slot.type === 'date') {
+        date = slot.value;
+      } else if (slot.key === 'subject') {
+        subject = slot.word;
+      } else if (slot.key === 'object') {
+        object = slot.word;
+      } else if (slot.key === 'verb') {
+        verb = (slot.word || {}).type || slot.value;
+      }
+    });
+
+    if (subject && verb && object) {
+      verb = add_action(verb, { time: new Date(date).getTime() }, true);
+      add_edge('the', verb._id, object._id, 0, true);
+      add_edge('did', subject._id, verb._id, 0, true);
+    }
+
+    // start over
+    // TODO: show the sentence
+    conversation = new_conversation();
+    // force_rerender()
+  }
+
+  return conversation;
+}
+
+function give_word(sentence, value) {
+  var slot = sentence.slots.shift();
+  if (!slot) return error$1('This sentence is finished');
+
+  // TODO: check this logic modularly
+  if (slot.type === 'word') {
+    var word = G.v({ name: value, cat: slot.cat }).run()[0];
+    if (word) {
+      slot.word = word;
+    }
+  }
+
+  if (slot.cat === 'thing') {
+    if (slot.type === 'word') {
+      if (!slot.word) {
+        sentence.slots.unshift({ key: 'type', type: 'gettype', name: value, cat: slot.cat, oldkey: slot.key });
+      }
+    } else if (slot.type === 'gettype') {
+      // var nameslot = sentence.filled[sentence.filled.length-1]
+    }
+  }
+
+  // fix it in post
+  slot.value = value;
+  sentence.filled.push(slot);
+
+  return sentence;
+}
+
 // this does some dom things
 
 var el = function () {
@@ -1958,7 +2057,16 @@ function set_el(el_id, val) {
   el(el_id).innerHTML = val;
 }
 
+// LOGIN/ORG/TAG STUFF
 
+function login(e) {
+  e.preventDefault();
+  state.email = el('email').value;
+  force_rerender();
+
+  // el('login').classList.add('hide')
+  // el('storytime').classList.remove('hide')
+}
 
 // SOME HIGHLIGHTING OR SOMETHING
 
@@ -2091,6 +2199,26 @@ function submit_addtag(ev) {
   showtags();
 }
 
+
+
+
+
+function submit_convo(ev) {
+  ev.preventDefault();
+
+  // submit event to field key-value list:
+  var fields = [].concat(toConsumableArray(ev.currentTarget.elements));
+  var values = fields.reduce(function (acc, el) {
+    acc[el.id] = el.value;return acc;
+  }, {});
+
+  update_conversation(values);
+
+  // whatsnext(G, update_conversation())
+
+  force_rerender();
+}
+
 var renderers = [];
 function add_renderer(f) {
   renderers.push(f);
@@ -2173,7 +2301,9 @@ function get_viz_html() {
   return env.output_html;
 }
 
-function get_convo_html() {}
+function get_convo_html() {
+  return render_conversation(convo);
+}
 
 // COMPACTIONS
 
@@ -2956,6 +3086,148 @@ function write_sentences(env) {
 
 // FORM BUILDER & FRIENDS
 
+function get_cat_dat(cat, q) {
+  var substrRegex = new RegExp(q, 'i');
+  var frontRegex = new RegExp('^' + q, 'i');
+  var nodes = G.vertices.filter(function (node) {
+    return node.cat === cat;
+  }).map(prop('name')).filter(function (name) {
+    return substrRegex.test(name);
+  });
+
+  nodes.sort(function (a, b) {
+    return frontRegex.test(b) - frontRegex.test(a) || a.charCodeAt() - b.charCodeAt();
+  });
+
+  return nodes;
+}
+
+function render_conversation(conversation) {
+  var str = '';
+
+  var typeahead_params = { hint: true, highlight: true, minLength: 1 };
+  function typeahead_source(cat) {
+    return { name: 'states', source: function source(q, cb) {
+        cb(get_cat_dat(cat, q));
+      } };
+  }
+
+  var inputs = '';
+  var prelude = '';
+  var submit_button = '<input type="submit" style="position: absolute; left: -9999px">';
+
+  // special case the first step
+  var sentence = conversation.current;
+
+  sentence.filled.forEach(function (slot, i) {
+    prelude += inject_value(slot, slot.value, i) + ' ';
+  });
+
+  // display the unfilled slot
+  var slot = sentence.slots[0];
+  var input = '';
+  if (slot.type === 'word') {
+    input = inject_value(slot, make_word_input(slot.cat, slot.key));
+  } else if (slot.type === 'gettype') {
+    input = inject_value(slot, make_type_input(slot.cat, slot.key));
+  } else if (slot.type === 'date') {
+    input = inject_value(slot, make_date_input(slot.key));
+  }
+
+  prelude += input;
+
+  // do the DOM
+  // dom.set_el('the-conversation', prelude + inputs + submit_button)
+  str = prelude + inputs + submit_button;
+
+  // wiring... /sigh
+  var catnames = Object.keys(cats);
+  catnames.forEach(function (cat) {
+    $('.' + cat + '-input').typeahead(typeahead_params, typeahead_source(cat));
+  });
+
+  if (sentence.filled.length) $('#' + slot.key).focus();
+
+  return str;
+
+  // helper functions
+
+  function make_word_input(cat, key) {
+    var text = '';
+
+    if (cat === 'thing') return '<input class="typeahead ' + cat + '-input" type="text" placeholder="A' + mayben(cat) + ' ' + cat + '" id="' + key + '">';
+    if (cat === 'action') {
+      text += '<select id="verb" name="verb">';
+      var options = ['participate in', 'lead', 'fund', 'organize', 'inspire', 'invite'];
+      // var options = ['facilitate', 'coordinate', 'contribute', 'create', 'attend', 'manage', 'assist', 'present', 'join', 'leave']
+      options.forEach(function (option) {
+        text += '<option>' + option + '</option>';
+      });
+      text += '</select>';
+      return text;
+    }
+  }
+
+  function make_type_input(cat, key) {
+    // TODO: this assumes cat is always 'thing'
+    var str = '<select id="' + key + '">';
+    str += '<option value="person">person</option>';
+    str += '<option value="org">org</option>';
+    str += '<option value="event">event</option>';
+    str += '<option value="outcome">outcome</option>';
+    str += '</select>';
+    return str;
+  }
+
+  function make_date_input(key) {
+    var str = '<input id="' + key + '" type="date" name="' + key + '" value="2016-01-01" />';
+    return str;
+  }
+
+  function inject_value(slot, value, index) {
+    // HACK: index is a huge hack, remove it.
+    var text = '';
+
+    if (slot.key === 'subject') {
+      if (slot.value) {
+        text += '<p><b>' + slot.value + '</b></p>';
+      } else {
+        text += "Okay, let's fill in the blanks. Tell us about ";
+        text += value + ' ';
+      }
+    } else if (slot.key === 'verb') {
+      text += ' did ';
+      text += value;
+      text += ' the ';
+    } else if (slot.key === 'object') {
+      text += value + ' ';
+    } else if (slot.type === 'gettype') {
+      if (index === 1) {
+        text += ' is a';
+        text += mayben(value) + ' ';
+        text += value + ' ';
+        if (slot.value) text += slot.value === 'person' ? 'who ' : 'which ';
+      } else {
+        text += ' (a';
+        text += mayben(value) + ' ';
+        text += value + ') ';
+      }
+    } else if (slot.type === 'date') {
+      text += ' in/on ';
+      text += value + ' ';
+    } else {
+      text = ' ' + value + ' ';
+    }
+
+    return text;
+  }
+}
+
+function mayben(val) {
+  return (/^[aeiou]/.test(val) ? 'n' : ''
+  );
+}
+
 function set_minus(xs, ys) {
   return xs.filter(function (x) {
     return ys.indexOf(x) === -1;
@@ -3282,10 +3554,10 @@ var Story = function Story() {
     ),
     h(
       'div',
-      { id: 'signup' },
+      { id: 'signup', 'class': state.email ? 'hide' : '' },
       h(
         'form',
-        { id: 'login' },
+        { id: 'login', onSubmit: login },
         h(
           'p',
           null,
@@ -3296,13 +3568,15 @@ var Story = function Story() {
     ),
     h(
       'div',
-      { id: 'storytime', 'class': 'hide' },
+      { id: 'storytime', 'class': state.email ? '' : 'hide' },
       h(
         'h3',
         null,
         'Want to add something to the map?'
       ),
-      h('form', { id: 'the-conversation', dangerouslySetInnerHTML: { __html: get_convo_html() } })
+      h('form', { id: 'the-conversation',
+        onSubmit: submit_convo,
+        dangerouslySetInnerHTML: { __html: get_convo_html() } })
     )
   );
 };
@@ -3397,24 +3671,6 @@ var Sidebar = function (_Component) {
   }]);
   return Sidebar;
 }(Component);
-
-// TODO: partition incoming bleep bloops by action
-// TODO: build edit functions
-// TODO: build remove functions
-// TODO: ask user for email address
-// TODO: show current tags
-// TODO: allow changing of tags
-// TODO: allow multitag views
-// TODO: add all tags on server
-// TODO: try to get an additional compaction in
-
-// TODO: consolidate like-named nodes
-// TODO: consolidate email addresses on server
-// TODO: copy tags into url
-
-
-// INIT
-
 
 function init$1() {
 

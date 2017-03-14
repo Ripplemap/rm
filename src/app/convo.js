@@ -1,18 +1,19 @@
 import {add_thing, add_action, add_edge} from 'model'
-import * as dom from 'dom'
+// import * as dom from 'dom'
 import {G} from 'graph'
-import {force_rerender} from 'render'
+// import {force_rerender} from 'render'
 import {error} from 'fun'
 
 
 export let convo = new_conversation()
-export {join_conversation}
+export {update_conversation}
 
-function join_conversation(conversation) {
+function update_conversation(values, conversation) {
   var conversation = conversation || convo
 
   var wants = conversation.current.slots[0].key
-  var value = dom.el(wants).value
+  var value = values && values[wants] || false
+  // var value = dom.el(wants).value
 
   convo = fulfill_desire(conversation, value)
 
@@ -72,7 +73,7 @@ function fulfill_desire(conversation, value) {
     // start over
     // TODO: show the sentence
     conversation = new_conversation()
-    force_rerender()
+    // force_rerender()
   }
 
   return conversation

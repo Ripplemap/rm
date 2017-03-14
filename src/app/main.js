@@ -102,11 +102,13 @@ export function do_the_glue() {
   dom.el('sentences').addEventListener('keyup', dom.keyup_sentences)
   dom.el('sentences').addEventListener('click', dom.click_sentences)
 
-  dom.el('tagnames').addEventListener('click', dom.click_tagnames)
-  dom.el('tagnames').addEventListener('mouseover', dom.mouseover_tagnames)
-  dom.el('tagnames').addEventListener('mouseout', dom.mouseout_tagnames)
+  // dom.el('tagnames').addEventListener('click', dom.click_tagnames)
+  // dom.el('tagnames').addEventListener('mouseover', dom.mouseover_tagnames)
+  // dom.el('tagnames').addEventListener('mouseout', dom.mouseout_tagnames)
 
-  document.addEventListener('keydown', dom.global_keydown)
+  // document.addEventListener('keydown', dom.global_keydown)
+
+
 
   // render_all()
 }

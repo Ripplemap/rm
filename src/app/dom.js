@@ -2,10 +2,10 @@
 
 import state from 'state'
 import {G, addtag, removetag} from 'graph'
-import {join_conversation} from 'convo'
+import {update_conversation} from 'convo'
 import {error, noop} from 'fun'
 import {persist} from 'net'
-import {force_rerender, showtags} from 'render'
+import {force_rerender, showtags, whatsnext} from 'render'
 
 export {set_el, append_el}
 
@@ -37,8 +37,10 @@ function append_el(el_id, val) {
 export function login(e) {
   e.preventDefault()
   state.email = el('email').value
-  el('login').classList.add('hide')
-  el('storytime').classList.remove('hide')
+  force_rerender()
+
+  // el('login').classList.add('hide')
+  // el('storytime').classList.remove('hide')
 }
 
 // SOME HIGHLIGHTING OR SOMETHING
@@ -287,10 +289,13 @@ export function click_sentences(ev) {
 export function submit_convo(ev) {
   ev.preventDefault()
 
-  join_conversation()
+  // submit event to field key-value list:
+  let fields = [...ev.currentTarget.elements]
+  let values = fields.reduce((acc, el) => {acc[el.id] = el.value; return acc}, {})
+
+  update_conversation(values)
+
+  // whatsnext(G, update_conversation())
+
   force_rerender()
-
-  // whatsnext(G, join_conversation())
-
-  return false
 }

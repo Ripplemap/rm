@@ -1,7 +1,7 @@
 import {G} from 'graph'
 import {unique, eq, prop, clone, truncate, push_it, pipe} from 'fun'
 import * as dom from 'dom'
-// import {convo as conversation} from 'convo'
+import {convo} from 'convo'
 import {cats} from 'model'
 import state from 'state'
 
@@ -10,7 +10,7 @@ import state from 'state'
 import {isDate} from '../utils'
 
 
-export {init, force_rerender, add_renderer, get_sentence_html, get_viz_html, get_convo_html, get_tag_html, showtags}
+export {init, force_rerender, add_renderer, get_sentence_html, get_viz_html, get_convo_html, get_tag_html, showtags, whatsnext}
 
 const renderers = []
 function add_renderer(f) {
@@ -119,7 +119,7 @@ function get_viz_html() {
 }
 
 function get_convo_html() {
-
+  return render_conversation(convo)
 }
 
 
@@ -1027,12 +1027,18 @@ function write_sentences(env) {
 
 // FORM BUILDER & FRIENDS
 
-function whatsnext(graph, conversation) {
+function whatsnext(graph = G, conversation = convo) {
+  // this function decides what to ask the user next, based on their conversation and the world
+  // call it for rendering so it can decide what to do
+
+
   // TODO: incorporate graph knowledge (graph is the whole world, or the relevant subgraph)
   // THINK: what is a conversation?
   // are we currently in a sentence? then find the highest weighted unfilled 'port'
 
-  render_conversation(conversation)
+  return render_conversation(conversation)
+
+  // force_rerender()
 }
 
 function get_cat_dat(cat, q) {
