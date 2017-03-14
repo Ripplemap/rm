@@ -1,5 +1,6 @@
 import { h, render } from 'preact';
 import Header from 'UiKit/Header/index';
+import Button from 'UiKit/Button/'
 
 import {get_convo_html} from 'render'
 import './styles.css'
@@ -21,10 +22,10 @@ const Story = () => {
         <form id="the-conversation" dangerouslySetInnerHTML={{__html: get_convo_html()}}></form>
       </div>
 
-      {/* TODO: give this a top-border */}
-      {/* TODO: connect this to form submission */}
-      {/* <NextButton>Next &gt;</NextButton> */}
-
+      {/* TODO: hookup OnClick to a function */}
+      <Button type="next">Next
+        <i class="fa fa-chevron-right pl_1" aria-hidden="true"></i>
+     </Button>
     </div>
   );
 };

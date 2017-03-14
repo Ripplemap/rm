@@ -22,6 +22,7 @@ $primaryRedDarken: rgb(235, 49, 37);
 
   &:hover {
     border: 2px solid $primaryRedDarken;
+    color: $primaryRedDarken;
   }
 
   &:active {
@@ -30,5 +31,12 @@ $primaryRedDarken: rgb(235, 49, 37);
 
   &.large {
     font-size: 25px;
+  }
+
+  &.next {
+    border: 0;
+    border-top: 2px solid $primaryRed;
+    border-radius: 0;
+    justify-content: flex-end;
   }
 }

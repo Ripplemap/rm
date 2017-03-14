@@ -6,18 +6,20 @@ const Button = props => {
     switch(props.type){
       case 'large':
         return 'Button large'
-      default: 
+      case 'next':
+        return 'Button next'
+      default:
         return 'Button'
     }
   }
 
 
   return (
-    <button 
+    <button
       onClick={props.onClick}
-      class={genClassName()} 
+      class={genClassName()}
       style={props.style}>
-     {props.children} 
+     {props.children}
     </button>
   );
 };
