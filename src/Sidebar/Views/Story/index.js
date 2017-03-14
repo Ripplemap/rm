@@ -2,16 +2,17 @@ import { h, render } from 'preact';
 import Header from 'UiKit/Header/index';
 
 import {get_convo_html} from 'render'
+import './styles.css'
 
 const Story = () => {
   return (
-    <div>
+    <div class="Story">
       <Header>Add a story</Header>
 
-      <div id="signup">
-        <form id="login">
+      <div id="signup" >
+        <form id="login" class="Story__form">
           <p>We'd love to hear your stories! Let's start with your contact info:</p>
-          <input name="email" id="email" type="text" placeholder="email" class="typeahead" />
+          <input name="email" id="email" type="text" placeholder="email" class="typeahead Story__input" />
         </form>
       </div>
 

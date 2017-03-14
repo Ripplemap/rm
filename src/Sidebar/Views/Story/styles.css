@@ -1,0 +1,14 @@
+.Story {
+  display: flex;
+  flex-direction: column
+}
+
+
+.Story__form {
+  display: flex;
+  flex-direction: column;
+}
+
+.Story__input {
+  margin-top: 10px;
+}
