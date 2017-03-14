@@ -4,6 +4,8 @@ import './styles.css'
 import LegendItem from 'UiKit/LegendItem';
 import Button from 'UiKit/Button'
 
+import {force_rerender} from 'render'
+
 // TODO: find out if EDGES need to be filterable (like NODES are clickable to toggle)
 const LegendNodes = [{
         name: 'Event',
@@ -85,7 +87,9 @@ class Legend extends Component {
 
     // FIXME: this is leaking into the global space
     window.filter_poo = this.state.currentFilters
-    window.rm_render()
+
+    // window.rm_render()
+    force_rerender()
   }
 
   renderNodes = () => {

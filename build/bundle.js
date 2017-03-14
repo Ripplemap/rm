@@ -1220,9 +1220,6 @@ var Tab = function Tab(_ref) {
   );
 };
 
-/**
- * List to iterate over and generate tab commponents with.
- */
 var tabs = [{ name: "Home", id: "home", icon: "fa fa-home" }, { name: "Add A Story", id: "story", icon: "fa fa-commenting-o" }, { name: "Filters", id: "filters", icon: "fa fa-map-marker" }, { name: "Read Stories", id: "read_stories", icon: "fa fa-eye" }, { name: "Selected Stories", id: "selected_stories", icon: "fa fa-commenting" }, { name: "About", id: "about", icon: "fa fa-clone" }];
 
 /**
@@ -2040,8 +2037,6 @@ function submit_addtag(ev) {
   showtags();
 }
 
-// import {convo as conversation} from 'convo'
-// TODO: ask Tyler about this (and utils.js in general):
 var renderers = [];
 function add_renderer(f) {
   renderers.push(f);
@@ -2058,8 +2053,17 @@ function force_rerender() {
     renderers.forEach(function (f) {
       return f(state);
     });
+    // do_the_glue()
   });
 }
+
+///////////////////////// DOM GLUE ///////////////////////////////
+
+
+
+
+///////////////////// END DOM GLUE ///////////////////////////////
+
 
 // function render_all() {
 //   render()
@@ -2554,7 +2558,7 @@ function copy_nodes(env) {
       _id: node._id,
       x: node.x,
       y: node.y,
-      r: node.r * 0.8 // node is 20% smaller 
+      r: node.r * 0.8 // node is 20% smaller
       , name: node.name,
       fill: color
     };
@@ -2782,13 +2786,15 @@ function draw_it_svg(env) {
   }
 }
 
+/////////////////////////////////
+
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// SENTENCE STRUCTURES
+// CANVAS FUNCTIONS
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -2910,6 +2916,8 @@ function write_sentences(env) {
     return ' ' + text + notes + button;
   }
 }
+
+// FORM BUILDER & FRIENDS
 
 function set_minus(xs, ys) {
   return xs.filter(function (x) {
@@ -3118,7 +3126,9 @@ var Legend = function (_Component) {
 
       // FIXME: this is leaking into the global space
       window.filter_poo = _this.state.currentFilters;
-      window.rm_render();
+
+      // window.rm_render()
+      force_rerender();
     }, _this.renderNodes = function () {
       return LegendNodes.map(function (node) {
         return h(
@@ -3318,6 +3328,9 @@ var Sidebar = function (_Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       // window.do_the_glue()
+
+      // FIXME: this is a huge horrid hacky hack
+      window.changeView = this.changeView.bind(this);
     }
   }, {
     key: 'componentDidUpdate',
@@ -3352,27 +3365,6 @@ var Sidebar = function (_Component) {
   }]);
   return Sidebar;
 }(Component);
-
-///////////////////// END DOM GLUE ///////////////////////////////
-
-
-// TODO: partition incoming bleep bloops by action
-// TODO: build edit functions
-// TODO: build remove functions
-// TODO: ask user for email address
-// TODO: show current tags
-// TODO: allow changing of tags
-// TODO: allow multitag views
-// TODO: add all tags on server
-// TODO: try to get an additional compaction in
-
-// TODO: consolidate like-named nodes
-// TODO: consolidate email addresses on server
-// TODO: copy tags into url
-
-
-// INIT
-
 
 function init$1() {
 
@@ -3425,6 +3417,8 @@ function tagglue() {
  *
  */
 
+// TODO: do we need h, Component below?
+
 init$1(); // engage the application
 
 var root = void 0;
@@ -3432,7 +3426,5 @@ var renderer = function renderer() {
   return root = render(h(Sidebar, null), document.getElementById('sidebar'), root);
 };
 
-// on_render(x => render(<Sidebar />, document.getElementById('sidebar'))) // connect the preact renderer
-// on_render((state) => co._component.render(state)) // connect the preact renderer
 add_renderer(renderer); // connect the preact renderer
 //# sourceMappingURL=bundle.js.map

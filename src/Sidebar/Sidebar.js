@@ -18,6 +18,10 @@ class Sidebar extends Component {
 
   componentDidMount() {
     // window.do_the_glue()
+
+    // FIXME: this is a huge horrid hacky hack
+    window.changeView = this.changeView.bind(this)
+
   }
 
   componentDidUpdate() {
