@@ -202,13 +202,6 @@ var NON_DIMENSION_PROPS = {
 // DOM event types that do not bubble and should be attached via useCapture
 var NON_BUBBLING_EVENTS = { blur: 1, error: 1, focus: 1, load: 1, resize: 1, scroll: 1 };
 
-/** Create an Event handler function that sets a given state property.
- *	@param {Component} component	The component whose state should be updated
- *	@param {string} key				A dot-notated key path to update in the component's state
- *	@param {string} eventPath		A dot-notated key path to the value that should be retrieved from the Event or component
- *	@returns {function} linkedStateHandler
- *	@private
- */
 function createLinkedState(component, key, eventPath) {
 	var path = key.split('.');
 	return function (e) {
@@ -225,9 +218,6 @@ function createLinkedState(component, key, eventPath) {
 	};
 }
 
-/** Managed queue of dirty components to be re-rendered */
-
-// items/itemsOffline swap on each rerender() call (just a simple pool technique)
 var items = [];
 
 function enqueueRender(component) {
@@ -245,12 +235,6 @@ function rerender() {
 	}
 }
 
-/** Check if a VNode is a reference to a stateless functional component.
- *	A function component is represented as a VNode whose `nodeName` property is a reference to a function.
- *	If that function is not a Component (ie, has no `.render()` method on a prototype), it is considered a stateless functional component.
- *	@param {VNode} vnode	A VNode
- *	@private
- */
 function isFunctionalComponent(vnode) {
   var nodeName = vnode && vnode.nodeName;
   return nodeName && isFunction(nodeName) && !(nodeName.prototype && nodeName.prototype.render);
@@ -264,11 +248,6 @@ function buildFunctionalComponent(vnode, context) {
   return vnode.nodeName(getNodeProps(vnode), context || EMPTY);
 }
 
-/** Check if two nodes are equivalent.
- *	@param {Element} node
- *	@param {VNode} vnode
- *	@private
- */
 function isSameNodeType(node, vnode) {
 	if (isString(vnode)) {
 		return node instanceof Text;
@@ -432,7 +411,6 @@ var toConsumableArray = function (arr) {
   }
 };
 
-/** Removes a given DOM Node from its parent. */
 function removeNode(node) {
 	var p = node.parentNode;
 	if (p) p.removeChild(node);
@@ -515,8 +493,6 @@ function eventProxy(e) {
 	return this._listeners[e.type](options.event && options.event(e) || e);
 }
 
-/** DOM node pool, keyed on nodeName. */
-
 var nodes = {};
 
 function collectNode(node) {
@@ -537,7 +513,6 @@ function createNode(nodeName, isSvg) {
 	return node;
 }
 
-/** Queue of components that have been mounted and are awaiting componentDidMount */
 var mounts = [];
 
 /** Diff recursion count, used to track the end of the diff cycle. */
@@ -836,10 +811,6 @@ function diffAttributes(dom, attrs, old) {
 	}
 }
 
-/** Retains a pool of Components for re-use, keyed on component name.
- *	Note: since component names are not unique or even necessarily available, these are primarily a form of sharding.
- *	@private
- */
 var components = {};
 
 function collectComponent(component) {
@@ -864,12 +835,6 @@ function createComponent(Ctor, props, context) {
 	return inst;
 }
 
-/** Set a component's `props` (generally derived from JSX attributes).
- *	@param {Object} props
- *	@param {Object} [opts]
- *	@param {boolean} [opts.renderSync=false]	If `true` and {@link options.syncComponentUpdates} is `true`, triggers synchronous rendering.
- *	@param {boolean} [opts.render=true]			If `false`, no render will be triggered.
- */
 function setComponentProps(component, props, opts, context, mountAll) {
 	if (component._disable) return;
 	component._disable = true;
@@ -1125,16 +1090,6 @@ function unmountComponent(component, remove) {
 	if (component.componentDidUnmount) component.componentDidUnmount();
 }
 
-/** Base Component class, for the ES6 Class method of creating Components
- *	@public
- *
- *	@example
- *	class MyFoo extends Component {
- *		render(props, state) {
- *			return <div />;
- *		}
- *	}
- */
 function Component(props, context) {
 	/** @private */
 	this._dirty = true;
@@ -1220,21 +1175,6 @@ extend(Component.prototype, {
 	render: function render() {}
 });
 
-/** Render JSX into a `parent` Element.
- *	@param {VNode} vnode		A (JSX) VNode to render
- *	@param {Element} parent		DOM element to render into
- *	@param {Element} [merge]	Attempt to re-use an existing DOM tree rooted at `merge`
- *	@public
- *
- *	@example
- *	// render a div into <body>:
- *	render(<div id="hello">hello!</div>, document.body);
- *
- *	@example
- *	// render a "Thing" component into #foo:
- *	const Thing = ({ name }) => <span>{ name }</span>;
- *	render(<Thing name="one" />, document.querySelector('#foo'));
- */
 function render(vnode, parent, merge) {
   return diff(merge, vnode, {}, false, parent);
 }
@@ -1280,9 +1220,6 @@ var Tab = function Tab(_ref) {
   );
 };
 
-/**
- * List to iterate over and generate tab commponents with.
- */
 var tabs = [{ name: "Home", id: "home", icon: "fa fa-home" }, { name: "Add A Story", id: "story", icon: "fa fa-commenting-o" }, { name: "Filters", id: "filters", icon: "fa fa-map-marker" }, { name: "Read Stories", id: "read_stories", icon: "fa fa-eye" }, { name: "Selected Stories", id: "selected_stories", icon: "fa fa-commenting" }, { name: "About", id: "about", icon: "fa fa-clone" }];
 
 /**
@@ -1607,18 +1544,6 @@ function error$1(mess) {
 
 var cats = {}; // ripplemap categories
 var adders = { thing: add_thing, action: add_action, edge: add_edge };
-/* INTERFACES FOR RIPPLE MODEL
- *
- * There are four categories: Thing, Action, Effect, and Happening
- *
- * Each category has multiple types associated with it. Each node has a category and type.
- *
- * Each node also tracks its cron, the adding user, and some type of 'confidence interval' (later)
- *
- * Each edge has a type, which is its label. Nodes expect edges of certain types.
- *
- */
-
 cats.thing = {};
 cats.action = {};
 cats.effect = {};
@@ -1847,11 +1772,6 @@ function add_edge(type, from, to, props, persist$$1) {
   if (persist$$1) add_to_server_facts('edge', edge);
 }
 
-// find all the paths between them, and their attached bits
-
-
-// SET UP CATEGORIES AND EDGES
-
 new_thing_type('person', {});
 new_thing_type('org', { cc: ['org'] });
 new_thing_type('place', { cc: ['place', 'event'] });
@@ -2038,8 +1958,6 @@ function set_el(el_id, val) {
   el(el_id).innerHTML = val;
 }
 
-// LOGIN/ORG/TAG STUFF
-
 
 
 // SOME HIGHLIGHTING OR SOMETHING
@@ -2109,7 +2027,61 @@ function mouseout_tagnames(ev) {
   highlight();
 }
 
+function global_keydown(ev) {
+  // TODO: clean this up (prevent span hijacking)
+  if (ev.target.tagName === 'SPAN' || ev.target.tagName === 'INPUT' || ev.target.tagName === 'SELECT' || ev.target.tagName === 'TEXTAREA') return true;
 
+  var key = ev.keyCode || ev.which;
+
+  // var key_a = 97
+  var key_e = 69;
+  var key_f = 70;
+  var key_l = 76;
+  var key_n = 78;
+  var key_p = 80;
+  // var key_s = 115
+  var tilde = 126;
+  var larro = 37;
+  var uarro = 38;
+  var rarro = 39;
+  var darro = 40;
+  // var langl = 60
+  // var rangl = 62
+
+  if (key === larro || key === darro || key === key_p) {
+    ev.preventDefault();
+    if (state.current_year <= state.my_minyear) return false;
+    state.current_year--;
+    force_rerender();
+  }
+
+  if (key === rarro || key === uarro || key === key_n) {
+    ev.preventDefault();
+    if (state.current_year >= state.my_maxyear) return false;
+    state.current_year++;
+    force_rerender();
+  }
+
+  if (key === key_f) {
+    state.filter_sentences = !state.filter_sentences;
+    force_rerender();
+  }
+
+  if (key === key_e) {
+    state.all_edges = !state.all_edges;
+    force_rerender();
+  }
+
+  if (key === key_l) {
+    state.show_labels = !state.show_labels;
+    force_rerender();
+  }
+
+  if (key === tilde) {
+    state.admin_mode = !state.admin_mode;
+    force_rerender();
+  }
+}
 
 function submit_addtag(ev) {
   ev.preventDefault();
@@ -2119,8 +2091,6 @@ function submit_addtag(ev) {
   showtags();
 }
 
-// import {convo as conversation} from 'convo'
-// TODO: ask Tyler about this (and utils.js in general):
 var renderers = [];
 function add_renderer(f) {
   renderers.push(f);
@@ -2137,17 +2107,8 @@ function force_rerender() {
     renderers.forEach(function (f) {
       return f(state);
     });
-    // do_the_glue()
   });
 }
-
-///////////////////////// DOM GLUE ///////////////////////////////
-
-
-
-
-///////////////////// END DOM GLUE ///////////////////////////////
-
 
 // function render_all() {
 //   render()
@@ -2862,13 +2823,15 @@ function draw_it_svg(env) {
   }
 }
 
+/////////////////////////////////
+
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// SENTENCE STRUCTURES
+// CANVAS FUNCTIONS
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -2990,6 +2953,8 @@ function write_sentences(env) {
     return ' ' + text + notes + button;
   }
 }
+
+// FORM BUILDER & FRIENDS
 
 function set_minus(xs, ys) {
   return xs.filter(function (x) {
@@ -3119,7 +3084,6 @@ var LegendItem = function LegendItem(props) {
   );
 };
 
-// TODO: find out if EDGES need to be filterable (like NODES are clickable to toggle)
 var LegendNodes = [{
   name: 'Event',
   color: '#f32938',
@@ -3343,10 +3307,6 @@ var Story = function Story() {
   );
 };
 
-/**
- * Sidebar layout and state
- */
-
 var Sidebar = function (_Component) {
   inherits(Sidebar, _Component);
 
@@ -3498,7 +3458,17 @@ function tagglue() {
   el('tagnames').addEventListener('mouseover', mouseover_tagnames);
   el('tagnames').addEventListener('mouseout', mouseout_tagnames);
   el('addtag').addEventListener('submit', submit_addtag);
+
+  // not quite as barfy
+  document.addEventListener('keydown', global_keydown);
 }
+
+///////////////////////// DOM GLUE ///////////////////////////////
+
+
+
+
+///////////////////// END DOM GLUE ///////////////////////////////
 
 /**
  *
@@ -3506,8 +3476,6 @@ function tagglue() {
  * Binds the RM app to the Preact renderer
  *
  */
-
-// TODO: do we need h, Component below?
 
 init$1(); // engage the application
 

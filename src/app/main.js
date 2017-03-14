@@ -79,4 +79,37 @@ function tagglue() {
   dom.el('tagnames').addEventListener('mouseover', dom.mouseover_tagnames)
   dom.el('tagnames').addEventListener('mouseout', dom.mouseout_tagnames)
   dom.el('addtag').addEventListener('submit', dom.submit_addtag)
+
+  // not quite as barfy
+  document.addEventListener('keydown', dom.global_keydown)
 }
+
+
+///////////////////////// DOM GLUE ///////////////////////////////
+
+
+
+export function do_the_glue() {
+
+  dom.el('login').addEventListener('submit', dom.login)
+
+  dom.el('addtag').addEventListener('submit', dom.submit_addtag)
+
+  dom.el('the-conversation').addEventListener('submit', dom.submit_convo)
+
+  dom.el('sentences').addEventListener('mouseover', dom.activate_highlighter)
+  dom.el('sentences').addEventListener('mouseout', dom.deactivate_highlighter)
+  dom.el('sentences').addEventListener('keyup', dom.keyup_sentences)
+  dom.el('sentences').addEventListener('click', dom.click_sentences)
+
+  dom.el('tagnames').addEventListener('click', dom.click_tagnames)
+  dom.el('tagnames').addEventListener('mouseover', dom.mouseover_tagnames)
+  dom.el('tagnames').addEventListener('mouseout', dom.mouseout_tagnames)
+
+  document.addEventListener('keydown', dom.global_keydown)
+
+  // render_all()
+}
+
+
+///////////////////// END DOM GLUE ///////////////////////////////
