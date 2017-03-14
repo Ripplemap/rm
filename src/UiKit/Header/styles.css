@@ -7,6 +7,7 @@ $primaryRed: rgb(255, 89, 97);
   margin: 3rem 0;
   width: 100%;
   text-transform: uppercase;
+  letter-spacing: 1px;
 
   &.large {
     font-size: 25px;

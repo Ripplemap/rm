@@ -1,7 +1,7 @@
 /**
 *
 */
-$tabText: rgb(160, 160, 160);
+$tabText: #512261;
 $primaryRed: rgb(255, 89, 97);
 
 .Tab {
@@ -12,7 +12,7 @@ $primaryRed: rgb(255, 89, 97);
   justify-content: center;
   align-items: center;
   text-align: center;
-  background-color: #efefef;
+  background-color: #ede8ef;
   cursor: pointer;
   border: 0;
   color: $tabText;
@@ -21,7 +21,7 @@ $primaryRed: rgb(255, 89, 97);
   outline: none;
 
   &:hover {
-    background-color: #eaeaea;
+    background-color: #dcd7de;
   }
 
   &:active {

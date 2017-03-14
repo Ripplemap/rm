@@ -471,7 +471,7 @@ function filter_nodes(env) {
 
 function add_rings(env) {
   for(var i = env.params.minyear; i <= env.params.maxyear; i++) {
-    var color = i === state.current_year ? '#999' : '#ccc'
+    var color = i === state.current_year ? '#999' : 'rgba(204, 204, 204, 0.6)'
     var radius = state.ring_radius * (i - env.params.my_minyear + 1)
     env.shapes.unshift({shape: 'circle', x: 0, y: 0, r: radius, stroke: color, fill: 'rgba(0, 0, 0, 0)', line: 1, type: 'ring', year: i})
   }
@@ -555,7 +555,7 @@ function copy_nodes(env) {
                 , _id: node._id
                 , x: node.x
                 , y: node.y
-                , r: node.r
+                , r: node.r * 0.8     // node is 20% smaller 
                 , name: node.name
                 , fill: color
                 }
@@ -567,7 +567,7 @@ function copy_nodes(env) {
                     , _id: node._id
                     , x: node.x
                     , y: node.y
-                    , r: node.r + 5
+                    , r: node.r 
                     , line: 0.01
                     , fill: 'hsla(0, 80%, 100%, 0.95)'
                     }
@@ -695,6 +695,7 @@ function draw_it_svg(env) {
   function draw_circle(node, x, y, radius, stroke_color, fill_color, line_width) {
     if(!x || !y || !radius) return undefined
 
+    console.log(stroke_color)
     fill_color = fill_color || '#444444'
     line_width = line_width || 2
     stroke_color = stroke_color || '#eef'
@@ -706,8 +707,11 @@ function draw_it_svg(env) {
   }
 
   function draw_line(node, fromx, fromy, tox, toy, stroke_color, line_width) {
-    stroke_color = stroke_color || '#eef'
+    /* stroke_color = stroke_color || '#eef' // override until highlighting is figured out*/
+    stroke_color = 'rgba(255, 255, 255, 0.4)'
+    console.log(stroke_color);
     line_width = line_width || 0.5
+
 
     if(fromx * fromy * tox * toy * 0 !== 0)
       return ''
@@ -715,10 +719,10 @@ function draw_it_svg(env) {
     let u_id = `${node._id}`
     edges.push(u_id)
 
-    /* return `<line id="${u_id}" class="${node.type}" x1="${fromx}" y1="${fromy}" x2="${tox}" y2="${toy}" stroke-width="5" stroke="${stroke_color}"/>`*/
+    // TODO: highlight edge
     return `
       <g>
-        <line class= "${node.type}" x1="${fromx}" y1="${fromy}" x2="${tox}" y2="${toy}" stroke-width="5" stroke="${stroke_color}"/>
+        <line class= "${node.type}" x1="${fromx}" y1="${fromy}" x2="${tox}" y2="${toy}" stroke-width="2" stroke="${stroke_color}"/>
         <line id="${u_id}" class= "${node.type}" x1="${fromx}" y1="${fromy}" x2="${tox}" y2="${toy}" stroke-width="30" stroke="rgba(0, 0, 0, 0)"/>
       </g>`
   }
@@ -726,7 +730,7 @@ function draw_it_svg(env) {
   function draw_text(node, x, y, str, font, fill_color, font_size) {
     fill_color = '#fff'
     font = "Archivo Narrow"
-    font_size = '16px'
+    font_size = '14.5px'
     if(isNaN(x)) return ''
     x = x || 0
     y = y || 0
@@ -1196,7 +1200,7 @@ function showtags() {
   // generate current tags
   // hoverable span for highlight, plus clickable for remove
   var tagwrapper = ['<span class="tag">', '</span>']
-  var tagstr = state.tags.map(function(tag) { return tagwrapper[0] + tag + tagwrapper[1] }).join(', ')
+  var tagstr = state.tags.map(function(tag) { return tagwrapper[0] + tag + tagwrapper[1] }).join('')
   dom.set_el('tagnames', tagstr)
 
   // generate select box

@@ -17,7 +17,7 @@ function __$styleInject(css, returnValue) {
   return returnValue;
 }
 
-__$styleInject("html{font-size:62.5%}body{margin:0;padding:0;font-family:Fira Sans,Arial,Helvetica,sans-serif;font-size:13px;font-size:1.3rem;max-height:100vh}.App{display:flex;min-height:100vh;background:rgb(255)}#sidebar{display:flex;flex:1}#ripplemap-mount{display:flex;flex:2;background:linear-gradient(135deg,#502561,#fd5d62);justify-content:center}input{padding:10px;padding:1rem;border:1px solid #777}.highlight{background-color:#ff6}.hide{display:none}#controls{max-width:200px;display:flex;flex-direction:column;position:fixed;top:0;right:0;margin:10px;margin:1rem;color:hsla(0, 0%, 100%, .9)}#addtag{align-self:flex-end}#btn_add_tag{background:hsla(0, 0%, 100%, .9);border:0;padding:5px;padding:.5rem;text-transform:uppercase;border-radius:2px;transition:all .1s ease;box-shadow:1px 2px 1px rgba(0, 0, 0, .32);outline:none}#btn_add_tag:hover{box-shadow:3px 3px 3px rgba(0, 0, 0, .42)}#btn_add_tag:active{box-shadow:1px 1px 1px rgba(0, 0, 0, .12)}#tag-box{display:flex;flex-direction:column;color:#dfdfdf;opacity:.5;text-align:right;align-self:flex-end;margin-bottom:0}#tagnames{margin-top:10px;margin-top:1rem}.tag{text-align:right}", undefined);
+__$styleInject("html{font-size:62.5%}body{margin:0;padding:0;font-family:Fira Sans,Arial,Helvetica,sans-serif;font-size:13px;font-size:1.3rem;max-height:100vh}.App{display:flex;min-height:100vh;background:rgb(255)}#sidebar{display:flex;flex:1}#ripplemap-mount{display:flex;flex:2;background:linear-gradient(135deg,#502561,#fd5d62);justify-content:center}input{padding:10px;padding:1rem;border:1px solid #777}.highlight{background-color:#ff6}.hide{display:none}#controls{display:flex;flex-direction:column;position:fixed;top:0;right:0;margin:10px;margin:1rem;color:hsla(0, 0%, 100%, .9)}#addtag{align-self:flex-end}#btn_add_tag{background:hsla(0, 0%, 100%, .9);border:0;padding:5px;padding:.5rem;text-transform:uppercase;border-radius:2px;transition:all .1s ease;box-shadow:1px 2px 1px rgba(0, 0, 0, .32);outline:none}#btn_add_tag:hover{box-shadow:3px 3px 3px rgba(0, 0, 0, .42)}#btn_add_tag:active{box-shadow:1px 1px 1px rgba(0, 0, 0, .12)}#tag-box{display:flex;color:#dfdfdf;opacity:.5;text-align:right;align-self:flex-end;margin-bottom:0;display:block}#tag-box,#tagnames{flex-direction:column}#tagnames{margin-top:10px;margin-top:1rem;display:flex}.tag{text-align:right;cursor:pointer;padding:2.5px 0;padding:.25rem 0}", undefined);
 
 /** Virtual DOM Node */
 function VNode(nodeName, attributes, children) {
@@ -1179,11 +1179,11 @@ function render(vnode, parent, merge) {
   return diff(merge, vnode, {}, false, parent);
 }
 
-__$styleInject(".Sidebar{display:flex;flex:1;justify-content:space-between}.Sidebar__container{flex-grow:1;justify-content:center;padding:16px 64px;padding:1rem 4rem;max-height:100vh;overflow-y:scroll}.Sidebar__header{font-size:30px;color:#ff5961;font-weight:100;text-transform:uppercase;align-content:center;text-align:center;margin-bottom:64px;margin-bottom:4rem}", undefined);
+__$styleInject(".Sidebar{display:flex;flex:1;justify-content:space-between}.Sidebar__container{flex-grow:1;justify-content:center;padding:16px 64px;padding:1rem 4rem;max-height:100vh;overflow-y:scroll}.Sidebar__header{font-size:30px;color:#ff5961;font-weight:100;text-transform:uppercase;align-content:center;letter-spacing:1px;margin-bottom:0}.Sidebar__subheading{font-size:22.4px;font-size:1.4rem;font-style:italic;margin-bottom:48px;margin-bottom:3rem}", undefined);
 
-__$styleInject(".Tabbar{min-width:130px;max-width:130px;display:flex;flex-direction:column}.Tabbar__fillspace{background:#efefef;flex-grow:1}", undefined);
+__$styleInject(".Tabbar{min-width:130px;max-width:130px;display:flex;flex-direction:column}.Tabbar__fillspace{background:#ede8ef;flex-grow:1}", undefined);
 
-__$styleInject(".Tab{height:110px;margin-bottom:5px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background-color:#efefef;cursor:pointer;border:0;color:#a0a0a0;font-size:15px;text-transform:uppercase;outline:none}.Tab:hover{background-color:#eaeaea}.Tab:active{background-color:#ddd}.Tab.selected{background-color:#fff}.tab-icon{font-size:48px;font-size:3rem;padding:16px;padding:1rem;color:#fb8d94}.tab-icon.selected{color:#ff5961}", undefined);
+__$styleInject(".Tab{height:110px;margin-bottom:5px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background-color:#ede8ef;cursor:pointer;border:0;color:#512261;font-size:15px;text-transform:uppercase;outline:none}.Tab:hover{background-color:#dcd7de}.Tab:active{background-color:#ddd}.Tab.selected{background-color:#fff}.tab-icon{font-size:48px;font-size:3rem;padding:16px;padding:1rem;color:#fb8d94}.tab-icon.selected{color:#ff5961}", undefined);
 
 // for making conditional class making easier in react
 var classMaker = function classMaker(a, b, class_1, class_2) {
@@ -1220,7 +1220,10 @@ var Tab = function Tab(_ref) {
   );
 };
 
-var tabs = [{ name: "Home", id: "home", icon: "fa fa-home" }, { name: "Add A Story", id: "story", icon: "fa fa-commenting-o" }, { name: "Filters / Legend", id: "legend", icon: "fa fa-map-marker" }, { name: "Currently Showing", id: "currently_showing", icon: "fa fa-eye" }, { name: "Your Selection", id: "your_selection", icon: "fa fa-commenting" }, { name: "About", id: "about", icon: "fa fa-clone" }];
+/**
+ * List to iterate over and generate tab commponents with.
+ */
+var tabs = [{ name: "Home", id: "home", icon: "fa fa-home" }, { name: "Add A Story", id: "story", icon: "fa fa-commenting-o" }, { name: "Filters", id: "filters", icon: "fa fa-map-marker" }, { name: "Read Stories", id: "read_stories", icon: "fa fa-eye" }, { name: "Selected Stories", id: "selected_stories", icon: "fa fa-commenting" }, { name: "About", id: "about", icon: "fa fa-clone" }];
 
 /**
  * Constructs the menu tabs that are clickable. 
@@ -1240,9 +1243,9 @@ var TabBar = function TabBar(props) {
   );
 };
 
-__$styleInject("", undefined);
+__$styleInject(".Home__cta_text{font-size:25.6px;font-size:1.6rem}", undefined);
 
-__$styleInject(".Header{border-bottom:2px solid #ff5961;color:#ff5961;font-size:25.6px;font-size:1.6rem;margin:48px 0;margin:3rem 0;width:100%;text-transform:uppercase}.Header.large{font-size:25px}", undefined);
+__$styleInject(".Header{border-bottom:2px solid #ff5961;color:#ff5961;font-size:25.6px;font-size:1.6rem;margin:48px 0;margin:3rem 0;width:100%;text-transform:uppercase;letter-spacing:1px}.Header.large{font-size:25px}", undefined);
 
 var Header = function Header(props) {
   var genClassName = function genClassName() {
@@ -1261,7 +1264,7 @@ var Header = function Header(props) {
   );
 };
 
-__$styleInject(".Button{display:flex;flex:1;background:none;border:2px solid #ff5961;border-radius:5px;outline:none;justify-content:center;width:100%;padding:16px;padding:1rem;margin:48px 0;margin:3rem 0;color:#ff5961;font-size:22.4px;font-size:1.4rem;text-transform:uppercase}.Button:hover{border:2px solid #eb3125;box-shadow:1px 2px 1px rgba(0, 0, 0, .1)}.Button:active{border:2px solid red;box-shadow:none}.Button.large{font-size:25px}", undefined);
+__$styleInject(".Button{display:flex;flex:1;background:none;border:2px solid #ff5961;border-radius:5px;outline:none;justify-content:center;width:100%;padding:16px;padding:1rem;margin:32px 0;margin:2rem 0;color:#ff5961;font-size:22.4px;font-size:1.4rem;text-transform:uppercase}.Button:hover{border:2px solid #eb3125;box-shadow:1px 2px 1px rgba(0, 0, 0, .1)}.Button:active{border:2px solid red;box-shadow:none}.Button.large{font-size:25px}", undefined);
 
 var Button = function Button(props) {
   var genClassName = function genClassName() {
@@ -1289,17 +1292,18 @@ var Home = function Home(_ref) {
   return h(
     'div',
     null,
-    h(
-      'section',
-      { 'class': 'Home__welcome' },
-      'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Veniam quidem voluptatem laudantium fuga iste nulla eligendi mollitia velit amet laborum, quia blanditiis rerum, eius nobis quod ipsam sit recusandae ratione!'
-    ),
+    h('section', { 'class': 'Home__welcome' }),
     h(
       'section',
       { 'class': 'Home__cta-addstory' },
       h(
         'p',
         null,
+        'Held every summer in Detroit, the Allied Media Conference brings together a vibrant and diverse community of people using media to incite change: filmmakers, radio producers, technologists, youth organizers, writers, entrepreneurs, musicians, dancers, and artists. This ripple map illustrates the many connections and outcomes that the AMC has fostered.'
+      ),
+      h(
+        'p',
+        { 'class': 'Home__cta_text' },
         'We\'d love to hear your stories!'
       ),
       h(
@@ -2036,6 +2040,8 @@ function submit_addtag(ev) {
   showtags();
 }
 
+// import {convo as conversation} from 'convo'
+// TODO: ask Tyler about this (and utils.js in general):
 var renderers = [];
 function add_renderer(f) {
   renderers.push(f);
@@ -2462,7 +2468,7 @@ function filter_nodes(env) {
 
 function add_rings(env) {
   for (var i = env.params.minyear; i <= env.params.maxyear; i++) {
-    var color = i === state.current_year ? '#999' : '#ccc';
+    var color = i === state.current_year ? '#999' : 'rgba(204, 204, 204, 0.6)';
     var radius = state.ring_radius * (i - env.params.my_minyear + 1);
     env.shapes.unshift({ shape: 'circle', x: 0, y: 0, r: radius, stroke: color, fill: 'rgba(0, 0, 0, 0)', line: 1, type: 'ring', year: i });
   }
@@ -2548,8 +2554,8 @@ function copy_nodes(env) {
       _id: node._id,
       x: node.x,
       y: node.y,
-      r: node.r,
-      name: node.name,
+      r: node.r * 0.8 // node is 20% smaller 
+      , name: node.name,
       fill: color
     };
 
@@ -2559,7 +2565,7 @@ function copy_nodes(env) {
       _id: node._id,
       x: node.x,
       y: node.y,
-      r: node.r + 5,
+      r: node.r,
       line: 0.01,
       fill: 'hsla(0, 80%, 100%, 0.95)'
     };
@@ -2692,6 +2698,7 @@ function draw_it_svg(env) {
   function draw_circle(node, x, y, radius, stroke_color, fill_color, line_width) {
     if (!x || !y || !radius) return undefined;
 
+    console.log(stroke_color);
     fill_color = fill_color || '#444444';
     line_width = line_width || 2;
     stroke_color = stroke_color || '#eef';
@@ -2703,7 +2710,9 @@ function draw_it_svg(env) {
   }
 
   function draw_line(node, fromx, fromy, tox, toy, stroke_color, line_width) {
-    stroke_color = stroke_color || '#eef';
+    /* stroke_color = stroke_color || '#eef' // override until highlighting is figured out*/
+    stroke_color = 'rgba(255, 255, 255, 0.4)';
+    console.log(stroke_color);
     line_width = line_width || 0.5;
 
     if (fromx * fromy * tox * toy * 0 !== 0) return '';
@@ -2711,14 +2720,14 @@ function draw_it_svg(env) {
     var u_id = '' + node._id;
     edges.push(u_id);
 
-    /* return `<line id="${u_id}" class="${node.type}" x1="${fromx}" y1="${fromy}" x2="${tox}" y2="${toy}" stroke-width="5" stroke="${stroke_color}"/>`*/
-    return '\n      <g>\n        <line class= "' + node.type + '" x1="' + fromx + '" y1="' + fromy + '" x2="' + tox + '" y2="' + toy + '" stroke-width="5" stroke="' + stroke_color + '"/>\n        <line id="' + u_id + '" class= "' + node.type + '" x1="' + fromx + '" y1="' + fromy + '" x2="' + tox + '" y2="' + toy + '" stroke-width="30" stroke="rgba(0, 0, 0, 0)"/>\n      </g>';
+    // TODO: highlight edge
+    return '\n      <g>\n        <line class= "' + node.type + '" x1="' + fromx + '" y1="' + fromy + '" x2="' + tox + '" y2="' + toy + '" stroke-width="2" stroke="' + stroke_color + '"/>\n        <line id="' + u_id + '" class= "' + node.type + '" x1="' + fromx + '" y1="' + fromy + '" x2="' + tox + '" y2="' + toy + '" stroke-width="30" stroke="rgba(0, 0, 0, 0)"/>\n      </g>';
   }
 
   function draw_text(node, x, y, str, font, fill_color, font_size) {
     fill_color = '#fff';
     font = "Archivo Narrow";
-    font_size = '16px';
+    font_size = '14.5px';
     if (isNaN(x)) return '';
     x = x || 0;
     y = y || 0;
@@ -2773,15 +2782,13 @@ function draw_it_svg(env) {
   }
 }
 
-/////////////////////////////////
-
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// CANVAS FUNCTIONS
+// SENTENCE STRUCTURES
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -2904,8 +2911,6 @@ function write_sentences(env) {
   }
 }
 
-// FORM BUILDER & FRIENDS
-
 function set_minus(xs, ys) {
   return xs.filter(function (x) {
     return ys.indexOf(x) === -1;
@@ -2919,7 +2924,7 @@ function showtags() {
   var tagwrapper = ['<span class="tag">', '</span>'];
   var tagstr = state.tags.map(function (tag) {
     return tagwrapper[0] + tag + tagwrapper[1];
-  }).join(', ');
+  }).join('');
   set_el('tagnames', tagstr);
 
   // generate select box
@@ -3034,6 +3039,7 @@ var LegendItem = function LegendItem(props) {
   );
 };
 
+// TODO: find out if EDGES need to be filterable (like NODES are clickable to toggle)
 var LegendNodes = [{
   name: 'Event',
   color: '#FF1E3A',
@@ -3125,7 +3131,7 @@ var Legend = function (_Component) {
           node.name
         );
       });
-    }, _this.renderEdges = function () {
+    }, _this.renderActions = function () {
       return LegendEdges.map(function (node) {
         return h(
           LegendItem,
@@ -3155,7 +3161,7 @@ var Legend = function (_Component) {
             h(
               Header,
               null,
-              'Nodes'
+              'People & things'
             ),
             this.renderNodes()
           ),
@@ -3165,9 +3171,9 @@ var Legend = function (_Component) {
             h(
               Header,
               null,
-              'Edges'
+              'Actions'
             ),
-            this.renderEdges()
+            this.renderActions()
           )
         ),
         h(
@@ -3255,6 +3261,10 @@ var Story = function Story() {
   );
 };
 
+/**
+ * Sidebar layout and state
+ */
+
 var Sidebar = function (_Component) {
   inherits(Sidebar, _Component);
 
@@ -3286,13 +3296,13 @@ var Sidebar = function (_Component) {
         case 'story':
           return h(Story, null);
 
-        case 'legend':
+        case 'filters':
           return h(Legend, null);
 
-        case 'currently_showing':
+        case 'read_stories':
           return h(Current, null);
 
-        case 'your_selection':
+        case 'selected_stories':
           return h(YourSelection, { changeView: _this.changeView });
 
         case 'about':
@@ -3327,7 +3337,12 @@ var Sidebar = function (_Component) {
           h(
             'h3',
             { 'class': 'Sidebar__header' },
-            'AMC Ripple Map'
+            'AMC: Ripple Effect'
+          ),
+          h(
+            'div',
+            { 'class': 'Sidebar__subheading' },
+            'A collaborative laboratory of media-based organizing strategies'
           ),
           this.renderSelectedView()
         ),
@@ -3337,11 +3352,6 @@ var Sidebar = function (_Component) {
   }]);
   return Sidebar;
 }(Component);
-
-///////////////////////// DOM GLUE ///////////////////////////////
-
-
-
 
 ///////////////////// END DOM GLUE ///////////////////////////////
 

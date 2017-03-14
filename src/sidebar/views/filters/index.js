@@ -100,7 +100,7 @@ class Legend extends Component {
       </LegendItem>)
   )}
 
-  renderEdges = () => {
+  renderActions = () => {
     return LegendEdges.map(node => (
       <LegendItem
         {...node}
@@ -120,14 +120,14 @@ class Legend extends Component {
         {/* Render the "Nodes" column (with colored legend items */}
         <section class="Legend__columns" >
           <section class="Legend__column" style={{paddingRight: '10px'}}>
-            <Header>Nodes</Header>
+           <Header>People & things</Header>
             {this.renderNodes()}
           </section>
 
-        {/* Render the "Edges" column (and "Hide all"" button) */}
+        {/* Render the "Actions" column (and "Hide all"" button) */}
           <section class="Legend__column" style={{paddingLeft: '10px'}}>
-            <Header>Edges</Header>
-            {this.renderEdges()}
+            <Header>Actions</Header>
+            {this.renderActions()}
             {/* <Button><icon class="fa fa-eye-slash" style={{paddingRight: '1rem'}} />Hide all </Button> */}
           </section>
         </section>
