@@ -23,7 +23,7 @@ const Story = () => {
       </div>
 
       {/* TODO: hookup OnClick to a function */}
-      <Button type="next">Next
+      <Button type="submit" buttonStyle="next">Next
         <i class="fa fa-chevron-right pl_1" aria-hidden="true"></i>
      </Button>
     </div>

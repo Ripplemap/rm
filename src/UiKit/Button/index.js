@@ -3,7 +3,7 @@ import './styles.css'
 
 const Button = props => {
   const genClassName = () => {
-    switch(props.type){
+    switch(props.buttonStyle){
       case 'large':
         return 'Button large'
       case 'next':
@@ -16,6 +16,7 @@ const Button = props => {
 
   return (
     <button
+      type={props.type}
       onClick={props.onClick}
       class={genClassName()}
       style={props.style}>
