@@ -17,7 +17,7 @@ function __$styleInject(css, returnValue) {
   return returnValue;
 }
 
-__$styleInject("html{font-size:62.5%}body{margin:0;padding:0;font-family:Fira Sans,Arial,Helvetica,sans-serif;font-size:13px;font-size:1.3rem;max-height:100vh}.App{display:flex;min-height:100vh;background:rgb(255)}#sidebar{display:flex;flex:1}#ripplemap-mount{display:flex;flex:2;background:linear-gradient(135deg,#502561,#fd5d62);justify-content:center}input{padding:10px;padding:1rem;border:1px solid #777}.highlight{background-color:#ff6}.hide{display:none}#controls{display:flex;flex-direction:column;position:fixed;top:0;right:0;margin:10px;margin:1rem;color:hsla(0, 0%, 100%, .9)}#addtag{align-self:flex-end}#btn_add_tag{background:hsla(0, 0%, 100%, .9);border:0;padding:5px;padding:.5rem;text-transform:uppercase;border-radius:2px;transition:all .1s ease;box-shadow:1px 2px 1px rgba(0, 0, 0, .32);outline:none}#btn_add_tag:hover{box-shadow:3px 3px 3px rgba(0, 0, 0, .42)}#btn_add_tag:active{box-shadow:1px 1px 1px rgba(0, 0, 0, .12)}#tag-box{display:flex;color:#dfdfdf;opacity:.5;text-align:right;align-self:flex-end;margin-bottom:0;display:block}#tag-box,#tagnames{flex-direction:column}#tagnames{margin-top:10px;margin-top:1rem;display:flex}.tag{text-align:right;cursor:pointer;padding:2.5px 0;padding:.25rem 0}", undefined);
+__$styleInject("html{font-size:62.5%}body{margin:0;padding:0;font-family:Fira Sans,Arial,Helvetica,sans-serif;font-size:13px;font-size:1.3rem;max-height:100vh}.App{display:flex;min-height:100vh;background:#fff}#sidebar{display:flex;flex:1}#ripplemap-mount{display:flex;flex:2;background:linear-gradient(135deg,#502561,#fd5d62);justify-content:center}input{padding:10px;padding:1rem;border:1px solid #777}.highlight{background-color:#ff6}.hide{display:none}#controls{display:flex;flex-direction:column;position:fixed;top:0;right:0;margin:10px;margin:1rem;color:hsla(0, 0%, 100%, .9)}#addtag{align-self:flex-end}#btn_add_tag{background:hsla(0, 0%, 100%, .9);border:0;padding:5px;padding:.5rem;text-transform:uppercase;border-radius:2px;transition:all .1s ease;box-shadow:1px 2px 1px rgba(0, 0, 0, .32);outline:none}#btn_add_tag:hover{box-shadow:3px 3px 3px rgba(0, 0, 0, .42)}#btn_add_tag:active{box-shadow:1px 1px 1px rgba(0, 0, 0, .12)}#tag-box{color:#dfdfdf;opacity:.5;text-align:right;align-self:flex-end;margin-bottom:0}#tag-box,#tagnames{display:flex;flex-direction:column}#tagnames{margin-top:10px;margin-top:1rem}.tag{text-align:right;cursor:pointer;padding:2.5px 0;padding:.25rem 0;align-self:flex-end;padding:5px;border-radius:3px}.tag:hover{background:#ffd600;color:#111;box-shadow:1px 1px 5px rgba(0, 0, 0, .32)}.tag:hover:before{content:\"X \"}.tag:active{background:#ffd600;color:#111;box-shadow:0 0 0 transparent}.tag:active:before{content:\"X \"}", undefined);
 
 /** Virtual DOM Node */
 function VNode(nodeName, attributes, children) {
@@ -1220,9 +1220,6 @@ var Tab = function Tab(_ref) {
   );
 };
 
-/**
- * List to iterate over and generate tab commponents with.
- */
 var tabs = [{ name: "Home", id: "home", icon: "fa fa-home" }, { name: "Add A Story", id: "story", icon: "fa fa-commenting-o" }, { name: "Filters", id: "filters", icon: "fa fa-map-marker" }, { name: "Read Stories", id: "read_stories", icon: "fa fa-eye" }, { name: "Selected Stories", id: "selected_stories", icon: "fa fa-commenting" }, { name: "About", id: "about", icon: "fa fa-clone" }];
 
 /**
@@ -2040,8 +2037,6 @@ function submit_addtag(ev) {
   showtags();
 }
 
-// import {convo as conversation} from 'convo'
-// TODO: ask Tyler about this (and utils.js in general):
 var renderers = [];
 function add_renderer(f) {
   renderers.push(f);
@@ -2534,18 +2529,10 @@ function copy_nodes(env) {
     // var this_year = state.all_edges || node.year === state.current_year
     // var color =  'hsla(0,0%,20%,0.' + (this_year ? '99' : '3') + ')'
 
-    // Person: Blue
-    // Org: Green
-    // Event: Magenta
-    // Outcome: Orange
-    // Concept: Purple
-    // Labels should be black
-    // Connections should be grey
-    var hues = { outcome: "hsla(48, 100%, 78%, 1)"
-      // , action '20'
-      , person: "hsla(195, 50%, 42%, 1)",
-      event: "hsla(353, 100%, 56%, 1)",
-      org: "hsla(150, 100%, 34%, 1)"
+    var hues = { outcome: "#ffd600" // yellow
+      , person: "#009edb" // blue (aka, Individual)
+      , event: "#f32938" // red
+      , org: "#00af4c" // green (aka, "Group")
     };
 
     var color = hues[node.type];
@@ -2554,7 +2541,7 @@ function copy_nodes(env) {
       _id: node._id,
       x: node.x,
       y: node.y,
-      r: node.r * 0.8 // node is 20% smaller 
+      r: node.r * 0.8 // node is 20% smaller
       , name: node.name,
       fill: color
     };
@@ -2782,13 +2769,15 @@ function draw_it_svg(env) {
   }
 }
 
+/////////////////////////////////
+
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// SENTENCE STRUCTURES
+// CANVAS FUNCTIONS
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -2910,6 +2899,8 @@ function write_sentences(env) {
     return ' ' + text + notes + button;
   }
 }
+
+// FORM BUILDER & FRIENDS
 
 function set_minus(xs, ys) {
   return xs.filter(function (x) {
@@ -3039,25 +3030,24 @@ var LegendItem = function LegendItem(props) {
   );
 };
 
-// TODO: find out if EDGES need to be filterable (like NODES are clickable to toggle)
 var LegendNodes = [{
   name: 'Event',
-  color: '#FF1E3A',
+  color: '#f32938',
   selected: 'grey',
   filter_key: 'event'
 }, {
   name: 'Individual',
-  color: '#00A3D8',
+  color: '#009edb',
   selected: 'grey',
   filter_key: 'person'
 }, {
   name: 'Group',
-  color: '#00AE57',
+  color: '#00af4c',
   selected: 'grey',
   filter_key: 'org'
 }, {
   name: 'Outcome',
-  color: '#FFE98F',
+  color: '#ffd600',
   selected: 'grey',
   filter_key: 'outcome'
 }];
@@ -3260,10 +3250,6 @@ var Story = function Story() {
     )
   );
 };
-
-/**
- * Sidebar layout and state
- */
 
 var Sidebar = function (_Component) {
   inherits(Sidebar, _Component);
