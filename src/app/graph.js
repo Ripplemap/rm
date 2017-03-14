@@ -2,8 +2,8 @@
 
 import state from 'state'
 import {get_facts_from_server} from 'net'
-import {add_edge} from 'model'
-import {render_all} from 'render'
+import {adders, add_edge} from 'model'
+import {force_rerender} from 'render'
 
 export let G = Dagoba.graph()
 export {addtag, removetag, add_data}
@@ -11,9 +11,9 @@ export {addtag, removetag, add_data}
 
 function addtag(tag) {
   state.tags.push(tag)
-  G = Dagoba.graph()
+  G = Dagoba.graph() // THINK: can we thread this through instead?
   fact_to_graph(state.facts)
-  render_all()
+  force_rerender()
 }
 
 function removetag(tag) {
@@ -22,9 +22,9 @@ function removetag(tag) {
     return undefined
 
   state.tags.splice(index, 1)
-  G = Dagoba.graph()
+  G = Dagoba.graph() // THINK: can we thread this through instead?
   fact_to_graph(state.facts)
-  render_all()
+  force_rerender()
 }
 
 // function reset_graph() {
@@ -65,7 +65,8 @@ function fact_to_graph(facts) {
   state.tagkeys = get_tagkeys(facts)
 
   tree.nodes.add.forEach(function(node) {
-    var fun = window['add_' + node.cat] // FIXME: ugh erk yuck poo
+    // var fun = window['add_' + node.cat] // FIXME: ugh erk yuck poo
+    var fun = adders[node.cat]
     if(!fun) return undefined
     fun(node.type, node)
   })

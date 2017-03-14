@@ -1,10 +1,10 @@
 import {add_data} from './graph'
-import {init as render_init, render, render_all} from 'render'
+import {init as render_init, add_renderer as on_render, force_rerender, showtags, get_viz_html} from 'render'
 import * as dom from 'dom' // just for effects
 import state from 'state'
 
 
-export {init, render_all}
+export {init, state, on_render}
 
 
 
@@ -31,7 +31,7 @@ export function do_the_glue() {
 
   document.addEventListener('keydown', dom.global_keydown)
 
-  render_all()
+  // render_all()
 }
 
 
@@ -39,23 +39,6 @@ export function do_the_glue() {
 
 
 ///////////////////// END DOM GLUE ///////////////////////////////
-
-
-
-
-
-
-
-
-
-
-// package and expose some functionality for the view side,
-// and create outward-facing bindings to spin everything up.
-
-
-// init network load
-// expose rendering functions
-// create dom hooks on demand as html is rendered
 
 
 
@@ -79,17 +62,12 @@ export function do_the_glue() {
 
 
 
-
-
-
-
 // INIT
 
 
-// TODO: break this up a little so the logic is clearer
-
 function init() {
-  // do_the_glue()
+
+  // TODO: break this up a little so the logic is clearer
 
   if(window.location.host.slice(0, 9) === "127.0.0.1") {
     if(window.location.hash)
@@ -112,21 +90,27 @@ function init() {
 
   // G = Dagoba.graph()
 
-  // FIXME: leaking into the global space
-  window.rm_render = render_all
-
   render_init()
 
   function cb() {
-    render_all()
-    state.loading = false // TODO: get rid of this somehow
+    force_rerender()
+    showtags()
+    tagglue()
   }
 
   add_data(cb)
 
-  setTimeout(function() {
-    render()
-  }, 111)
+  // setTimeout(function() {
+  //   // render()
+  // }, 111)
+
+  on_render(get_viz_html)       // oh poo
 }
 
-// init()
+function tagglue() {
+  // barf yuck
+  dom.el('tagnames').addEventListener('click', dom.click_tagnames)
+  dom.el('tagnames').addEventListener('mouseover', dom.mouseover_tagnames)
+  dom.el('tagnames').addEventListener('mouseout', dom.mouseout_tagnames)
+  dom.el('addtag').addEventListener('submit', dom.submit_addtag)
+}

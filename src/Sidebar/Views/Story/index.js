@@ -1,5 +1,7 @@
 import { h, render } from 'preact';
-import Header from '../../../UiKit/Header/index';
+import Header from 'UiKit/Header/index';
+
+import {get_convo_html} from 'render'
 
 const Story = () => {
   return (
@@ -15,7 +17,7 @@ const Story = () => {
 
       <div id="storytime" class="hide">
         <h3>Want to add something to the map?</h3>
-        <form id="the-conversation"></form>
+        <form id="the-conversation" dangerouslySetInnerHTML={{__html: get_convo_html()}}></form>
       </div>
 
       {/* TODO: give this a top-border */}

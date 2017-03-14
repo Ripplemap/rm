@@ -7,7 +7,6 @@ state.tagkeys = {}
 state.query = {}
 
 state.safe_mode = false
-state.loading = true // TODO: fix this
 
 state.all_edges        = true  // awkward... :(
 state.admin_mode       = false // yep another hack w00t

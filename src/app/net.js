@@ -4,11 +4,11 @@ import state from 'state'
 export {add_to_server_facts, persist, get_facts_from_server}
 
 
-
+let loaded = false
 
 function add_to_server_facts(type, live_item) {
-  if(state.loading)
-    return undefined
+  if(!loaded)
+    return undefined // can't save facts until you have all the facts
 
   /*
 
@@ -88,12 +88,9 @@ function send_data_to_server(data, cb) {
 
   fetch(url, { method: 'post'
              , body: JSON.stringify(data)
-  }).then(function(response) {
-    return response.json()
-  }).then(function(result) {
-    if(cb)
-      cb(result)
-  })
+             })
+  .then(response => response.json())
+  .then(result   => cb ? cb(result) : null)
 }
 
 function get_facts_from_server(cb) {
@@ -103,17 +100,12 @@ function get_facts_from_server(cb) {
   if(state.safe_mode === 'local')
     return cb(JSON.parse(localStorage['DAGOBA::ripmapdata']))
 
-  if(state.safe_mode === 'daring') {
+  if(state.safe_mode === 'daring')
     url = 'http://localhost:8888'
-  }
 
-  fetch(url, {
-    method: 'get'
-  }).then(function(response) {
-    return response.json()
-  }).then(function(data) {
-    cb(data)
-  }).catch(function(err) {
-    console.log('lalalal', err)
-  })
+  fetch(url, { method: 'get'})
+  .then(response => response.json())
+  .then(data => cb(data))
+  .then(data => {loaded = true; return data})
+  .catch(err => console.log('lalalal', err))
 }

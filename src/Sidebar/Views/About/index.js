@@ -1,5 +1,5 @@
 import { h, render } from 'preact';
-import Header from '../../../UiKit/Header/index';
+import Header from 'UiKit/Header/index';
 
 const About = () => {
   return (
@@ -16,7 +16,7 @@ const About = () => {
       <p>Quaerat doloremque suscipit aperiam, velit, perspiciatis mollitia officia ad vero reprehenderit veritatis dolores blanditiis reiciendis iusto quisquam, quasi, incidunt ab hic. Fugit necessitatibus tempore cupiditate aspernatur quaerat. Itaque, labore, provident.</p>
       <p>Aspernatur, error. Consequatur eos, laudantium unde vitae ipsam voluptatem neque ea quod et velit voluptatum nihil, aperiam. Quod tenetur, rem consequuntur itaque dignissimos saepe est? Modi laudantium delectus tempora ut.</p>
       <p>Unde a neque laudantium beatae voluptas tenetur, expedita consequuntur nemo quos dolorem quasi, amet quo perspiciatis! Aspernatur nesciunt modi perspiciatis ea nisi iste quam voluptate veritatis. Facilis minus aperiam, perspiciatis.</p>
-     <Header> Documentation </Header> 
+     <Header> Documentation </Header>
     </div>
   );
 };

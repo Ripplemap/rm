@@ -17,6 +17,8 @@ function __$styleInject(css, returnValue) {
   return returnValue;
 }
 
+__$styleInject("html{font-size:62.5%}body{margin:0;padding:0;font-family:Fira Sans,Arial,Helvetica,sans-serif;font-size:13px;font-size:1.3rem;max-height:100vh}.App{display:flex;min-height:100vh;background:rgb(255)}#sidebar{display:flex;flex:1}#ripplemap-mount{display:flex;flex:2;background:linear-gradient(135deg,#502561,#fd5d62);justify-content:center}input{padding:10px;padding:1rem;border:1px solid #777}.highlight{background-color:#ff6}.hide{display:none}#controls{max-width:200px;display:flex;flex-direction:column;position:fixed;top:0;right:0;margin:10px;margin:1rem;color:hsla(0, 0%, 100%, .9)}#addtag{align-self:flex-end}#btn_add_tag{background:hsla(0, 0%, 100%, .9);border:0;padding:5px;padding:.5rem;text-transform:uppercase;border-radius:2px;transition:all .1s ease;box-shadow:1px 2px 1px rgba(0, 0, 0, .32);outline:none}#btn_add_tag:hover{box-shadow:3px 3px 3px rgba(0, 0, 0, .42)}#btn_add_tag:active{box-shadow:1px 1px 1px rgba(0, 0, 0, .12)}#tag-box{display:flex;flex-direction:column;color:#dfdfdf;opacity:.5;text-align:right;align-self:flex-end;margin-bottom:0}#tagnames{margin-top:10px;margin-top:1rem}.tag{text-align:right}", undefined);
+
 /** Virtual DOM Node */
 function VNode(nodeName, attributes, children) {
 	/** @type {string|function} */
@@ -1378,416 +1380,6 @@ var About = function About() {
   );
 };
 
-var YourSelection = function YourSelection(_ref) {
-  var changeView = _ref.changeView;
-
-  return h(
-    'div',
-    null,
-    h(
-      Header,
-      null,
-      'Your Selection'
-    ),
-    h(
-      'section',
-      { 'class': 'YourSelection__cta-addstory' },
-      h(
-        'p',
-        null,
-        'Ready to add your own story?'
-      ),
-      h(
-        Button,
-        { onClick: function onClick() {
-            return changeView('story');
-          } },
-        'Add a story \u25B6'
-      )
-    ),
-    h(
-      'h3',
-      null,
-      'Click any story to edit'
-    ),
-    h(
-      'div',
-      { id: 'sentences' },
-      ' '
-    )
-  );
-};
-
-var Current = function Current() {
-  return h(
-    'div',
-    null,
-    h(
-      Header,
-      null,
-      'Currently Showing'
-    ),
-    h(
-      'h3',
-      null,
-      'Click any story to edit'
-    ),
-    h(
-      'div',
-      { id: 'sentences' },
-      ' '
-    )
-  );
-};
-
-__$styleInject(".Legend__columns{display:flex;justify-content:space-between}.Legend__column{display:flex;flex-direction:column;flex:1}", undefined);
-
-__$styleInject(".Header{border-bottom:2px solid #ff5961;color:#ff5961;font-size:25.6px;font-size:1.6rem;margin:48px 0;margin:3rem 0;width:100%;text-transform:uppercase}.Header.large{font-size:25px}", undefined);
-
-var LegendItem = function LegendItem(props) {
-  var filter_is_on = props.currentFilters.indexOf(props.filter_key);
-
-  var containerStyles = {
-    display: 'flex',
-    alignItems: 'center',
-    margin: '1rem 0',
-    cursor: 'pointer'
-  };
-
-  var circleStyles = {
-    display: 'inline-block',
-    width: props.size || '0px',
-    height: props.size || '0px',
-    background: filter_is_on !== -1 ? props.selected : props.color,
-    borderRadius: '50%',
-    marginRight: '1rem',
-    borderBottom: filter_is_on !== -1 ? '1px solid black' : '0'
-  };
-
-  var textStyles = {
-    borderBottom: filter_is_on !== -1 ? '1px solid black' : '0'
-  };
-
-  return h(
-    'div',
-    { style: containerStyles },
-    h('div', { style: circleStyles }),
-    h(
-      'span',
-      { onClick: function onClick() {
-          return props.toggleFilter(props.filter_key);
-        }, style: textStyles },
-      props.children
-    )
-  );
-};
-
-var LegendNodes = [{
-  name: 'Event',
-  color: '#FF1E3A',
-  selected: 'grey',
-  filter_key: 'event'
-}, {
-  name: 'Individual',
-  color: '#00A3D8',
-  selected: 'grey',
-  filter_key: 'person'
-}, {
-  name: 'Group',
-  color: '#00AE57',
-  selected: 'grey',
-  filter_key: 'org'
-}, {
-  name: 'Outcome',
-  color: '#FFE98F',
-  selected: 'grey',
-  filter_key: 'outcome'
-}];
-
-var LegendEdges = [{
-  name: 'Participated',
-  filter_key: 'participated',
-  color: 'rgba(52, 73, 94, 0.7)'
-}, {
-  name: 'Lead',
-  filter_key: 'lead',
-  color: 'rgba(231, 76, 60, 0.7)'
-}, {
-  name: 'Inspired',
-  filter_key: 'inspired',
-  color: 'rgba(241, 196, 15, 0.7)'
-}, {
-  name: 'Organized',
-  filter_key: 'organized',
-  color: "rgba(141, 196, 215, 0.7)"
-}, {
-  name: 'Met',
-  filter_key: 'met',
-  color: 'rgba(102, 39, 239, 0.7)'
-}];
-
-/* ----- Preact Jams ----- */
-
-var Legend = function (_Component) {
-  inherits(Legend, _Component);
-
-  function Legend() {
-    var _ref;
-
-    var _temp, _this, _ret;
-
-    classCallCheck(this, Legend);
-
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = Legend.__proto__ || Object.getPrototypeOf(Legend)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
-      currentFilters: []
-    }, _this.toggleFilter = function (filter) {
-      var cur_filters = _this.state.currentFilters;
-      var filter_exists = cur_filters.indexOf(filter);
-
-      // if filter already exists, remove it
-      if (filter_exists !== -1) {
-        cur_filters.splice(filter_exists, 1);
-        _this.setState({ currentFilters: cur_filters });
-      } else {
-        _this.setState(_extends({}, _this.state, {
-          currentFilters: [].concat(toConsumableArray(_this.state.currentFilters), [filter])
-        }));
-      }
-
-      // FIXME: this is leaking into the global space
-      window.filter_poo = _this.state.currentFilters;
-      window.rm_render();
-    }, _this.renderNodes = function () {
-      return LegendNodes.map(function (node) {
-        return h(
-          LegendItem,
-          _extends({}, node, {
-            size: '15px',
-            toggleFilter: _this.toggleFilter,
-            currentFilters: _this.state.currentFilters
-          }),
-          node.name
-        );
-      });
-    }, _this.renderEdges = function () {
-      return LegendEdges.map(function (node) {
-        return h(
-          LegendItem,
-          _extends({}, node, {
-            size: '15px',
-            currentFilters: _this.state.currentFilters,
-            toggleFilter: _this.toggleFilter
-          }),
-          node.name
-        );
-      });
-    }, _temp), possibleConstructorReturn(_this, _ret);
-  }
-
-  createClass(Legend, [{
-    key: 'render',
-    value: function render$$1() {
-      return h(
-        'div',
-        { 'class': 'Legend' },
-        h(
-          'section',
-          { 'class': 'Legend__columns' },
-          h(
-            'section',
-            { 'class': 'Legend__column', style: { paddingRight: '10px' } },
-            h(
-              Header,
-              null,
-              'Nodes'
-            ),
-            this.renderNodes()
-          ),
-          h(
-            'section',
-            { 'class': 'Legend__column', style: { paddingLeft: '10px' } },
-            h(
-              Header,
-              null,
-              'Edges'
-            ),
-            this.renderEdges()
-          )
-        ),
-        h(
-          'section',
-          { 'class': 'Legend__years' },
-          h(
-            Header,
-            null,
-            ' Years '
-          )
-        ),
-        h(
-          'section',
-          { 'class': 'Legend__keys' },
-          h(
-            Header,
-            null,
-            ' Keys '
-          ),
-          h(
-            'p',
-            null,
-            '\'\u2190\' for previous year'
-          ),
-          h(
-            'p',
-            null,
-            '\'\u2192\' for next year'
-          ),
-          h(
-            'p',
-            null,
-            '\'e\' toggles recent connections'
-          ),
-          h(
-            'p',
-            null,
-            '\'f\' toggles filter stories by year'
-          ),
-          h(
-            'p',
-            null,
-            '\'l\' for legend edges'
-          )
-        )
-      );
-    }
-  }]);
-  return Legend;
-}(Component);
-
-var Story = function Story() {
-  return h(
-    'div',
-    null,
-    h(
-      Header,
-      null,
-      'Add a story'
-    ),
-    h(
-      'div',
-      { id: 'signup' },
-      h(
-        'form',
-        { id: 'login' },
-        h(
-          'p',
-          null,
-          'We\'d love to hear your stories! Let\'s start with your contact info:'
-        ),
-        h('input', { name: 'email', id: 'email', type: 'text', placeholder: 'email', 'class': 'typeahead' })
-      )
-    ),
-    h(
-      'div',
-      { id: 'storytime', 'class': 'hide' },
-      h(
-        'h3',
-        null,
-        'Want to add something to the map?'
-      ),
-      h('form', { id: 'the-conversation' })
-    )
-  );
-};
-
-var Sidebar = function (_Component) {
-  inherits(Sidebar, _Component);
-
-  function Sidebar() {
-    var _ref;
-
-    var _temp, _this, _ret;
-
-    classCallCheck(this, Sidebar);
-
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = Sidebar.__proto__ || Object.getPrototypeOf(Sidebar)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
-      currentView: 'home'
-    }, _this.changeView = function (view_id) {
-      _this.setState({
-        currentView: view_id
-      });
-      // on transitioning to different component sub views... run glue?
-      window.do_the_glue();
-    }, _this.renderSelectedView = function () {
-      switch (_this.state.currentView) {
-
-        case 'home':
-          return h(Home, { changeView: _this.changeView });
-
-        case 'story':
-          return h(Story, null);
-
-        case 'legend':
-          return h(Legend, null);
-
-        case 'currently_showing':
-          return h(Current, null);
-
-        case 'your_selection':
-          return h(YourSelection, { changeView: _this.changeView });
-
-        case 'about':
-          return h(About, null);
-
-        default:
-          return h(Home, null);
-      }
-    }, _temp), possibleConstructorReturn(_this, _ret);
-  }
-
-  createClass(Sidebar, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      window.do_the_glue();
-    }
-  }, {
-    key: 'componentDidUpdate',
-    value: function componentDidUpdate() {
-      window.render_all();
-      window.do_the_glue();
-    }
-  }, {
-    key: 'render',
-    value: function render$$1() {
-      return h(
-        'aside',
-        { 'class': 'Sidebar' },
-        h(
-          'section',
-          { 'class': 'Sidebar__container' },
-          h(
-            'h3',
-            { 'class': 'Sidebar__header' },
-            'AMC Ripple Map'
-          ),
-          this.renderSelectedView()
-        ),
-        h(TabBar, { currentView: this.state.currentView, changeView: this.changeView })
-      );
-    }
-  }]);
-  return Sidebar;
-}(Component);
-
-__$styleInject("html{font-size:62.5%}body{margin:0;padding:0;font-family:Fira Sans,Arial,Helvetica,sans-serif;font-size:13px;font-size:1.3rem;max-height:100vh}.App{display:flex;min-height:100vh;background:rgb(255)}#sidebar{display:flex;flex:1}#ripplemap-mount{display:flex;flex:2;background:linear-gradient(135deg,#502561,#fd5d62);justify-content:center}input{padding:10px;padding:1rem;border:1px solid #777}.highlight{background-color:#ff6}.hide{display:none}#controls{max-width:200px;display:flex;flex-direction:column;position:fixed;top:0;right:0;margin:10px;margin:1rem;color:hsla(0, 0%, 100%, .9)}#addtag{align-self:flex-end}#btn_add_tag{background:hsla(0, 0%, 100%, .9);border:0;padding:5px;padding:.5rem;text-transform:uppercase;border-radius:2px;transition:all .1s ease;box-shadow:1px 2px 1px rgba(0, 0, 0, .32);outline:none}#btn_add_tag:hover{box-shadow:3px 3px 3px rgba(0, 0, 0, .42)}#btn_add_tag:active{box-shadow:1px 1px 1px rgba(0, 0, 0, .12)}#tag-box{display:flex;flex-direction:column;color:#dfdfdf;opacity:.5;text-align:right;align-self:flex-end;margin-bottom:0}#tagnames{margin-top:10px;margin-top:1rem}.tag{text-align:right}", undefined);
-
 var state = {};
 state.tags = []; // THINK: default to ['plain']?
 state.facts = [];
@@ -1795,7 +1387,6 @@ state.tagkeys = {};
 state.query = {};
 
 state.safe_mode = false;
-state.loading = true; // TODO: fix this
 
 state.all_edges = true; // awkward... :(
 state.admin_mode = false; // yep another hack w00t
@@ -1806,8 +1397,10 @@ state.current_year = 2017; // more hacks
 state.filter_sentences = false; // awkward... :(
 state.ring_radius = 40; // lalala
 
+var loaded = false;
+
 function add_to_server_facts(type, live_item) {
-  if (state.loading) return undefined;
+  if (!loaded) return undefined; // can't save facts until you have all the facts
 
   /*
     data model:
@@ -1845,35 +1438,6 @@ function add_to_server_facts(type, live_item) {
   send_data_to_server(fact);
 }
 
-function persist() {
-  // THINK: do we still need localstorage caching?
-  Dagoba.persist(G, 'rripplemap');
-}
-
-persist = debounce(persist, 1000);
-
-function debounce(func, wait, immediate) {
-  // via underscore, needs cleaning
-  // Returns a function, that, as long as it continues to be invoked, will not
-  // be triggered. The function will be called after it stops being called for
-  // N milliseconds. If `immediate` is passed, trigger the function on the
-  // leading edge, instead of the trailing.
-
-  var timeout;
-  return function () {
-    var context = this,
-        args = arguments;
-    var later = function later() {
-      timeout = null;
-      if (!immediate) func.apply(context, args);
-    };
-    var callNow = immediate && !timeout;
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-    if (callNow) func.apply(context, args);
-  };
-}
-
 function send_data_to_server(data, cb) {
   var url = 'http://ripplemap.io:8888';
 
@@ -1888,7 +1452,7 @@ function send_data_to_server(data, cb) {
   }).then(function (response) {
     return response.json();
   }).then(function (result) {
-    if (cb) cb(result);
+    return cb ? cb(result) : null;
   });
 }
 
@@ -1898,18 +1462,16 @@ function get_facts_from_server(cb) {
   // local shunt for airplane mode
   if (state.safe_mode === 'local') return cb(JSON.parse(localStorage['DAGOBA::ripmapdata']));
 
-  if (state.safe_mode === 'daring') {
-    url = 'http://localhost:8888';
-  }
+  if (state.safe_mode === 'daring') url = 'http://localhost:8888';
 
-  fetch(url, {
-    method: 'get'
-  }).then(function (response) {
+  fetch(url, { method: 'get' }).then(function (response) {
     return response.json();
   }).then(function (data) {
-    cb(data);
+    return cb(data);
+  }).then(function (data) {
+    loaded = true;return data;
   }).catch(function (err) {
-    console.log('lalalal', err);
+    return console.log('lalalal', err);
   });
 }
 
@@ -1925,12 +1487,6 @@ function eq(attr, val) {
 
 function unique(v, k, list) {
   return list.indexOf(v) === k;
-}
-
-function prop(attr) {
-  return function (obj) {
-    return obj[attr];
-  };
 }
 
 function clone$1(obj) {
@@ -1975,7 +1531,7 @@ function pipe() {
 
     // TODO: this should return a promise for data
     inner();
-    return true;
+    return data;
   }
 
   return magic_pipe;
@@ -1986,6 +1542,7 @@ function error$1(mess) {
 }
 
 var cats = {}; // ripplemap categories
+var adders = { thing: add_thing, action: add_action, edge: add_edge };
 cats.thing = {};
 cats.action = {};
 cats.effect = {};
@@ -2268,96 +1825,117 @@ function convert_props(props) {
   return clone$1(props);
 }
 
-var convo = new_conversation();
-function join_conversation(conversation) {
-  var conversation = conversation || convo;
+/*global Dagoba */
 
-  var wants = conversation.current.slots[0].key;
-  var value = el(wants).value;
-
-  convo = fulfill_desire(conversation, value);
-
-  return convo;
+var G = Dagoba.graph();
+function addtag(tag) {
+  state.tags.push(tag);
+  G = Dagoba.graph(); // THINK: can we thread this through instead?
+  fact_to_graph(state.facts);
+  force_rerender();
 }
 
-function new_sentence() {
-  var slots = [{ key: 'subject', type: 'word', cat: 'thing' }, { key: 'verb', type: 'word', cat: 'action' }, { key: 'object', type: 'word', cat: 'thing' }, { key: 'date', type: 'date' }];
-  return { slots: slots, filled: [] };
+function removetag(tag) {
+  var index = state.tags.indexOf(tag);
+  if (index === -1) return undefined;
+
+  state.tags.splice(index, 1);
+  G = Dagoba.graph(); // THINK: can we thread this through instead?
+  fact_to_graph(state.facts);
+  force_rerender();
 }
 
-function new_conversation() {
-  var sentence = new_sentence();
-  return { sentences: [sentence], current: sentence };
+// function reset_graph() {
+//   G = Dagoba.graph()
+// }
+
+function add_data(cb) {
+  get_facts_from_server(function (facts) {
+    if (Array.isArray(facts)) cb(fact_to_graph(capture_facts(facts)));else cb(facts); // already a graph, from localStorage
+  });
 }
 
-function fulfill_desire(conversation, value) {
-  var conversation = conversation || convo;
+function capture_facts(facts) {
+  state.facts = facts;
+  return facts;
+}
 
-  var sentence = give_word(conversation.current, value);
+function fact_to_graph(facts) {
+  /*
+    data model:
+   user: id
+   action: add/remove/edit
+   type: node/edge
+   tags: [...]
+   org: id
+   [maybe other stats can live here?]
+   data:
+   node: {id, name, type, cat...}
+   edge: {_in, _out, type, label}
+    */
 
-  // TODO: allow multi-sentence conversations
+  var tree = factor_facts(filter_facts(facts));
+  state.tagkeys = get_tagkeys(facts);
 
+  tree.nodes.add.forEach(function (node) {
+    // var fun = window['add_' + node.cat] // FIXME: ugh erk yuck poo
+    var fun = adders[node.cat];
+    if (!fun) return undefined;
+    fun(node.type, node);
+  });
 
-  if (!sentence.slots.length) {
-    var subject, verb, object, date;
-    sentence.filled.forEach(function (slot) {
-      if (slot.type === 'gettype') {
-        var thing = add_thing(slot.value, { name: slot.name }, true);
-        if (slot.oldkey === 'subject') subject = thing;
-        if (slot.oldkey === 'object') object = thing;
-      } else if (slot.type === 'date') {
-        date = slot.value;
-      } else if (slot.key === 'subject') {
-        subject = slot.word;
-      } else if (slot.key === 'object') {
-        object = slot.word;
-      } else if (slot.key === 'verb') {
-        verb = (slot.word || {}).type || slot.value;
-      }
+  tree.edges.add.forEach(function (edge) {
+    // we need to delay these so the nodes are all in place (sometimes the facts get added in weird orders)
+    add_edge(edge.type, edge._out, edge._in, edge);
+  });
+
+  tree.nodes.edit.forEach(function (node) {
+    // FIXME: what on earth is this??? should it be G.edit?
+    // RM.graph.edit(node) //////
+  });
+}
+
+function get_tagkeys(facts) {
+  var keys = {};
+  facts.forEach(function (fact) {
+    ~(fact.tags || []).forEach(function (tag) {
+      if (tag) keys[tag] = true;
     });
-
-    if (subject && verb && object) {
-      verb = add_action(verb, { time: new Date(date).getTime() }, true);
-      add_edge('the', verb._id, object._id, 0, true);
-      add_edge('did', subject._id, verb._id, 0, true);
-    }
-
-    // start over
-    // TODO: show the sentence
-    conversation = new_conversation();
-    render$1(); // THINK: this should queue or something... rAF?
-  }
-
-  return conversation;
+  });
+  return keys;
 }
 
-function give_word(sentence, value) {
-  var slot = sentence.slots.shift();
-  if (!slot) return error$1('This sentence is finished');
+function filter_facts(facts) {
+  facts = facts.filter(function (fact) {
+    return !!set_intersect(fact.tags, state.tags).length; // THINK: this implies no empty tag arrays (so 'plain' as default?)
+  });
 
-  // TODO: check this logic modularly
-  if (slot.type === 'word') {
-    var word = G.v({ name: value, cat: slot.cat }).run()[0];
-    if (word) {
-      slot.word = word;
-    }
-  }
+  return facts;
+}
 
-  if (slot.cat === 'thing') {
-    if (slot.type === 'word') {
-      if (!slot.word) {
-        sentence.slots.unshift({ key: 'type', type: 'gettype', name: value, cat: slot.cat, oldkey: slot.key });
-      }
-    } else if (slot.type === 'gettype') {
-      // var nameslot = sentence.filled[sentence.filled.length-1]
-    }
-  }
+function factor_facts(facts) {
+  var tree = { nodes: { add: [], edit: [], remove: [] }, edges: { add: [], edit: [], remove: [] } };
+  facts.forEach(function (fact) {
+    // var branch = tree[fact.type+'s']
+    // var list = branch[fact.action] || []
+    // if(!branch[fact.action])
+    //   branch[fact.action] = list
+    var list = tree[fact.type + 's'][fact.action] || []; // TODO: error handling
 
-  // fix it in post
-  slot.value = value;
-  sentence.filled.push(slot);
+    // var item = clone(fact.data)
+    var item = fact.data; // THINK: is mutating here okay?
+    item.org = fact.org;
+    item.user = fact.user;
+    item.tags = fact.tags;
+    list.push(item);
+  });
+  return tree;
+}
 
-  return sentence;
+function set_intersect(xs, ys) {
+  return xs.filter(function (x) {
+    return ys.indexOf(x) !== -1;
+  });
 }
 
 // this does some dom things
@@ -2379,51 +1957,15 @@ function set_el(el_id, val) {
   el(el_id).innerHTML = val;
 }
 
-function append_el(el_id, val) {
-  el(el_id).innerHTML += val;
-}
 
-// LOGIN/ORG/TAG STUFF
-
-function login(e) {
-  e.preventDefault();
-  state.email = el('email').value;
-  el('login').classList.add('hide');
-  el('storytime').classList.remove('hide');
-}
 
 // SOME HIGHLIGHTING OR SOMETHING
 
-var highlight_fun;
 var highlight_target;
 
-function activate_highlighter() {
-  highlight_fun = el('sentences').addEventListener('mousemove', highlighter);
-}
 
-function deactivate_highlighter() {
-  el('sentences').removeEventListener('mousemove', highlight_fun);
-}
 
-function highlighter(e) {
-  for (var t = e.target; t && t.matches; t = t.parentNode) {
-    if (t.matches('.sentence')) {
-      if (highlight_target === t) return undefined;
 
-      highlight_target = t;
-      var ids = [].slice.call(t.children).map(function (node) {
-        return node.dataset.id;
-      }).filter(Boolean);
-      var fun = function fun(v) {
-        return ~ids.indexOf(v._id);
-      };
-      // ids.forEach(id => G.v(id).run()[0].highlight = true)
-      // render()
-      highlight(fun);
-      return undefined;
-    }
-  }
-}
 
 function highlight(o_or_f) {
   var current = G.v({ highlight: true }).run();
@@ -2433,7 +1975,7 @@ function highlight(o_or_f) {
   });
 
   if (!o_or_f) {
-    render$1();
+    force_rerender();
     return undefined;
   }
 
@@ -2447,7 +1989,7 @@ function highlight(o_or_f) {
     node.highlight = true;
   });
 
-  render$1();
+  force_rerender();
 }
 
 // INTERACTIONS & DOM BINDINGS
@@ -2458,6 +2000,9 @@ function click_tagnames(ev) {
   var tag = target.innerText;
   if (!tag) return undefined;
   removetag(tag);
+
+  force_rerender();
+  showtags();
 }
 
 function mouseover_tagnames(ev) {
@@ -2481,153 +2026,43 @@ function mouseout_tagnames(ev) {
   highlight();
 }
 
-function global_keydown(ev) {
-  // TODO: clean this up (prevent span hijacking)
-  if (ev.target.tagName === 'SPAN' || ev.target.tagName === 'INPUT' || ev.target.tagName === 'SELECT' || ev.target.tagName === 'TEXTAREA') return true;
 
-  var key = ev.keyCode || ev.which;
-
-  // var key_a = 97
-  var key_e = 69;
-  var key_f = 70;
-  var key_l = 76;
-  var key_n = 78;
-  var key_p = 80;
-  // var key_s = 115
-  var tilde = 126;
-  var larro = 37;
-  var uarro = 38;
-  var rarro = 39;
-  var darro = 40;
-  // var langl = 60
-  // var rangl = 62
-
-  if (key === larro || key === darro || key === key_p) {
-    ev.preventDefault();
-    if (state.current_year <= state.my_minyear) return false;
-    state.current_year--;
-    render$1();
-  }
-
-  if (key === rarro || key === uarro || key === key_n) {
-    ev.preventDefault();
-    if (state.current_year >= state.my_maxyear) return false;
-    state.current_year++;
-    render$1();
-  }
-
-  if (key === key_f) {
-    state.filter_sentences = !state.filter_sentences;
-    render$1();
-  }
-
-  if (key === key_e) {
-    state.all_edges = !state.all_edges;
-    render$1();
-  }
-
-  if (key === key_l) {
-    state.show_labels = !state.show_labels;
-    render$1();
-  }
-
-  if (key === tilde) {
-    state.admin_mode = !state.admin_mode;
-    render$1();
-  }
-}
 
 function submit_addtag(ev) {
   ev.preventDefault();
   addtag(el('othertags').value);
+
+  force_rerender();
+  showtags();
 }
 
-function keyup_sentences(ev) {
-  // var key = ev.keyCode || ev.which
-  var span = ev.target;
-  var type = span.classList.contains('edge') ? 'edge' : 'cat';
-  var val = span.textContent;
-  var id = span.getAttribute('data-id');
-
-  // TODO: trap return for special effects
-  // TODO: maybe trap tab also
-
-  // ev.preventDefault()
-
-  // handle the node case
-  if (type === 'cat' && id && val) {
-    var node = G.vertexIndex[id];
-    if (node && node.name !== val) {
-      // update the name/label in the real graph
-      node.name = val;
-      pub(id);
-    }
-  }
-
-  // handle the edge case
-  if (type === 'edge') {
-    var id1 = span.getAttribute('data-id1');
-    var id2 = span.getAttribute('data-id2');
-
-    var node1 = G.vertexIndex[id1];
-    var edges = node1._in.concat(node1._out);
-    var edge = edges.filter(function (edge) {
-      return edge._in._id === id1 && edge._out._id === id2 || edge._in._id === id2 && edge._out._id === id1;
-    })[0];
-
-    if (!edge) return undefined;
-
-    edge.label = val;
-    edge.type = val;
-
-    // pub(id1 + '-' + id2)
-    // Dagoba.persist(G, 'rripplemap')
-    persist();
-  }
-
-  function pub(id) {
-    // publish the change
-    // Dagoba.persist(G, 'rripplemap')
-    persist();
-
-    // update all other sentences
-    var spans = document.querySelectorAll('span.node-' + id);
-    for (var i = 0; i < spans.length; i++) {
-      if (spans[i] !== span) spans[i].textContent = val;
-    }
-
-    // rerender the graph
-    render$1(0);
-  }
+var renderers = [];
+function add_renderer(f) {
+  renderers.push(f);
 }
 
-function click_sentences(ev) {
-  var target = ev.target;
-  if (target.nodeName !== 'BUTTON') return true;
+var render_requested = false;
 
-  var id = target.getAttribute('data-id');
-  var node = G.vertexIndex[id];
+function force_rerender() {
+  if (render_requested) return undefined;
+  render_requested = true;
 
-  if (!node) return error$1('That node does not exist');
-
-  if (node.cat === 'action') {
-    // remove "sentence"
-    G.removeVertex(node);
-  } else {
-    G.removeVertex(node); // THINK: is this really reasonable?
-  }
-
-  persist();
-  render$1();
+  window.requestAnimationFrame(function () {
+    render_requested = false;
+    renderers.forEach(function (f) {
+      return f(state);
+    });
+  });
 }
 
-function submit_convo(ev) {
-  ev.preventDefault();
+// function render_all() {
+//   render()
+//   render_conversation(conversation)
+//   showtags()
+// }
 
-  whatsnext(G, join_conversation());
 
-  return false;
-}
+// TODO: break this up more, make canvas and svg renderers into imported modules (w/ dom ctx as input to canvas one)
 
 var ctx = el('ripples').getContext('2d');
 
@@ -2636,7 +2071,7 @@ var word_pipe;
 
 // RENDER PIPELINE
 
-function init$2() {
+function init() {
   // TODO: consider a workflow for managing this tripartite pipeline, so we can auto-cache etc
   viz_pipe = pipe(mod('data', sg_compact), mod('data', likenamed), mod('data', cluster), mod('data', Dagoba.cloneflat)
   // layout:
@@ -2649,7 +2084,7 @@ function init$2() {
   word_pipe = pipe(get_actions, filter_actions, make_sentences, write_sentences);
 }
 
-function render$1() {
+function render_pipe(pipe$$1) {
   // TODO: cloning is inefficient: make lazy subgraphs
   var env = { data: Dagoba.clone(G),
     svg: { head: '', body: '', tail: '' },
@@ -2661,14 +2096,29 @@ function render$1() {
     ctx: ctx
   };
 
-  viz_pipe(env);
-  word_pipe(env);
+  return pipe$$1(env);
+
+  // viz_pipe(env)
+  // word_pipe(env)
 
   // if(n === undefined)
   //   state.pipelines.forEach(function(pipeline) { pipeline(env) })
   // else
   //   state.pipelines[n](env)
 }
+
+function get_sentence_html() {
+  var env = render_pipe(word_pipe);
+  return env.output_html;
+}
+
+function get_viz_html() {
+  // THINK: viz_pipe should be initialized with a dom context or something...
+  var env = render_pipe(viz_pipe);
+  return env.output_html;
+}
+
+function get_convo_html() {}
 
 // COMPACTIONS
 
@@ -3048,7 +2498,7 @@ function copy_edges(env) {
     var label = edge.label || "777";
     var id = edge._in._id + '-' + edge._out._id;
 
-    // TODO: is this needed with hard baked colours? 
+    // TODO: is this needed with hard baked colours?
     /* var color = str_to_color(label)*/
     /* function str_to_color(str) { return 'hsl' + (state.show_labels?'a':'') + '(' + str_to_num(str) + ',100%,40%' + (state.show_labels?',0.3':'') + ')';}*/
     /* function str_to_color(str) { return 'hsla' + '(' + str_to_num(str) + ',30%,40%,0.' + (state.show_labels?'3':'7') + ')' }*/
@@ -3374,7 +2824,9 @@ function construct(action) {
 }
 
 function write_sentences(env) {
-  set_el('sentences', '');
+  // dom.set_el('sentences', '')
+  var str = '';
+
   var oldyear = 1;
 
   env.params.sentences.sort(function (a, b) {
@@ -3416,8 +2868,15 @@ function write_sentences(env) {
     sentence_classes += highlight_count === 3 ? ' highlight' : '';
     sentence += '<p class="' + sentence_classes + '">' + innerwords + '.</p>';
 
-    append_el('sentences', sentence);
+    // dom.append_el('sentences', sentence)
+    str += sentence;
   });
+
+  env.output_html = str;
+
+  return env;
+
+  // helpers:
 
   function template(classes, data, text) {
     classes.unshift('word');
@@ -3443,158 +2902,9 @@ function write_sentences(env) {
 
     return ' ' + text + notes + button;
   }
-
-  return env;
 }
 
 // FORM BUILDER & FRIENDS
-
-function whatsnext(graph, conversation) {
-  // TODO: incorporate graph knowledge (graph is the whole world, or the relevant subgraph)
-  // THINK: what is a conversation?
-  // are we currently in a sentence? then find the highest weighted unfilled 'port'
-
-  render_conversation(conversation);
-}
-
-function get_cat_dat(cat, q) {
-  var substrRegex = new RegExp(q, 'i');
-  var frontRegex = new RegExp('^' + q, 'i');
-  var nodes = G.vertices.filter(function (node) {
-    return node.cat === cat;
-  }).map(prop('name')).filter(function (name) {
-    return substrRegex.test(name);
-  });
-
-  nodes.sort(function (a, b) {
-    return frontRegex.test(b) - frontRegex.test(a) || a.charCodeAt() - b.charCodeAt();
-  });
-
-  return nodes;
-}
-
-function render_conversation(conversation) {
-  var typeahead_params = { hint: true, highlight: true, minLength: 1 };
-  function typeahead_source(cat) {
-    return { name: 'states', source: function source(q, cb) {
-        cb(get_cat_dat(cat, q));
-      } };
-  }
-
-  var inputs = '';
-  var prelude = '';
-  var submit_button = '<input type="submit" style="position: absolute; left: -9999px">';
-
-  // special case the first step
-  var sentence = conversation.current;
-
-  sentence.filled.forEach(function (slot, i) {
-    prelude += inject_value(slot, slot.value, i) + ' ';
-  });
-
-  // display the unfilled slot
-  var slot = sentence.slots[0];
-  var input = '';
-  if (slot.type === 'word') {
-    input = inject_value(slot, make_word_input(slot.cat, slot.key));
-  } else if (slot.type === 'gettype') {
-    input = inject_value(slot, make_type_input(slot.cat, slot.key));
-  } else if (slot.type === 'date') {
-    input = inject_value(slot, make_date_input(slot.key));
-  }
-
-  prelude += input;
-
-  // do the DOM
-  set_el('the-conversation', prelude + inputs + submit_button);
-
-  // wiring... /sigh
-  var catnames = Object.keys(cats);
-  catnames.forEach(function (cat) {
-    $('.' + cat + '-input').typeahead(typeahead_params, typeahead_source(cat));
-  });
-
-  if (sentence.filled.length) $('#' + slot.key).focus();
-
-  return false;
-
-  // helper functions
-
-  function make_word_input(cat, key) {
-    var text = '';
-
-    if (cat === 'thing') return '<input class="typeahead ' + cat + '-input" type="text" placeholder="A' + mayben(cat) + ' ' + cat + '" id="' + key + '">';
-    if (cat === 'action') {
-      text += '<select id="verb" name="verb">';
-      var options = ['participate in', 'lead', 'fund', 'organize', 'inspire', 'invite'];
-      // var options = ['facilitate', 'coordinate', 'contribute', 'create', 'attend', 'manage', 'assist', 'present', 'join', 'leave']
-      options.forEach(function (option) {
-        text += '<option>' + option + '</option>';
-      });
-      text += '</select>';
-      return text;
-    }
-  }
-
-  function make_type_input(cat, key) {
-    // TODO: this assumes cat is always 'thing'
-    var str = '<select id="' + key + '">';
-    str += '<option value="person">person</option>';
-    str += '<option value="org">org</option>';
-    str += '<option value="event">event</option>';
-    str += '<option value="outcome">outcome</option>';
-    str += '</select>';
-    return str;
-  }
-
-  function make_date_input(key) {
-    var str = '<input id="' + key + '" type="date" name="' + key + '" value="2016-01-01" />';
-    return str;
-  }
-
-  function inject_value(slot, value, index) {
-    // HACK: index is a huge hack, remove it.
-    var text = '';
-
-    if (slot.key === 'subject') {
-      if (slot.value) {
-        text += '<p><b>' + slot.value + '</b></p>';
-      } else {
-        text += "Okay, let's fill in the blanks. Tell us about ";
-        text += value + ' ';
-      }
-    } else if (slot.key === 'verb') {
-      text += ' did ';
-      text += value;
-      text += ' the ';
-    } else if (slot.key === 'object') {
-      text += value + ' ';
-    } else if (slot.type === 'gettype') {
-      if (index === 1) {
-        text += ' is a';
-        text += mayben(value) + ' ';
-        text += value + ' ';
-        if (slot.value) text += slot.value === 'person' ? 'who ' : 'which ';
-      } else {
-        text += ' (a';
-        text += mayben(value) + ' ';
-        text += value + ') ';
-      }
-    } else if (slot.type === 'date') {
-      text += ' in/on ';
-      text += value + ' ';
-    } else {
-      text = ' ' + value + ' ';
-    }
-
-    return text;
-  }
-}
-
-function mayben(val) {
-  return (/^[aeiou]/.test(val) ? 'n' : ''
-  );
-}
 
 function set_minus(xs, ys) {
   return xs.filter(function (x) {
@@ -3602,6 +2912,7 @@ function set_minus(xs, ys) {
   });
 }
 
+// function get_tag_html() {
 function showtags() {
   // generate current tags
   // hoverable span for highlight, plus clickable for remove
@@ -3615,158 +2926,424 @@ function showtags() {
   var unused = set_minus(Object.keys(state.tagkeys), state.tags).sort();
   var optionstr = '<option>' + unused.join('</option><option>') + '</option>';
   set_el('othertags', optionstr);
+
+  // return {tagnames: tagstr, othertags: optionstr}
 }
 
-function render_all() {
-  render$1();
-  render_conversation(convo);
-  showtags();
-}
+var YourSelection = function YourSelection(_ref) {
+  var changeView = _ref.changeView;
 
-/*global Dagoba */
+  return h(
+    'div',
+    null,
+    h(
+      Header,
+      null,
+      'Your Selection'
+    ),
+    h(
+      'section',
+      { 'class': 'YourSelection__cta-addstory' },
+      h(
+        'p',
+        null,
+        'Ready to add your own story?'
+      ),
+      h(
+        Button,
+        { onClick: function onClick() {
+            return changeView('story');
+          } },
+        'Add a story \u25B6'
+      )
+    ),
+    h(
+      'h3',
+      null,
+      'Click any story to edit'
+    ),
+    h(
+      'div',
+      { id: 'sentences', dangerouslySetInnerHTML: { __html: get_sentence_html() } },
+      ' '
+    )
+  );
+};
 
-var G = Dagoba.graph();
-function addtag(tag) {
-  state.tags.push(tag);
-  G = Dagoba.graph();
-  fact_to_graph(state.facts);
-  render_all();
-}
+var Current = function Current() {
+  return h(
+    'div',
+    null,
+    h(
+      Header,
+      null,
+      'Currently Showing'
+    ),
+    h(
+      'h3',
+      null,
+      'Click any story to edit'
+    ),
+    h(
+      'div',
+      { id: 'sentences', dangerouslySetInnerHTML: { __html: get_sentence_html() } },
+      ' '
+    )
+  );
+};
 
-function removetag(tag) {
-  var index = state.tags.indexOf(tag);
-  if (index === -1) return undefined;
+__$styleInject(".Legend__columns{display:flex;justify-content:space-between}.Legend__column{display:flex;flex-direction:column;flex:1}", undefined);
 
-  state.tags.splice(index, 1);
-  G = Dagoba.graph();
-  fact_to_graph(state.facts);
-  render_all();
-}
+__$styleInject(".Header{border-bottom:2px solid #ff5961;color:#ff5961;font-size:25.6px;font-size:1.6rem;margin:48px 0;margin:3rem 0;width:100%;text-transform:uppercase}.Header.large{font-size:25px}", undefined);
 
-// function reset_graph() {
-//   G = Dagoba.graph()
-// }
+var LegendItem = function LegendItem(props) {
+  var filter_is_on = props.currentFilters.indexOf(props.filter_key);
 
-function add_data(cb) {
-  get_facts_from_server(function (facts) {
-    if (Array.isArray(facts)) cb(fact_to_graph(capture_facts(facts)));else cb(facts); // already a graph, from localStorage
-  });
-}
+  var containerStyles = {
+    display: 'flex',
+    alignItems: 'center',
+    margin: '1rem 0',
+    cursor: 'pointer'
+  };
 
-function capture_facts(facts) {
-  state.facts = facts;
-  return facts;
-}
+  var circleStyles = {
+    display: 'inline-block',
+    width: props.size || '0px',
+    height: props.size || '0px',
+    background: filter_is_on !== -1 ? props.selected : props.color,
+    borderRadius: '50%',
+    marginRight: '1rem',
+    borderBottom: filter_is_on !== -1 ? '1px solid black' : '0'
+  };
 
-function fact_to_graph(facts) {
-  /*
-    data model:
-   user: id
-   action: add/remove/edit
-   type: node/edge
-   tags: [...]
-   org: id
-   [maybe other stats can live here?]
-   data:
-   node: {id, name, type, cat...}
-   edge: {_in, _out, type, label}
-    */
+  var textStyles = {
+    borderBottom: filter_is_on !== -1 ? '1px solid black' : '0'
+  };
 
-  var tree = factor_facts(filter_facts(facts));
-  state.tagkeys = get_tagkeys(facts);
+  return h(
+    'div',
+    { style: containerStyles },
+    h('div', { style: circleStyles }),
+    h(
+      'span',
+      { onClick: function onClick() {
+          return props.toggleFilter(props.filter_key);
+        }, style: textStyles },
+      props.children
+    )
+  );
+};
 
-  tree.nodes.add.forEach(function (node) {
-    var fun = window['add_' + node.cat]; // FIXME: ugh erk yuck poo
-    if (!fun) return undefined;
-    fun(node.type, node);
-  });
+var LegendNodes = [{
+  name: 'Event',
+  color: '#FF1E3A',
+  selected: 'grey',
+  filter_key: 'event'
+}, {
+  name: 'Individual',
+  color: '#00A3D8',
+  selected: 'grey',
+  filter_key: 'person'
+}, {
+  name: 'Group',
+  color: '#00AE57',
+  selected: 'grey',
+  filter_key: 'org'
+}, {
+  name: 'Outcome',
+  color: '#FFE98F',
+  selected: 'grey',
+  filter_key: 'outcome'
+}];
 
-  tree.edges.add.forEach(function (edge) {
-    // we need to delay these so the nodes are all in place (sometimes the facts get added in weird orders)
-    add_edge(edge.type, edge._out, edge._in, edge);
-  });
+var LegendEdges = [{
+  name: 'Participated',
+  filter_key: 'participated',
+  color: 'rgba(52, 73, 94, 0.7)'
+}, {
+  name: 'Lead',
+  filter_key: 'lead',
+  color: 'rgba(231, 76, 60, 0.7)'
+}, {
+  name: 'Inspired',
+  filter_key: 'inspired',
+  color: 'rgba(241, 196, 15, 0.7)'
+}, {
+  name: 'Organized',
+  filter_key: 'organized',
+  color: "rgba(141, 196, 215, 0.7)"
+}, {
+  name: 'Met',
+  filter_key: 'met',
+  color: 'rgba(102, 39, 239, 0.7)'
+}];
 
-  tree.nodes.edit.forEach(function (node) {
-    // FIXME: what on earth is this??? should it be G.edit?
-    // RM.graph.edit(node) //////
-  });
-}
+/* ----- Preact Jams ----- */
 
-function get_tagkeys(facts) {
-  var keys = {};
-  facts.forEach(function (fact) {
-    ~(fact.tags || []).forEach(function (tag) {
-      if (tag) keys[tag] = true;
-    });
-  });
-  return keys;
-}
+var Legend = function (_Component) {
+  inherits(Legend, _Component);
 
-function filter_facts(facts) {
-  facts = facts.filter(function (fact) {
-    return !!set_intersect(fact.tags, state.tags).length; // THINK: this implies no empty tag arrays (so 'plain' as default?)
-  });
+  function Legend() {
+    var _ref;
 
-  return facts;
-}
+    var _temp, _this, _ret;
 
-function factor_facts(facts) {
-  var tree = { nodes: { add: [], edit: [], remove: [] }, edges: { add: [], edit: [], remove: [] } };
-  facts.forEach(function (fact) {
-    // var branch = tree[fact.type+'s']
-    // var list = branch[fact.action] || []
-    // if(!branch[fact.action])
-    //   branch[fact.action] = list
-    var list = tree[fact.type + 's'][fact.action] || []; // TODO: error handling
+    classCallCheck(this, Legend);
 
-    // var item = clone(fact.data)
-    var item = fact.data; // THINK: is mutating here okay?
-    item.org = fact.org;
-    item.user = fact.user;
-    item.tags = fact.tags;
-    list.push(item);
-  });
-  return tree;
-}
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-function set_intersect(xs, ys) {
-  return xs.filter(function (x) {
-    return ys.indexOf(x) !== -1;
-  });
-}
+    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = Legend.__proto__ || Object.getPrototypeOf(Legend)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+      currentFilters: []
+    }, _this.toggleFilter = function (filter) {
+      var cur_filters = _this.state.currentFilters;
+      var filter_exists = cur_filters.indexOf(filter);
 
-function do_the_glue() {
+      // if filter already exists, remove it
+      if (filter_exists !== -1) {
+        cur_filters.splice(filter_exists, 1);
+        _this.setState({ currentFilters: cur_filters });
+      } else {
+        _this.setState(_extends({}, _this.state, {
+          currentFilters: [].concat(toConsumableArray(_this.state.currentFilters), [filter])
+        }));
+      }
 
-  el('login').addEventListener('submit', login);
+      // FIXME: this is leaking into the global space
+      window.filter_poo = _this.state.currentFilters;
+      window.rm_render();
+    }, _this.renderNodes = function () {
+      return LegendNodes.map(function (node) {
+        return h(
+          LegendItem,
+          _extends({}, node, {
+            size: '15px',
+            toggleFilter: _this.toggleFilter,
+            currentFilters: _this.state.currentFilters
+          }),
+          node.name
+        );
+      });
+    }, _this.renderEdges = function () {
+      return LegendEdges.map(function (node) {
+        return h(
+          LegendItem,
+          _extends({}, node, {
+            size: '15px',
+            currentFilters: _this.state.currentFilters,
+            toggleFilter: _this.toggleFilter
+          }),
+          node.name
+        );
+      });
+    }, _temp), possibleConstructorReturn(_this, _ret);
+  }
 
-  el('addtag').addEventListener('submit', submit_addtag);
+  createClass(Legend, [{
+    key: 'render',
+    value: function render$$1() {
+      return h(
+        'div',
+        { 'class': 'Legend' },
+        h(
+          'section',
+          { 'class': 'Legend__columns' },
+          h(
+            'section',
+            { 'class': 'Legend__column', style: { paddingRight: '10px' } },
+            h(
+              Header,
+              null,
+              'Nodes'
+            ),
+            this.renderNodes()
+          ),
+          h(
+            'section',
+            { 'class': 'Legend__column', style: { paddingLeft: '10px' } },
+            h(
+              Header,
+              null,
+              'Edges'
+            ),
+            this.renderEdges()
+          )
+        ),
+        h(
+          'section',
+          { 'class': 'Legend__years' },
+          h(
+            Header,
+            null,
+            ' Years '
+          )
+        ),
+        h(
+          'section',
+          { 'class': 'Legend__keys' },
+          h(
+            Header,
+            null,
+            ' Keys '
+          ),
+          h(
+            'p',
+            null,
+            '\'\u2190\' for previous year'
+          ),
+          h(
+            'p',
+            null,
+            '\'\u2192\' for next year'
+          ),
+          h(
+            'p',
+            null,
+            '\'e\' toggles recent connections'
+          ),
+          h(
+            'p',
+            null,
+            '\'f\' toggles filter stories by year'
+          ),
+          h(
+            'p',
+            null,
+            '\'l\' for legend edges'
+          )
+        )
+      );
+    }
+  }]);
+  return Legend;
+}(Component);
 
-  el('the-conversation').addEventListener('submit', submit_convo);
+var Story = function Story() {
+  return h(
+    'div',
+    null,
+    h(
+      Header,
+      null,
+      'Add a story'
+    ),
+    h(
+      'div',
+      { id: 'signup' },
+      h(
+        'form',
+        { id: 'login' },
+        h(
+          'p',
+          null,
+          'We\'d love to hear your stories! Let\'s start with your contact info:'
+        ),
+        h('input', { name: 'email', id: 'email', type: 'text', placeholder: 'email', 'class': 'typeahead' })
+      )
+    ),
+    h(
+      'div',
+      { id: 'storytime', 'class': 'hide' },
+      h(
+        'h3',
+        null,
+        'Want to add something to the map?'
+      ),
+      h('form', { id: 'the-conversation', dangerouslySetInnerHTML: { __html: get_convo_html() } })
+    )
+  );
+};
 
-  el('sentences').addEventListener('mouseover', activate_highlighter);
-  el('sentences').addEventListener('mouseout', deactivate_highlighter);
-  el('sentences').addEventListener('keyup', keyup_sentences);
-  el('sentences').addEventListener('click', click_sentences);
+var Sidebar = function (_Component) {
+  inherits(Sidebar, _Component);
 
-  el('tagnames').addEventListener('click', click_tagnames);
-  el('tagnames').addEventListener('mouseover', mouseover_tagnames);
-  el('tagnames').addEventListener('mouseout', mouseout_tagnames);
+  function Sidebar() {
+    var _ref;
 
-  document.addEventListener('keydown', global_keydown);
+    var _temp, _this, _ret;
 
-  render_all();
-}
+    classCallCheck(this, Sidebar);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = Sidebar.__proto__ || Object.getPrototypeOf(Sidebar)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+      currentView: 'home'
+    }, _this.changeView = function (view_id) {
+      _this.setState({
+        currentView: view_id
+      });
+      // on transitioning to different component sub views... run glue?
+      // window.do_the_glue()
+    }, _this.renderSelectedView = function () {
+      switch (_this.state.currentView) {
+
+        case 'home':
+          return h(Home, { changeView: _this.changeView });
+
+        case 'story':
+          return h(Story, null);
+
+        case 'legend':
+          return h(Legend, null);
+
+        case 'currently_showing':
+          return h(Current, null);
+
+        case 'your_selection':
+          return h(YourSelection, { changeView: _this.changeView });
+
+        case 'about':
+          return h(About, null);
+
+        default:
+          return h(Home, null);
+      }
+    }, _temp), possibleConstructorReturn(_this, _ret);
+  }
+
+  createClass(Sidebar, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      // window.do_the_glue()
+    }
+  }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate() {
+      // window.render_all()
+      // window.do_the_glue()
+    }
+  }, {
+    key: 'render',
+    value: function render$$1() {
+      return h(
+        'aside',
+        { 'class': 'Sidebar' },
+        h(
+          'section',
+          { 'class': 'Sidebar__container' },
+          h(
+            'h3',
+            { 'class': 'Sidebar__header' },
+            'AMC Ripple Map'
+          ),
+          this.renderSelectedView()
+        ),
+        h(TabBar, { currentView: this.state.currentView, changeView: this.changeView })
+      );
+    }
+  }]);
+  return Sidebar;
+}(Component);
+
+///////////////////////// DOM GLUE ///////////////////////////////
+
+
+
 
 ///////////////////// END DOM GLUE ///////////////////////////////
-
-
-// package and expose some functionality for the view side,
-// and create outward-facing bindings to spin everything up.
-
-
-// init network load
-// expose rendering functions
-// create dom hooks on demand as html is rendered
 
 
 // TODO: partition incoming bleep bloops by action
@@ -3787,10 +3364,9 @@ function do_the_glue() {
 // INIT
 
 
-// TODO: break this up a little so the logic is clearer
-
 function init$1() {
-  // do_the_glue()
+
+  // TODO: break this up a little so the logic is clearer
 
   if (window.location.host.slice(0, 9) === "127.0.0.1") {
     if (window.location.hash) state.safe_mode = window.location.hash.slice(1);else state.safe_mode = true;
@@ -3807,37 +3383,46 @@ function init$1() {
 
   // G = Dagoba.graph()
 
-  // FIXME: leaking into the global space
-  window.rm_render = render_all;
-
-  init$2();
+  init();
 
   function cb() {
-    render_all();
-    state.loading = false; // TODO: get rid of this somehow
+    force_rerender();
+    showtags();
+    tagglue();
   }
 
   add_data(cb);
 
-  setTimeout(function () {
-    render$1();
-  }, 111);
+  // setTimeout(function() {
+  //   // render()
+  // }, 111)
+
+  add_renderer(get_viz_html); // oh poo
 }
 
-// init()
+function tagglue() {
+  // barf yuck
+  el('tagnames').addEventListener('click', click_tagnames);
+  el('tagnames').addEventListener('mouseover', mouseover_tagnames);
+  el('tagnames').addEventListener('mouseout', mouseout_tagnames);
+  el('addtag').addEventListener('submit', submit_addtag);
+}
 
 /**
  *
- * The Entry point to all of Ripplemap. (RM)
- * Creates the sidebar for controlling the RM. (built with Preact, see src/Sidebar)
+ * The entry point to the Ripple Map app (RM)
+ * Binds the RM app to the Preact renderer
+ *
  */
 
-init$$1();
+init$1(); // engage the application
 
-function init$$1() {
-  init$1();
-  window.do_the_glue = do_the_glue;
-  window.rm_render_all = render_all;
-  render(h(Sidebar, null), document.getElementById('sidebar'));
-}
+var root = void 0;
+var renderer = function renderer() {
+  return root = render(h(Sidebar, null), document.getElementById('sidebar'), root);
+};
+
+// on_render(x => render(<Sidebar />, document.getElementById('sidebar'))) // connect the preact renderer
+// on_render((state) => co._component.render(state)) // connect the preact renderer
+add_renderer(renderer); // connect the preact renderer
 //# sourceMappingURL=bundle.js.map

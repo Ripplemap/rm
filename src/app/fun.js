@@ -58,7 +58,7 @@ function pipe() {
 
     // TODO: this should return a promise for data
     inner()
-    return true
+    return data
   }
 
   return magic_pipe

@@ -3,7 +3,9 @@ import {error, clone} from 'fun'
 import {add_to_server_facts} from 'net'
 
 export const cats = {} // ripplemap categories
+export const adders = {thing: add_thing, action: add_action, edge: add_edge}
 export {add_thing, add_action, add_edge}
+
 
 /* INTERFACES FOR RIPPLE MODEL
  *

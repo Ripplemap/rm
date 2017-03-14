@@ -1,8 +1,8 @@
 import { h, render, Component } from 'preact';
-import Header from '../../../UiKit/Header'
+import Header from 'UiKit/Header'
 import './styles.css'
-import LegendItem from '../../../UiKit/LegendItem';
-import Button from '../../../UiKit/Button'
+import LegendItem from 'UiKit/LegendItem';
+import Button from 'UiKit/Button'
 
 // TODO: find out if EDGES need to be filterable (like NODES are clickable to toggle)
 const LegendNodes = [{

@@ -12,7 +12,7 @@ import cssnext from 'postcss-cssnext'
 import cssnano from 'cssnano'
 
 var includePathOptions = { include:    {}
-                         , paths:      ['js', 'src', 'src/Ripplemap', 'src/Sidebar']
+                         , paths:      ['src', 'src/app', 'src/Sidebar']
                          , external:   []
                          , extensions: ['.js', '.json', '.html']
                          }

@@ -1,20 +1,25 @@
 /**
  *
- * The Entry point to all of Ripplemap. (RM)
- * Creates the sidebar for controlling the RM. (built with Preact, see src/Sidebar)
+ * The entry point to the Ripple Map app (RM)
+ * Binds the RM app to the Preact renderer
+ *
  */
 
-import { h, render, Component } from 'preact'
-import Sidebar from './Sidebar/Sidebar'
 import './styles/main.css'
-import {do_the_glue, init as rm_init, render_all as rm_render_all} from 'Ripplemap/main'
+
+// TODO: do we need h, Component below?
+
+import {render, h} from 'preact'
+import Sidebar from './Sidebar/Sidebar'
+
+import {init, on_render} from 'app/main'
 
 
-init()
+init() // engage the application
 
-function init() {
-  rm_init()
-  window.do_the_glue = do_the_glue
-  window.rm_render_all = rm_render_all
-  render(<Sidebar />, document.getElementById('sidebar'))
-}
+let root
+let renderer = () => root = render(h(Sidebar, null), document.getElementById('sidebar'), root)
+
+// on_render(x => render(<Sidebar />, document.getElementById('sidebar'))) // connect the preact renderer
+// on_render((state) => co._component.render(state)) // connect the preact renderer
+on_render(renderer) // connect the preact renderer

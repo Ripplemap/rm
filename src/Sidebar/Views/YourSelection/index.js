@@ -1,6 +1,8 @@
 import { h, render } from 'preact';
-import Header from '../../../UiKit/Header/index';
-import Button from '../../../UiKit/Button/index';
+import Header from 'UiKit/Header/index';
+import Button from 'UiKit/Button/index';
+
+import {get_sentence_html} from 'render'
 
 const YourSelection = ({changeView}) => {
   return (
@@ -14,7 +16,7 @@ const YourSelection = ({changeView}) => {
       </section>
 
       <h3>Click any story to edit</h3>
-      <div id="sentences"> </div>
+      <div id="sentences" dangerouslySetInnerHTML={{__html: get_sentence_html()}}> </div>
 
     </div>
   );

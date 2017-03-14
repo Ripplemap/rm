@@ -1,7 +1,7 @@
 import { h, render } from 'preact';
 import './styles.css'
-import Header from '../../../UiKit/Header/index';
-import Button from '../../../UiKit/Button/index';
+import Header from 'UiKit/Header/index';
+import Button from 'UiKit/Button/index';
 
 const Home = ({changeView}) => {
   return (

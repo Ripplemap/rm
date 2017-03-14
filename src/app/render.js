@@ -1,13 +1,42 @@
 import {G} from 'graph'
 import {unique, eq, prop, clone, truncate, push_it, pipe} from 'fun'
 import * as dom from 'dom'
-import {convo as conversation} from 'convo'
+// import {convo as conversation} from 'convo'
 import {cats} from 'model'
 import state from 'state'
-import {isDate} from '../utils';
 
-export {init, render, render_all, whatsnext}
 
+// TODO: ask Tyler about this (and utils.js in general):
+import {isDate} from '../utils'
+
+
+export {init, force_rerender, add_renderer, get_sentence_html, get_viz_html, get_convo_html, get_tag_html, showtags}
+
+const renderers = []
+function add_renderer(f) {
+  renderers.push(f)
+}
+
+let render_requested = false
+
+function force_rerender() {
+  if(render_requested) return undefined
+  render_requested = true
+
+  window.requestAnimationFrame(() => {
+    render_requested = false
+    renderers.forEach(f => f(state))
+  })
+}
+
+// function render_all() {
+//   render()
+//   render_conversation(conversation)
+//   showtags()
+// }
+
+
+// TODO: break this up more, make canvas and svg renderers into imported modules (w/ dom ctx as input to canvas one)
 
 const ctx = dom.el('ripples').getContext('2d')
 
@@ -53,7 +82,7 @@ function init() {
                   )
 }
 
-function render() {
+function render_pipe(pipe) {
   // TODO: cloning is inefficient: make lazy subgraphs
   var env = { data: Dagoba.clone(G)
             , svg: {head: '', body: '', tail: ''}
@@ -65,8 +94,10 @@ function render() {
             , ctx: ctx
             }
 
-  viz_pipe(env)
-  word_pipe(env)
+  return pipe(env)
+
+  // viz_pipe(env)
+  // word_pipe(env)
 
   // if(n === undefined)
   //   state.pipelines.forEach(function(pipeline) { pipeline(env) })
@@ -74,6 +105,20 @@ function render() {
   //   state.pipelines[n](env)
 }
 
+function get_sentence_html() {
+  let env = render_pipe(word_pipe)
+  return env.output_html
+}
+
+function get_viz_html() {
+  // THINK: viz_pipe should be initialized with a dom context or something...
+  let env = render_pipe(viz_pipe)
+  return env.output_html
+}
+
+function get_convo_html() {
+
+}
 
 
 // COMPACTIONS
@@ -462,7 +507,7 @@ function copy_edges(env) {
     var label = edge.label || "777"
     var id    = edge._in._id + '-' + edge._out._id
 
-    // TODO: is this needed with hard baked colours? 
+    // TODO: is this needed with hard baked colours?
     /* var color = str_to_color(label)*/
     /* function str_to_color(str) { return 'hsl' + (state.show_labels?'a':'') + '(' + str_to_num(str) + ',100%,40%' + (state.show_labels?',0.3':'') + ')';}*/
     /* function str_to_color(str) { return 'hsla' + '(' + str_to_num(str) + ',30%,40%,0.' + (state.show_labels?'3':'7') + ')' }*/
@@ -889,7 +934,9 @@ function construct(action) {
 }
 
 function write_sentences(env) {
-  dom.set_el('sentences', '')
+  // dom.set_el('sentences', '')
+  let str = ''
+
   var oldyear = 1
 
   env.params.sentences.sort(function(a, b) {
@@ -939,8 +986,15 @@ function write_sentences(env) {
     sentence_classes += highlight_count === 3 ? ' highlight' : ''
     sentence += '<p class="' + sentence_classes + '">' + innerwords + '.</p>'
 
-    dom.append_el('sentences', sentence)
+    // dom.append_el('sentences', sentence)
+    str += sentence
   })
+
+  env.output_html = str
+
+  return env
+
+  // helpers:
 
   function template(classes, data, text) {
     classes.unshift('word')
@@ -968,8 +1022,6 @@ function write_sentences(env) {
 
     return ' ' + text + notes + button
   }
-
-  return env
 }
 
 
@@ -999,6 +1051,8 @@ function get_cat_dat(cat, q) {
 }
 
 function render_conversation(conversation) {
+  let str = ''
+
   var typeahead_params = {hint: true, highlight: true, minLength: 1}
   function typeahead_source(cat) {return {name: 'states', source: function(q, cb) {cb(get_cat_dat(cat, q))}}}
 
@@ -1030,7 +1084,8 @@ function render_conversation(conversation) {
 
 
   // do the DOM
-  dom.set_el('the-conversation', prelude + inputs + submit_button)
+  // dom.set_el('the-conversation', prelude + inputs + submit_button)
+  str = prelude + inputs + submit_button
 
   // wiring... /sigh
   var catnames = Object.keys(cats)
@@ -1041,7 +1096,7 @@ function render_conversation(conversation) {
   if(sentence.filled.length)
     $('#' + slot.key).focus()
 
-  return false
+  return str
 
   // helper functions
 
@@ -1136,15 +1191,7 @@ function set_minus(xs, ys) {
 
 
 
-
-
-
-
-
-
-
-
-
+// function get_tag_html() {
 function showtags() {
   // generate current tags
   // hoverable span for highlight, plus clickable for remove
@@ -1156,11 +1203,6 @@ function showtags() {
   var unused = set_minus(Object.keys(state.tagkeys), state.tags).sort()
   var optionstr = '<option>' + unused.join('</option><option>') + '</option>'
   dom.set_el('othertags', optionstr)
-}
 
-
-function render_all() {
-  render()
-  render_conversation(conversation)
-  showtags()
+  // return {tagnames: tagstr, othertags: optionstr}
 }

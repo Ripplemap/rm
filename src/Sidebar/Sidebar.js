@@ -17,12 +17,12 @@ class Sidebar extends Component {
   }
 
   componentDidMount() {
-    window.do_the_glue()
+    // window.do_the_glue()
   }
 
   componentDidUpdate() {
-    window.render_all()
-    window.do_the_glue()
+    // window.render_all()
+    // window.do_the_glue()
   }
 
   changeView = (view_id) => {
@@ -30,7 +30,7 @@ class Sidebar extends Component {
       currentView: view_id
     })
     // on transitioning to different component sub views... run glue?
-    window.do_the_glue()
+    // window.do_the_glue()
   }
 
   renderSelectedView = () => {

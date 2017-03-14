@@ -5,7 +5,7 @@ import {G, addtag, removetag} from 'graph'
 import {join_conversation} from 'convo'
 import {error, noop} from 'fun'
 import {persist} from 'net'
-import {render, whatsnext} from 'render'
+import {force_rerender, showtags} from 'render'
 
 export {set_el, append_el}
 
@@ -78,7 +78,7 @@ export function highlight(o_or_f) {
   })
 
   if(!o_or_f) {
-    render()
+    force_rerender()
     return undefined
   }
 
@@ -92,7 +92,7 @@ export function highlight(o_or_f) {
     node.highlight = true
   })
 
-  render()
+  force_rerender()
 }
 
 
@@ -104,6 +104,9 @@ export function click_tagnames(ev) {
   var tag = target.innerText
   if(!tag) return undefined
   removetag(tag)
+
+  force_rerender()
+  showtags()
 }
 
 export function mouseover_tagnames(ev) {
@@ -158,40 +161,43 @@ export function global_keydown(ev) {
     ev.preventDefault()
     if(state.current_year <= state.my_minyear) return false
     state.current_year--
-    render()
+    force_rerender()
   }
 
   if(key === rarro || key === uarro || key === key_n) {
     ev.preventDefault()
     if(state.current_year >= state.my_maxyear) return false
     state.current_year++
-    render()
+    force_rerender()
   }
 
   if(key === key_f) {
     state.filter_sentences = !state.filter_sentences
-    render()
+    force_rerender()
   }
 
   if(key === key_e) {
     state.all_edges = !state.all_edges
-    render()
+    force_rerender()
   }
 
   if(key === key_l) {
     state.show_labels = !state.show_labels
-    render()
+    force_rerender()
   }
 
   if(key === tilde) {
     state.admin_mode = !state.admin_mode
-    render()
+    force_rerender()
   }
 }
 
 export function submit_addtag(ev) {
   ev.preventDefault()
   addtag(el('othertags').value)
+
+  force_rerender()
+  showtags()
 }
 
 export function keyup_sentences(ev) {
@@ -251,7 +257,7 @@ export function keyup_sentences(ev) {
     }
 
     // rerender the graph
-    render(0)
+    force_rerender(0)
   }
 
 }
@@ -275,13 +281,16 @@ export function click_sentences(ev) {
   }
 
   persist()
-  render()
+  force_rerender()
 }
 
 export function submit_convo(ev) {
   ev.preventDefault()
 
-  whatsnext(G, join_conversation())
+  join_conversation()
+  force_rerender()
+
+  // whatsnext(G, join_conversation())
 
   return false
 }
