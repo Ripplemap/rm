@@ -3,8 +3,8 @@
 */
 
 .Tabbar {
-  /* Dont know why but min AND max seems necessary :( Otherwise the `Home`
-  Tab button gets squished (and all others do not)*/
+  /* min AND max seems necessary ? :( else the `Home`
+  Tab button gets squished (and all others do not) */
   min-width: 130px;
   max-width: 130px;
   display: flex;
@@ -12,6 +12,6 @@
 }
 
 .Tabbar__fillspace {
-  background: #efefef;
+  background: #ede8ef;
   flex-grow: 1;
 }

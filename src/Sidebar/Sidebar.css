@@ -6,7 +6,6 @@ $primaryRed: rgb(255, 89, 97);
 $primaryBg: rgb(255);
 $TabBg: rgb(238, 233, 239);
 
-
 .Sidebar {
   display: flex;
   flex: 1;
@@ -28,15 +27,17 @@ $TabBg: rgb(238, 233, 239);
   font-weight: 100;
   text-transform: uppercase;
   align-content: center;
+  letter-spacing: 1px;
   margin-bottom: 0;
 }
 
 .Sidebar__viewbox {
 
 }
+
 .Sidebar__subheading{
   font-size: 1.4rem;
   font-style: italic;
   margin-bottom: 3rem;
-  
+
 }
