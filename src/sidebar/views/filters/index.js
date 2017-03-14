@@ -9,25 +9,25 @@ import {force_rerender} from 'render'
 // TODO: find out if EDGES need to be filterable (like NODES are clickable to toggle)
 const LegendNodes = [{
         name: 'Event',
-        color: '#FF1E3A',
+        color: '#f32938',
         selected: 'grey',
         filter_key: 'event',
     },
     {
         name: 'Individual',
-        color: '#00A3D8',
+        color: '#009edb',
         selected: 'grey',
         filter_key: 'person',
     },
     {
         name: 'Group',
-        color: '#00AE57',
+        color: '#00af4c',
         selected: 'grey',
         filter_key: 'org',
     },
     {
         name: 'Outcome',
-        color: '#FFE98F',
+        color: '#ffd600',
         selected: 'grey',
         filter_key: 'outcome',
     },

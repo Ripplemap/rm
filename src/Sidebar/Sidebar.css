@@ -16,7 +16,7 @@ $TabBg: rgb(238, 233, 239);
 .Sidebar__container {
   flex-grow: 1;
   justify-content: center;
-  padding: 1rem 4rem;
+  padding: 1rem 2rem;
   max-height: 100vh;
   overflow-y: scroll;
 }

@@ -507,7 +507,7 @@ function filter_nodes(env) {
 
 function add_rings(env) {
   for(var i = env.params.minyear; i <= env.params.maxyear; i++) {
-    var color = i === state.current_year ? '#999' : 'rgba(204, 204, 204, 0.6)'
+    var color = i === state.current_year ? 'rgba(0, 0, 0, 0.80)' : 'rgba(0, 0, 0, 0.3)'
     var radius = state.ring_radius * (i - env.params.my_minyear + 1)
     env.shapes.unshift({shape: 'circle', x: 0, y: 0, r: radius, stroke: color, fill: 'rgba(0, 0, 0, 0)', line: 1, type: 'ring', year: i})
   }
@@ -540,7 +540,7 @@ function copy_edges(env) {
       return undefined
 
     var color = hues[edge.label]
-    var label = edge.label || "777"
+    var label = edge.label || "#777"
     var id    = edge._in._id + '-' + edge._out._id
 
     // TODO: is this needed with hard baked colours?
@@ -571,18 +571,10 @@ function copy_nodes(env) {
     // var this_year = state.all_edges || node.year === state.current_year
     // var color =  'hsla(0,0%,20%,0.' + (this_year ? '99' : '3') + ')'
 
-    // Person: Blue
-    // Org: Green
-    // Event: Magenta
-    // Outcome: Orange
-    // Concept: Purple
-    // Labels should be black
-    // Connections should be grey
-      var hues = { outcome: "hsla(48, 100%, 78%, 1)"
-               // , action '20'
-                 , person: "hsla(195, 50%, 42%, 1)"
-                 , event: "hsla(353, 100%, 56%, 1)"
-                 , org: "hsla(150, 100%, 34%, 1)"
+      var hues = { outcome: "#ffd600"    // yellow
+                 , person:  "#009edb"    // blue (aka, Individual)
+                 , event:   "#f32938"    // red
+                 , org:     "#00af4c"    // green (aka, "Group")
                }
 
       var color = hues[node.type]
@@ -603,9 +595,9 @@ function copy_nodes(env) {
                     , _id: node._id
                     , x: node.x
                     , y: node.y
-                    , r: node.r
+                    , r: node.r + 10
                     , line: 0.01
-                    , fill: 'hsla(0, 80%, 100%, 0.95)'
+                    , fill: 'rgba(255, 214, 0, 0.8)'
                     }
 
     return [highlight, shape]
@@ -759,7 +751,7 @@ function draw_it_svg(env) {
     return `
       <g>
         <line class= "${node.type}" x1="${fromx}" y1="${fromy}" x2="${tox}" y2="${toy}" stroke-width="2" stroke="${stroke_color}"/>
-        <line id="${u_id}" class= "${node.type}" x1="${fromx}" y1="${fromy}" x2="${tox}" y2="${toy}" stroke-width="30" stroke="rgba(0, 0, 0, 0)"/>
+        <line id="${u_id}" class= "${node.type}" x1="${fromx}" y1="${fromy}" x2="${tox}" y2="${toy}" stroke-width="15" stroke="rgba(0, 0, 0, 0)"/>
       </g>`
   }
 
