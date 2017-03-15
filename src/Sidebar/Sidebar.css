@@ -11,6 +11,10 @@ $TabBg: rgb(238, 233, 239);
   flex: 1;
   justify-content: space-between;
   /*width: 500px;*/
+  font-size: 16px;
+  line-height: 1.6;
+  min-width: 400px;
+
 }
 
 .Sidebar__container {
@@ -22,22 +26,16 @@ $TabBg: rgb(238, 233, 239);
 }
 
 .Sidebar__header {
-  font-size: 30px;
-  color: $primaryRed;
-  font-weight: 100;
-  text-transform: uppercase;
   align-content: center;
+  color: $primaryRed;
+  font-size: 30px;
+  font-weight: 100;
   letter-spacing: 1px;
-  margin-bottom: 0;
-}
-
-.Sidebar__viewbox {
-
+  text-transform: uppercase;
 }
 
 .Sidebar__subheading{
   font-size: 1.4rem;
   font-style: italic;
   margin-bottom: 3rem;
-
 }

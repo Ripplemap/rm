@@ -1179,7 +1179,7 @@ function render(vnode, parent, merge) {
   return diff(merge, vnode, {}, false, parent);
 }
 
-__$styleInject(".Sidebar{display:flex;flex:1;justify-content:space-between}.Sidebar__container{flex-grow:1;justify-content:center;padding:16px 32px;padding:1rem 2rem;max-height:100vh;overflow-y:scroll}.Sidebar__header{font-size:30px;color:#ff5961;font-weight:100;text-transform:uppercase;align-content:center;letter-spacing:1px;margin-bottom:0}.Sidebar__subheading{font-size:22.4px;font-size:1.4rem;font-style:italic;margin-bottom:48px;margin-bottom:3rem}", undefined);
+__$styleInject(".Sidebar{display:flex;flex:1;justify-content:space-between;font-size:16px;line-height:1.6;min-width:400px}.Sidebar__container{flex-grow:1;justify-content:center;padding:16px 32px;padding:1rem 2rem;max-height:100vh;overflow-y:scroll}.Sidebar__header{align-content:center;color:#ff5961;font-size:30px;font-weight:100;letter-spacing:1px;text-transform:uppercase}.Sidebar__subheading{font-size:22.4px;font-size:1.4rem;font-style:italic;margin-bottom:48px;margin-bottom:3rem}", undefined);
 
 __$styleInject(".Tabbar{min-width:130px;max-width:130px;display:flex;flex-direction:column}.Tabbar__fillspace{background:#ede8ef;flex-grow:1}", undefined);
 
@@ -2223,7 +2223,6 @@ function submit_convo(ev) {
   force_rerender();
 }
 
-// TODO: ask Tyler about this (and utils.js in general):
 var renderers = [];
 function add_renderer(f) {
   renderers.push(f);
@@ -2958,13 +2957,15 @@ function draw_it_svg(env) {
   }
 }
 
+/////////////////////////////////
+
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// SENTENCE STRUCTURES
+// CANVAS FUNCTIONS
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -3086,6 +3087,8 @@ function write_sentences(env) {
     return ' ' + text + notes + button;
   }
 }
+
+// FORM BUILDER & FRIENDS
 
 function render_conversation(conversation) {
   var str = '';
