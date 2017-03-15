@@ -17,7 +17,7 @@ function __$styleInject(css, returnValue) {
   return returnValue;
 }
 
-__$styleInject("html{font-size:62.5%}body{margin:0;padding:0;font-family:Fira Sans,Arial,Helvetica,sans-serif;font-size:13px;font-size:1.3rem;max-height:100vh}.App{display:flex;min-height:100vh;background:#fff}#sidebar{display:flex;flex:1}#ripplemap-mount{display:flex;flex:2;background:linear-gradient(135deg,#502561,#fd5d62);justify-content:center}input{padding:10px;padding:1rem;border:1px solid #999}.highlight{background-color:#ff6}.hide{display:none}#controls{display:flex;flex-direction:column;position:fixed;top:0;right:0;margin:10px;margin:1rem;color:hsla(0, 0%, 100%, .9)}#addtag{align-self:flex-end}#btn_add_tag{background:hsla(0, 0%, 100%, .9);border:0;padding:5px;padding:.5rem;text-transform:uppercase;border-radius:2px;transition:all .1s ease;box-shadow:1px 2px 1px rgba(0, 0, 0, .32);outline:none}#btn_add_tag:hover{box-shadow:3px 3px 3px rgba(0, 0, 0, .42)}#btn_add_tag:active{box-shadow:1px 1px 1px rgba(0, 0, 0, .12)}#tag-box{color:#dfdfdf;opacity:.5;text-align:right;align-self:flex-end;margin-bottom:0}#tag-box,#tagnames{display:flex;flex-direction:column}#tagnames{margin-top:10px;margin-top:1rem}.tag_icon{display:none                /* ! above .tag -> to show on hover.*/}.tag{text-align:right;cursor:pointer;padding:2.5px 0;padding:.25rem 0;align-self:flex-end;padding:5px;border-radius:3px}.tag:hover{background:#ffd600;color:#111;box-shadow:1px 1px 5px rgba(0, 0, 0, .32)}.tag:hover>.tag_icon{display:inline}.tag:active{background:#ffd600;color:#111;box-shadow:0 0 0 transparent}.pl_1{padding-left:10px;padding-left:1rem}.pr_1{padding-right:10px;padding-right:1rem}", undefined);
+__$styleInject("html{font-size:62.5%}body{margin:0;padding:0;font-family:Fira Sans,Arial,Helvetica,sans-serif;font-size:13px;font-size:1.3rem;max-height:100vh}.App{display:flex;min-height:100vh;background:#fff}#sidebar{display:flex;flex:1}#ripplemap-mount{display:flex;flex:2;background:linear-gradient(135deg,#502561,#fd5d62);justify-content:center}input{padding:10px;padding:1rem;border:1px solid #999}.highlight{background-color:#ff6}.hide{display:none}#controls{display:flex;flex-direction:column;position:fixed;top:0;right:0;margin:10px;margin:1rem;color:hsla(0, 0%, 100%, .9)}#addtag{align-self:flex-end}#btn_add_tag{background:hsla(0, 0%, 100%, .9);border:0;padding:5px;padding:.5rem;text-transform:uppercase;border-radius:2px;transition:all .1s ease;box-shadow:1px 2px 1px rgba(0, 0, 0, .32);outline:none;display:none}#btn_add_tag:hover{box-shadow:3px 3px 3px rgba(0, 0, 0, .42)}#btn_add_tag:active{box-shadow:1px 1px 1px rgba(0, 0, 0, .12)}#tag-box{color:#dfdfdf;opacity:.5;text-align:right;align-self:flex-end;margin-bottom:0}#tag-box,#tagnames{display:flex;flex-direction:column}#tagnames{margin-top:10px;margin-top:1rem}.tag_icon{display:none                /* ! above .tag -> to show on hover.*/}.tag{text-align:right;cursor:pointer;padding:2.5px 0;padding:.25rem 0;align-self:flex-end;padding:5px;border-radius:3px}.tag:hover{background:#ffd600;color:#111;box-shadow:1px 1px 5px rgba(0, 0, 0, .32)}.tag:hover>.tag_icon{display:inline}.tag:active{background:#ffd600;color:#111;box-shadow:0 0 0 transparent}.pl_1{padding-left:10px;padding-left:1rem}.pr_1{padding-right:10px;padding-right:1rem}", undefined);
 
 /** Virtual DOM Node */
 function VNode(nodeName, attributes, children) {
@@ -2223,7 +2223,6 @@ function submit_convo(ev) {
   force_rerender();
 }
 
-// TODO: ask Tyler about this (and utils.js in general):
 var renderers = [];
 function add_renderer(f) {
   renderers.push(f);
@@ -2958,13 +2957,15 @@ function draw_it_svg(env) {
   }
 }
 
+/////////////////////////////////
+
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// SENTENCE STRUCTURES
+// CANVAS FUNCTIONS
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -3086,6 +3087,8 @@ function write_sentences(env) {
     return ' ' + text + notes + button;
   }
 }
+
+// FORM BUILDER & FRIENDS
 
 function render_conversation(conversation) {
   var str = '';
