@@ -1228,8 +1228,14 @@ function set_minus(xs, ys) {
 function showtags() {
   // generate current tags
   // hoverable span for highlight, plus clickable for remove
-  var tagwrapper = ['<span class="tag">', '</span>']
-  var tagstr = state.tags.map(function(tag) { return tagwrapper[0] + tag + tagwrapper[1] }).join('')
+  var tagstr = state.tags.map(function(tag) {
+    return (
+      `<span class="tag">
+        <i class="tag_icon fa fa-trash-o pr_1" aria-hidden="true"></i>${tag}
+      </span>`
+    )
+  }).join('');
+
   dom.set_el('tagnames', tagstr)
 
   // generate select box
