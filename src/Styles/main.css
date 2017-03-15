@@ -1,21 +1,29 @@
 /**
-*
+* Main CSS table of contents
+- Variables
+- Text Styling
+- General Layout
+- Tags
+- Highlighting Stuff
+- Helpers
+
 */
 
-/* Variables */
+/*** # Variables # ***/
+
 $primaryRed: rgb(255, 89, 97);
 $primaryBg:  rgb(255, 255, 255);
 $tabText:    rgb(180, 163, 183);
 $TabBg:      rgb(238, 233, 239);
 
 /* Text / general colours */
-
 $tRed:       #f32938;
 $tGreen:     #00af4c;
 $tBlue:      #009edb;
 $tYellow:    #ffd600;
 
-/* General Layout */
+
+/*** # General Layout # ***/
 html {
   font-size: 62.5%;
 }
@@ -47,9 +55,7 @@ body {
 }
 
 
-
-/* HTML ELEMENTS */
-
+/*** # HTML ELEMENTS # ***/
 input {
   /* width: 100% !important; */
   padding: 1rem;
@@ -59,16 +65,9 @@ input {
 
 /* Decorations */
 
-.highlight {
-  background-color: #ffff66;
-}
-
-.hide {
-  display: none;
-}
 
 
-/* ========= Tags =========== */
+/*** # Tags # ****/
 
 #controls {
   /*max-width: 200px; */
@@ -153,7 +152,44 @@ input {
   }
 }
 
-/* HELPERS! */
+
+/* Highlighting Stuff */
+
+.highlight {
+  background-color: #ffff66;
+}
+
+.word:active, .word:focus, .word:hover {
+  border: none;
+  outline: none;
+  background-color: #dfd;
+}
+
+.thing:active, .thing:focus, .thing:hover {
+  background-color: #fee;
+}
+
+.action:active, .action:focus, .action:hover {
+  background-color: #ffe;
+}
+
+.happening:active, .happening:focus, .happening:hover {
+  background-color: #fef;
+}
+
+.effect:active, .effect:focus, .effect:hover {
+  background-color: #eff;
+}
+
+.edge:active, .edge:focus, .edge:hover {
+  background-color: #eee;
+}
+
+
+
+
+
+/*** # HELPERS! # ***/
 
 /* Padding + Margin Helpers */
 
@@ -162,4 +198,8 @@ input {
 }
 .pr_1 {
   padding-right: 1rem;
+}
+
+.hide {
+  display: none;
 }
