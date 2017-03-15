@@ -84,6 +84,8 @@ function fact_to_graph(facts) {
 function get_tagkeys(facts) {
   var keys = {}
   facts.forEach(function(fact) {
+    if(fact.action !== 'add') return undefined
+
     ~(fact.tags||[]).forEach(function(tag) {
       if(tag)
         keys[tag] = true
