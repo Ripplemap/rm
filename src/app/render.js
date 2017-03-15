@@ -1057,12 +1057,17 @@ function get_cat_dat(cat, q) {
 function render_conversation(conversation) {
   let str = ''
 
-  var typeahead_params = {hint: true, highlight: true, minLength: 1}
-  function typeahead_source(cat) {return {name: 'states', source: function(q, cb) {cb(get_cat_dat(cat, q))}}}
+  // var typeahead_params = {hint: true, highlight: true, minLength: 1}
+  // function typeahead_source(cat) {return {name: 'states', source: function(q, cb) {cb(get_cat_dat(cat, q))}}}
+  function make_datalist(cat) {
+    let nodes = G.vertices.filter(function(node) {return node.cat === cat}).map(prop('name'))
+    let options = nodes.reduce((acc, v) => acc + `<option value="${v}">`, '')
+    return `<datalist id="${cat}-list">${options}</datalist>`
+  }
 
   var inputs = ''
   var prelude = ''
-  var submit_button = '<input type="submit" style="position: absolute; left: -9999px">'
+  // var submit_button = '<input type="submit" style="position: absolute; left: -9999px">'
 
   // special case the first step
   var sentence = conversation.current
@@ -1089,48 +1094,72 @@ function render_conversation(conversation) {
 
   // do the DOM
   // dom.set_el('the-conversation', prelude + inputs + submit_button)
-  str = prelude + inputs + submit_button
+  str = prelude + inputs // + submit_button
 
   // wiring... /sigh
   var catnames = Object.keys(cats)
   catnames.forEach(function(cat) {
-    $('.'+cat+'-input').typeahead(typeahead_params, typeahead_source(cat))
+    // $('.'+cat+'-input').typeahead(typeahead_params, typeahead_source(cat))
   })
 
-  if(sentence.filled.length)
-    $('#' + slot.key).focus()
+  // if(sentence.filled.length)
+  //   dom.el(slot.key).focus()    // TODO: this probably doesn't work
+
+  // TODO: use the autofocus attr directly on the input
 
   return str
 
   // helper functions
 
   function make_word_input(cat, key) {
-    var text = ''
+    // var text = ''
 
-    if(cat === 'thing')
-      return '<input class="typeahead ' +cat+ '-input" type="text" placeholder="A' +mayben(cat)+ ' ' +cat+ '" id="' +key+ '">'
+    let datalist = make_datalist(cat, key)
+
+    if(cat === 'thing') {
+      return `<input autofocus list="${cat}-list" id="${key}" type="text" placeholder="A${mayben(cat)} ${cat}">` + datalist
+    }
+
     if(cat === 'action') {
-      text += '<select id="verb" name="verb">'
       var options = ['participate in', 'lead', 'fund', 'organize', 'inspire', 'invite']
-      // var options = ['facilitate', 'coordinate', 'contribute', 'create', 'attend', 'manage', 'assist', 'present', 'join', 'leave']
-      options.forEach(function(option) {
-        text += '<option>' + option + '</option>'
-      })
-      text += '</select>'
-      return text
+      return make_select_list('verb', options)
+
+      // text += '<select id="verb" name="verb">'
+      // // var options = ['facilitate', 'coordinate', 'contribute', 'create', 'attend', 'manage', 'assist', 'present', 'join', 'leave']
+      // options.forEach(function(option) {
+      //   text += '<option>' + option + '</option>'
+      // })
+      // text += '</select>'
+      // return text
     }
   }
 
   function make_type_input(cat, key) {
     // TODO: this assumes cat is always 'thing'
-    var str = '<select id="'+key+'">'
-    str += '<option value="person">person</option>'
-    str += '<option value="org">org</option>'
-    str += '<option value="event">event</option>'
-    str += '<option value="outcome">outcome</option>'
-    str += '</select>'
-    return str
+    var options = ['person', 'org', 'event', 'outcome']
+    return make_select_list(key, options)
+
+    // var str = '<select id="'+key+'">'
+    // str += '<option value="person">person</option>'
+    // str += '<option value="org">org</option>'
+    // str += '<option value="event">event</option>'
+    // str += '<option value="outcome">outcome</option>'
+    // str += '</select>'
+    // return str
   }
+
+  function make_select_box(id, xs) {  // takes a list of strings
+    let options = xs.reduce((acc, x) => acc + `<option value="${x}">${x}</option>`, '')
+    return `<select id="${id}" name="${id}"> ${options} </select>`
+  }
+
+  function make_select_list(id, xs) { // a newfangled select box
+    /// TODO: this is sooooooper stooooopid
+    ///       just return a data structure, bind it into the state as part of the convo,
+    ///       and have preact render it. no sense mucking with dom weirdness here, just handle the logic
+    return xs.reduce((acc, x) => acc + `<p onclick="f__r(yuck({${id}:'${x}'}))">${x}</p>`, '')
+  }
+
 
   function make_date_input(key) {
     var str = '<input id="' +key+ '" type="date" name="' +key+ '" value="2016-01-01" />'
