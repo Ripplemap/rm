@@ -1,12 +1,17 @@
 import {add_thing, add_action, add_edge} from 'model'
 // import * as dom from 'dom'
 import {G} from 'graph'
-// import {force_rerender} from 'render'
+import {force_rerender} from 'render'
 import {error} from 'fun'
 
 
 export let convo = new_conversation()
-export {update_conversation}
+export {update_conversation, restart_sentence}
+
+function restart_sentence() {
+  convo.current = new_sentence()
+  force_rerender()
+}
 
 function update_conversation(values, conversation) {
   var conversation = conversation || convo
@@ -31,7 +36,7 @@ function new_sentence() {
 
 function new_conversation() {
   var sentence = new_sentence()
-  return {sentences: [sentence], current: sentence}
+  return {sentences: [], current: sentence}
 }
 
 function fulfill_desire(conversation, value) {
@@ -72,7 +77,11 @@ function fulfill_desire(conversation, value) {
 
     // start over
     // TODO: show the sentence
-    conversation = new_conversation()
+    // conversation = new_conversation()
+    conversation.sentences.push(sentence)
+    restart_sentence()
+    // conversation.current = new_sentence()
+
     // force_rerender()
   }
 

@@ -1039,12 +1039,28 @@ function render_conversation(conversation) {
   var prelude = ''
   // var submit_button = '<input type="submit" style="position: absolute; left: -9999px">'
 
+  // account for existing sentences
+  if(conversation.sentences.length) {
+    conversation.sentences.forEach(
+      s => {
+        prelude += '<p>'
+        s.filled.forEach((slot, i) => prelude += inject_value(slot, slot.value, i) + ' ')
+        prelude += '</p>'
+      })
+  }
+
   // special case the first step
   var sentence = conversation.current
 
   sentence.filled.forEach(function(slot, i) {
     prelude += inject_value(slot, slot.value, i) + ' '
   })
+
+  if(!prelude) {
+    prelude = `<p>Okay, let’s fill in the blanks.</p>
+               <p>E.g. Sylver Sterling organized the Design Justice Exhibition.</p>
+              `
+  }
 
   // display the unfilled slot
   var slot = sentence.slots[0]
@@ -1087,7 +1103,9 @@ function render_conversation(conversation) {
     let datalist = make_datalist(cat, key)
 
     if(cat === 'thing') {
-      return `<input autofocus list="${cat}-list" id="${key}" type="text" placeholder="A${mayben(cat)} ${cat}">` + datalist
+      return `<input autofocus list="${cat}-list" id="${key}" type="text" size="50"
+                     placeholder="name of a person or thing">` + datalist
+                     // placeholder="A${mayben(cat)} ${cat}">` + datalist
     }
 
     if(cat === 'action') {
@@ -1127,7 +1145,7 @@ function render_conversation(conversation) {
     /// TODO: this is sooooooper stooooopid
     ///       just return a data structure, bind it into the state as part of the convo,
     ///       and have preact render it. no sense mucking with dom weirdness here, just handle the logic
-    return xs.reduce((acc, x) => acc + `<p onclick="f__r(yuck({${id}:'${x}'}))">${x}</p>`, '')
+    return xs.reduce((acc, x) => acc + `<p class="choice ${x}" onclick="f__r(yuck({${id}:'${x}'}))">${x}</p>`, '')
   }
 
 
@@ -1140,10 +1158,10 @@ function render_conversation(conversation) {
     var text = ''
 
     if(slot.key === 'subject') {
-      if(slot.value) {
-        text += '<p><b>' + slot.value + '</b></p>'
+      if(slot.value && Number.isInteger(index)) {
+        // text += '<p><b>' + slot.value + '</b></p>'
+        text += '<b>' + slot.value + '</b>'
       } else {
-        text += "Okay, let's fill in the blanks. Tell us about "
         text += value + ' '
       }
     }
@@ -1156,20 +1174,25 @@ function render_conversation(conversation) {
       text += value + ' '
     }
     else if(slot.type === 'gettype') {
-      if(index === 1) {
-        text += ' is a'
-        text += mayben(value) + ' '
-        text += value + ' '
-        if(slot.value)
-          text += slot.value === 'person' ? 'who ' : 'which '
-      } else {
-        text += ' (a'
-        text += mayben(value) + ' '
-        text += value + ') '
+      if(!Number.isInteger(index)) {
+        // hack hack hack
+        text += 'is a'
+        text += value
       }
+      // else if(index === 1) {
+      //   text += ' is a'
+      //   text += mayben(value) + ' '
+      //   text += value + ' '
+      //   if(slot.value)
+      //     text += slot.value === 'person' ? 'who ' : 'which '
+      // } else {
+      //   text += ' (a'
+      //   text += mayben(value) + ' '
+      //   text += value + ') '
+      // }
     }
     else if(slot.type === 'date') {
-      text += ' in/on '
+      text += ' on '
       text += value + ' '
     }
     else {

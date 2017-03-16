@@ -156,6 +156,10 @@ input {
   background-color: #ffff66;
 }
 
+.active {
+  background-color: #ffd600;
+}
+
 
 .thing {
   border-bottom: 2px solid rgb(228, 37, 156);
@@ -197,6 +201,49 @@ input {
   border-bottom: 2px solid rgb(255,214,0);
 }
 
+/* lalalalala */
+
+.choice {
+  border-bottom: 2px solid rgb(255,214,0);
+}
+.choice:active, .choice:focus, .choice:hover {
+  background-color: rgba(255, 214, 0, 0.4);
+  border-bottom: 2px solid rgb(255,214,0);
+}
+
+
+
+.person {
+  border-bottom: 2px solid rgb(0, 158, 219);
+}
+.person:active, .person:focus, .person:hover {
+  background-color: rgba(0, 158, 219, 0.4);
+  border-bottom: 2px solid rgb(0, 158, 219);
+}
+
+.org {
+  border-bottom: 2px solid rgb(0, 175, 76);
+}
+.org:active, .org:focus, .org:hover {
+  background-color: rgba(0, 175, 76, 0.4);
+  border-bottom: 2px solid rgb(0, 175, 76);
+}
+
+.event {
+  border-bottom: 2px solid rgb(243, 41, 56);
+}
+.event:active, .event:focus, .event:hover {
+  background-color: rgba(243, 41, 56, 0.4);
+  border-bottom: 2px solid rgb(243, 41, 56);
+}
+
+.outcome {
+  border-bottom: 2px solid rgb(255,214,0);
+}
+.outcome:active, .outcome:focus, .outcome:hover {
+  background-color: rgba(255, 214, 0, 0.4);
+  border-bottom: 2px solid rgb(255,214,0);
+}
 
 
 /* .word:active, .word:focus, .word:hover { */

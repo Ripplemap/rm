@@ -17,7 +17,7 @@ function __$styleInject(css, returnValue) {
   return returnValue;
 }
 
-__$styleInject("html{font-size:62.5%}body{margin:0;padding:0;font-family:Fira Sans,Arial,Helvetica,sans-serif;font-size:13px;font-size:1.3rem;max-height:100vh}.App{display:flex;min-height:100vh;background:#fff}#sidebar{display:flex;flex:1}#ripplemap-mount{display:flex;flex:2;background:linear-gradient(135deg,#502561,#fd5d62);justify-content:center}input{padding:10px;padding:1rem;border:1px solid #999}#controls{display:flex;flex-direction:column;position:fixed;top:0;right:0;margin:10px;margin:1rem;color:hsla(0, 0%, 100%, .9)}#addtag{align-self:flex-end}#btn_add_tag{background:hsla(0, 0%, 100%, .9);border:0;padding:5px;padding:.5rem;text-transform:uppercase;border-radius:2px;transition:all .1s ease;box-shadow:1px 2px 1px rgba(0, 0, 0, .32);outline:none;display:none}#btn_add_tag:hover{box-shadow:3px 3px 3px rgba(0, 0, 0, .42)}#btn_add_tag:active{box-shadow:1px 1px 1px rgba(0, 0, 0, .12)}#tag-box{color:#dfdfdf;opacity:.5;text-align:right;align-self:flex-end;margin-bottom:0}#tag-box,#tagnames{display:flex;flex-direction:column}#tagnames{margin-top:10px;margin-top:1rem}.tag_icon{display:none                /* ! above .tag -> to show on hover.*/}.tag{text-align:right;cursor:pointer;padding:2.5px 0;padding:.25rem 0;align-self:flex-end;padding:5px;border-radius:3px}.tag:hover{background:#ffd600;color:#111;box-shadow:1px 1px 5px rgba(0, 0, 0, .32)}.tag:hover>.tag_icon{display:inline}.tag:active{background:#ffd600;color:#111;box-shadow:0 0 0 transparent}.highlight{background-color:#ff6}.thing{border-bottom:2px solid #e4259c}.thing:active,.thing:focus,.thing:hover{background-color:rgba(228, 37, 156, .4);border-bottom:2px solid #e4259c}.action{border-bottom:2px solid #00af4c}.action:active,.action:focus,.action:hover{border-bottom:2px solid #00af4c;background-color:rgba(0, 175, 76, .4)}.happening{border-bottom:2px solid rgba(0, 158, 219, .4)}.happening:active,.happening:focus,.happening:hover{background-color:rgba(0, 158, 219, .4);border-bottom:2px solid #009edb}.effect{border-bottom:2px solid #f32938}.effect:active,.effect:focus,.effect:hover{background-color:rgba(243, 41, 56, .4);border-bottom:2px solid #f32938}.edge{border-bottom:2px solid #ffd600}.edge:active,.edge:focus,.edge:hover{background-color:rgba(255, 214, 0, .4);border-bottom:2px solid #ffd600}.pl_1{padding-left:10px;padding-left:1rem}.pr_1{padding-right:10px;padding-right:1rem}.hide{display:none}", undefined);
+__$styleInject("html{font-size:62.5%}body{margin:0;padding:0;font-family:Fira Sans,Arial,Helvetica,sans-serif;font-size:13px;font-size:1.3rem;max-height:100vh}.App{display:flex;min-height:100vh;background:#fff}#sidebar{display:flex;flex:1}#ripplemap-mount{display:flex;flex:2;background:linear-gradient(135deg,#502561,#fd5d62);justify-content:center}input{padding:10px;padding:1rem;border:1px solid #999}#controls{display:flex;flex-direction:column;position:fixed;top:0;right:0;margin:10px;margin:1rem;color:hsla(0, 0%, 100%, .9)}#addtag{align-self:flex-end}#btn_add_tag{background:hsla(0, 0%, 100%, .9);border:0;padding:5px;padding:.5rem;text-transform:uppercase;border-radius:2px;transition:all .1s ease;box-shadow:1px 2px 1px rgba(0, 0, 0, .32);outline:none;display:none}#btn_add_tag:hover{box-shadow:3px 3px 3px rgba(0, 0, 0, .42)}#btn_add_tag:active{box-shadow:1px 1px 1px rgba(0, 0, 0, .12)}#tag-box{color:#dfdfdf;opacity:.5;text-align:right;align-self:flex-end;margin-bottom:0}#tag-box,#tagnames{display:flex;flex-direction:column}#tagnames{margin-top:10px;margin-top:1rem}.tag_icon{display:none                /* ! above .tag -> to show on hover.*/}.tag{text-align:right;cursor:pointer;padding:2.5px 0;padding:.25rem 0;align-self:flex-end;padding:5px;border-radius:3px}.tag:hover{background:#ffd600;color:#111;box-shadow:1px 1px 5px rgba(0, 0, 0, .32)}.tag:hover>.tag_icon{display:inline}.tag:active{background:#ffd600;color:#111;box-shadow:0 0 0 transparent}.highlight{background-color:#ff6}.active{background-color:#ffd600}.thing{border-bottom:2px solid #e4259c}.thing:active,.thing:focus,.thing:hover{background-color:rgba(228, 37, 156, .4);border-bottom:2px solid #e4259c}.action{border-bottom:2px solid #00af4c}.action:active,.action:focus,.action:hover{border-bottom:2px solid #00af4c;background-color:rgba(0, 175, 76, .4)}.happening{border-bottom:2px solid rgba(0, 158, 219, .4)}.happening:active,.happening:focus,.happening:hover{background-color:rgba(0, 158, 219, .4);border-bottom:2px solid #009edb}.effect{border-bottom:2px solid #f32938}.effect:active,.effect:focus,.effect:hover{background-color:rgba(243, 41, 56, .4);border-bottom:2px solid #f32938}.edge{border-bottom:2px solid #ffd600}.edge:active,.edge:focus,.edge:hover{background-color:rgba(255, 214, 0, .4);border-bottom:2px solid #ffd600}.choice{border-bottom:2px solid #ffd600}.choice:active,.choice:focus,.choice:hover{background-color:rgba(255, 214, 0, .4);border-bottom:2px solid #ffd600}.person{border-bottom:2px solid #009edb}.person:active,.person:focus,.person:hover{background-color:rgba(0, 158, 219, .4);border-bottom:2px solid #009edb}.org{border-bottom:2px solid #00af4c}.org:active,.org:focus,.org:hover{background-color:rgba(0, 175, 76, .4);border-bottom:2px solid #00af4c}.event{border-bottom:2px solid #f32938}.event:active,.event:focus,.event:hover{background-color:rgba(243, 41, 56, .4);border-bottom:2px solid #f32938}.outcome{border-bottom:2px solid #ffd600}.outcome:active,.outcome:focus,.outcome:hover{background-color:rgba(255, 214, 0, .4);border-bottom:2px solid #ffd600}.pl_1{padding-left:10px;padding-left:1rem}.pr_1{padding-right:10px;padding-right:1rem}.hide{display:none}", undefined);
 
 /** Virtual DOM Node */
 function VNode(nodeName, attributes, children) {
@@ -202,13 +202,6 @@ var NON_DIMENSION_PROPS = {
 // DOM event types that do not bubble and should be attached via useCapture
 var NON_BUBBLING_EVENTS = { blur: 1, error: 1, focus: 1, load: 1, resize: 1, scroll: 1 };
 
-/** Create an Event handler function that sets a given state property.
- *	@param {Component} component	The component whose state should be updated
- *	@param {string} key				A dot-notated key path to update in the component's state
- *	@param {string} eventPath		A dot-notated key path to the value that should be retrieved from the Event or component
- *	@returns {function} linkedStateHandler
- *	@private
- */
 function createLinkedState(component, key, eventPath) {
 	var path = key.split('.');
 	return function (e) {
@@ -225,9 +218,6 @@ function createLinkedState(component, key, eventPath) {
 	};
 }
 
-/** Managed queue of dirty components to be re-rendered */
-
-// items/itemsOffline swap on each rerender() call (just a simple pool technique)
 var items = [];
 
 function enqueueRender(component) {
@@ -245,12 +235,6 @@ function rerender() {
 	}
 }
 
-/** Check if a VNode is a reference to a stateless functional component.
- *	A function component is represented as a VNode whose `nodeName` property is a reference to a function.
- *	If that function is not a Component (ie, has no `.render()` method on a prototype), it is considered a stateless functional component.
- *	@param {VNode} vnode	A VNode
- *	@private
- */
 function isFunctionalComponent(vnode) {
   var nodeName = vnode && vnode.nodeName;
   return nodeName && isFunction(nodeName) && !(nodeName.prototype && nodeName.prototype.render);
@@ -264,11 +248,6 @@ function buildFunctionalComponent(vnode, context) {
   return vnode.nodeName(getNodeProps(vnode), context || EMPTY);
 }
 
-/** Check if two nodes are equivalent.
- *	@param {Element} node
- *	@param {VNode} vnode
- *	@private
- */
 function isSameNodeType(node, vnode) {
 	if (isString(vnode)) {
 		return node instanceof Text;
@@ -432,7 +411,6 @@ var toConsumableArray = function (arr) {
   }
 };
 
-/** Removes a given DOM Node from its parent. */
 function removeNode(node) {
 	var p = node.parentNode;
 	if (p) p.removeChild(node);
@@ -515,8 +493,6 @@ function eventProxy(e) {
 	return this._listeners[e.type](options.event && options.event(e) || e);
 }
 
-/** DOM node pool, keyed on nodeName. */
-
 var nodes = {};
 
 function collectNode(node) {
@@ -537,7 +513,6 @@ function createNode(nodeName, isSvg) {
 	return node;
 }
 
-/** Queue of components that have been mounted and are awaiting componentDidMount */
 var mounts = [];
 
 /** Diff recursion count, used to track the end of the diff cycle. */
@@ -836,10 +811,6 @@ function diffAttributes(dom, attrs, old) {
 	}
 }
 
-/** Retains a pool of Components for re-use, keyed on component name.
- *	Note: since component names are not unique or even necessarily available, these are primarily a form of sharding.
- *	@private
- */
 var components = {};
 
 function collectComponent(component) {
@@ -864,12 +835,6 @@ function createComponent(Ctor, props, context) {
 	return inst;
 }
 
-/** Set a component's `props` (generally derived from JSX attributes).
- *	@param {Object} props
- *	@param {Object} [opts]
- *	@param {boolean} [opts.renderSync=false]	If `true` and {@link options.syncComponentUpdates} is `true`, triggers synchronous rendering.
- *	@param {boolean} [opts.render=true]			If `false`, no render will be triggered.
- */
 function setComponentProps(component, props, opts, context, mountAll) {
 	if (component._disable) return;
 	component._disable = true;
@@ -1125,16 +1090,6 @@ function unmountComponent(component, remove) {
 	if (component.componentDidUnmount) component.componentDidUnmount();
 }
 
-/** Base Component class, for the ES6 Class method of creating Components
- *	@public
- *
- *	@example
- *	class MyFoo extends Component {
- *		render(props, state) {
- *			return <div />;
- *		}
- *	}
- */
 function Component(props, context) {
 	/** @private */
 	this._dirty = true;
@@ -1220,21 +1175,6 @@ extend(Component.prototype, {
 	render: function render() {}
 });
 
-/** Render JSX into a `parent` Element.
- *	@param {VNode} vnode		A (JSX) VNode to render
- *	@param {Element} parent		DOM element to render into
- *	@param {Element} [merge]	Attempt to re-use an existing DOM tree rooted at `merge`
- *	@public
- *
- *	@example
- *	// render a div into <body>:
- *	render(<div id="hello">hello!</div>, document.body);
- *
- *	@example
- *	// render a "Thing" component into #foo:
- *	const Thing = ({ name }) => <span>{ name }</span>;
- *	render(<Thing name="one" />, document.querySelector('#foo'));
- */
 function render(vnode, parent, merge) {
   return diff(merge, vnode, {}, false, parent);
 }
@@ -1280,9 +1220,6 @@ var Tab = function Tab(_ref) {
   );
 };
 
-/**
- * List to iterate over and generate tab commponents with.
- */
 var tabs = [{ name: "Home", id: "home", icon: "fa fa-home" }, { name: "Add A Story", id: "story", icon: "fa fa-commenting-o" }, { name: "Filters", id: "filters", icon: "fa fa-map-marker" }, { name: "Read Stories", id: "read_stories", icon: "fa fa-eye" }, { name: "Selected Stories", id: "selected_stories", icon: "fa fa-commenting" }, { name: "About", id: "about", icon: "fa fa-clone" }];
 
 /**
@@ -1646,18 +1583,6 @@ function error$1(mess) {
 
 var cats = {}; // ripplemap categories
 var adders = { thing: add_thing, action: add_action, edge: add_edge };
-/* INTERFACES FOR RIPPLE MODEL
- *
- * There are four categories: Thing, Action, Effect, and Happening
- *
- * Each category has multiple types associated with it. Each node has a category and type.
- *
- * Each node also tracks its cron, the adding user, and some type of 'confidence interval' (later)
- *
- * Each edge has a type, which is its label. Nodes expect edges of certain types.
- *
- */
-
 cats.thing = {};
 cats.action = {};
 cats.effect = {};
@@ -1886,11 +1811,6 @@ function add_edge(type, from, to, props, persist$$1) {
   if (persist$$1) add_to_server_facts('edge', edge);
 }
 
-// find all the paths between them, and their attached bits
-
-
-// SET UP CATEGORIES AND EDGES
-
 new_thing_type('person', {});
 new_thing_type('org', { cc: ['org'] });
 new_thing_type('place', { cc: ['place', 'event'] });
@@ -2060,9 +1980,12 @@ function set_intersect(xs, ys) {
   });
 }
 
-// import * as dom from 'dom'
-// import {force_rerender} from 'render'
 var convo = new_conversation();
+function restart_sentence() {
+  convo.current = new_sentence();
+  force_rerender();
+}
+
 function update_conversation(values, conversation) {
   var conversation = conversation || convo;
 
@@ -2082,7 +2005,7 @@ function new_sentence() {
 
 function new_conversation() {
   var sentence = new_sentence();
-  return { sentences: [sentence], current: sentence };
+  return { sentences: [], current: sentence };
 }
 
 function fulfill_desire(conversation, value) {
@@ -2119,7 +2042,11 @@ function fulfill_desire(conversation, value) {
 
     // start over
     // TODO: show the sentence
-    conversation = new_conversation();
+    // conversation = new_conversation()
+    conversation.sentences.push(sentence);
+    restart_sentence();
+    // conversation.current = new_sentence()
+
     // force_rerender()
   }
 
@@ -2173,8 +2100,6 @@ var el = function () {
 function set_el(el_id, val) {
   el(el_id).innerHTML = val;
 }
-
-// LOGIN/ORG/TAG STUFF
 
 function login(e) {
   e.preventDefault();
@@ -2514,7 +2439,6 @@ function mouseout_tagnames(ev) {
   need to add listeners to things... where should those live? in preact?
 */
 
-// TODO: ask Tyler about this (and utils.js in general):
 var renderers = [];
 function add_renderer(f) {
   renderers.push(f);
@@ -3199,13 +3123,15 @@ function draw_it_svg(env) {
   }
 }
 
+/////////////////////////////////
+
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// SENTENCE STRUCTURES
+// CANVAS FUNCTIONS
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -3330,6 +3256,8 @@ function write_sentences(env) {
   }
 }
 
+// FORM BUILDER & FRIENDS
+
 function render_conversation(conversation) {
   var str = '';
 
@@ -3349,12 +3277,27 @@ function render_conversation(conversation) {
   var prelude = '';
   // var submit_button = '<input type="submit" style="position: absolute; left: -9999px">'
 
+  // account for existing sentences
+  if (conversation.sentences.length) {
+    conversation.sentences.forEach(function (s) {
+      prelude += '<p>';
+      s.filled.forEach(function (slot, i) {
+        return prelude += inject_value(slot, slot.value, i) + ' ';
+      });
+      prelude += '</p>';
+    });
+  }
+
   // special case the first step
   var sentence = conversation.current;
 
   sentence.filled.forEach(function (slot, i) {
     prelude += inject_value(slot, slot.value, i) + ' ';
   });
+
+  if (!prelude) {
+    prelude = '<p>Okay, let\u2019s fill in the blanks.</p>\n               <p>E.g. Sylver Sterling organized the Design Justice Exhibition.</p>\n              ';
+  }
 
   // display the unfilled slot
   var slot = sentence.slots[0];
@@ -3394,7 +3337,8 @@ function render_conversation(conversation) {
     var datalist = make_datalist(cat, key);
 
     if (cat === 'thing') {
-      return '<input autofocus list="' + cat + '-list" id="' + key + '" type="text" placeholder="A' + mayben(cat) + ' ' + cat + '">' + datalist;
+      return '<input autofocus list="' + cat + '-list" id="' + key + '" type="text" size="50"\n                     placeholder="name of a person or thing">' + datalist;
+      // placeholder="A${mayben(cat)} ${cat}">` + datalist
     }
 
     if (cat === 'action') {
@@ -3431,7 +3375,7 @@ function render_conversation(conversation) {
     ///       just return a data structure, bind it into the state as part of the convo,
     ///       and have preact render it. no sense mucking with dom weirdness here, just handle the logic
     return xs.reduce(function (acc, x) {
-      return acc + ('<p onclick="f__r(yuck({' + id + ':\'' + x + '\'}))">' + x + '</p>');
+      return acc + ('<p class="choice ' + x + '" onclick="f__r(yuck({' + id + ':\'' + x + '\'}))">' + x + '</p>');
     }, '');
   }
 
@@ -3445,10 +3389,10 @@ function render_conversation(conversation) {
     var text = '';
 
     if (slot.key === 'subject') {
-      if (slot.value) {
-        text += '<p><b>' + slot.value + '</b></p>';
+      if (slot.value && Number.isInteger(index)) {
+        // text += '<p><b>' + slot.value + '</b></p>'
+        text += '<b>' + slot.value + '</b>';
       } else {
-        text += "Okay, let's fill in the blanks. Tell us about ";
         text += value + ' ';
       }
     } else if (slot.key === 'verb') {
@@ -3458,18 +3402,24 @@ function render_conversation(conversation) {
     } else if (slot.key === 'object') {
       text += value + ' ';
     } else if (slot.type === 'gettype') {
-      if (index === 1) {
-        text += ' is a';
-        text += mayben(value) + ' ';
-        text += value + ' ';
-        if (slot.value) text += slot.value === 'person' ? 'who ' : 'which ';
-      } else {
-        text += ' (a';
-        text += mayben(value) + ' ';
-        text += value + ') ';
+      if (!Number.isInteger(index)) {
+        // hack hack hack
+        text += 'is a';
+        text += value;
       }
+      // else if(index === 1) {
+      //   text += ' is a'
+      //   text += mayben(value) + ' '
+      //   text += value + ' '
+      //   if(slot.value)
+      //     text += slot.value === 'person' ? 'who ' : 'which '
+      // } else {
+      //   text += ' (a'
+      //   text += mayben(value) + ' '
+      //   text += value + ') '
+      // }
     } else if (slot.type === 'date') {
-      text += ' in/on ';
+      text += ' on ';
       text += value + ' ';
     } else {
       text = ' ' + value + ' ';
@@ -3477,11 +3427,6 @@ function render_conversation(conversation) {
 
     return text;
   }
-}
-
-function mayben(val) {
-  return (/^[aeiou]/.test(val) ? 'n' : ''
-  );
 }
 
 function set_minus(xs, ys) {
@@ -3613,7 +3558,6 @@ var LegendItem = function LegendItem(props) {
   );
 };
 
-// TODO: find out if EDGES need to be filterable (like NODES are clickable to toggle)
 var LegendNodes = [{
   name: 'Event',
   color: '#f32938',
@@ -3819,6 +3763,11 @@ var Story = function Story() {
         'form',
         { id: 'login', onSubmit: login, 'class': 'Story__form' },
         h(
+          'h3',
+          null,
+          'Want to add something to the map?'
+        ),
+        h(
           'p',
           null,
           'We\'d love to hear your stories! Let\'s start with your contact info:'
@@ -3836,11 +3785,6 @@ var Story = function Story() {
       'div',
       { id: 'storytime', 'class': state.email ? '' : 'hide' },
       h(
-        'h3',
-        null,
-        'Want to add something to the map?'
-      ),
-      h(
         'form',
         { id: 'the-conversation', onSubmit: submit_convo },
         h('div', { dangerouslySetInnerHTML: { __html: get_convo_html() } }),
@@ -3849,15 +3793,17 @@ var Story = function Story() {
           { type: 'submit', buttonStyle: 'next' },
           'Next',
           h('i', { 'class': 'fa fa-chevron-right pl_1', 'aria-hidden': 'true' })
+        ),
+        h(
+          'p',
+          { onClick: restart_sentence },
+          ' Go back',
+          h('i', { 'class': 'fa fa-chevron-left pl_1', 'aria-hidden': 'true' })
         )
       )
     )
   );
 };
-
-/**
- * Sidebar layout and state
- */
 
 var Sidebar = function (_Component) {
   inherits(Sidebar, _Component);
@@ -3950,24 +3896,6 @@ var Sidebar = function (_Component) {
   return Sidebar;
 }(Component);
 
-// TODO: partition incoming bleep bloops by action
-// TODO: build edit functions
-// TODO: build remove functions
-// TODO: ask user for email address
-// TODO: show current tags
-// TODO: allow changing of tags
-// TODO: allow multitag views
-// TODO: add all tags on server
-// TODO: try to get an additional compaction in
-
-// TODO: consolidate like-named nodes
-// TODO: consolidate email addresses on server
-// TODO: copy tags into url
-
-
-// INIT
-
-
 function init$1() {
 
   // TODO: break this up a little so the logic is clearer
@@ -4028,8 +3956,6 @@ function tagglue() {
  * Binds the RM app to the Preact renderer
  *
  */
-
-// TODO: do we need h, Component below?
 
 window.yuck = update_conversation;
 window.f__r = force_rerender;
