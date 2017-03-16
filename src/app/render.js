@@ -1,6 +1,7 @@
 import {G} from 'graph'
-import {unique, eq, prop, clone, truncate, push_it, pipe} from 'fun'
+import {eq, prop, clone, truncate, push_it, pipe} from 'fun'
 import * as dom from 'dom'
+import * as highlight from 'highlight'
 import {convo} from 'convo'
 import {cats} from 'model'
 import state from 'state'
@@ -527,9 +528,9 @@ function copy_nodes(env) {
     // HACK: move this elsewhere
     if(!state.all_edges) {
       var ghost = !node._in.concat(node._out)
-                       .map(e => [e._in.year, e._out.year])
-                       .reduce((acc, t) => acc.concat(t), [])
-                       .filter(y => y === state.current_year).length
+                           .map(e => [e._in.year, e._out.year])
+                           .reduce((acc, t) => acc.concat(t), [])
+                           .filter(y => y === state.current_year).length
       if(ghost)
         return []
     }
@@ -537,13 +538,13 @@ function copy_nodes(env) {
     // var this_year = state.all_edges || node.year === state.current_year
     // var color =  'hsla(0,0%,20%,0.' + (this_year ? '99' : '3') + ')'
 
-      var hues = { outcome: "#ffd600"    // yellow
-                 , person:  "#009edb"    // blue (aka, Individual)
-                 , event:   "#f32938"    // red
-                 , org:     "#00af4c"    // green (aka, "Group")
+    var hues = { outcome: "#ffd600"    // yellow
+               , person:  "#009edb"    // blue (aka, Individual)
+               , event:   "#f32938"    // red
+               , org:     "#00af4c"    // green (aka, "Group")
                }
 
-      var color = hues[node.type]
+    var color = hues[node.type]
 
     var shape = { shape: 'circle'
                 , _id: node._id
@@ -554,8 +555,11 @@ function copy_nodes(env) {
                 , fill: color
                 }
 
-    if(!node.highlight)
+    if(!node.highlight && !node.active)
       return shape
+
+    let colour = node.active ? 'rgba(255, 214, 0, 0.98)'
+                             : 'rgba(255, 214, 0, 0.8)'
 
     var highlight = { shape: 'circle'
                     , _id: node._id
@@ -563,7 +567,7 @@ function copy_nodes(env) {
                     , y: node.y
                     , r: node.r + 10
                     , line: 0.01
-                    , fill: 'rgba(255, 214, 0, 0.8)'
+                    , fill: colour
                     }
 
     return [highlight, shape]
@@ -622,43 +626,7 @@ function draw_it_svg(env) {
   // inject the svg node
   document.getElementById('ripplemap-mount').innerHTML = env.svg.head + env.svg.body + env.svg.tail
 
-  // add listeners
-  function highlight_edge(e) {
-    let id = e.target.id
-    let ids = id.split('-')
-    if(!ids[0]) return undefined
-
-    var fun = function(v) {return ~ids.indexOf(v._id)}
-    dom.highlight(fun)
-  }
-
-  let edge_click = highlight_edge
-  let edge_hover = highlight_edge
-
-  let good_edges = edges.filter(id => true)
-  good_edges.map(id => dom.el(id).addEventListener('click', edge_click))
-  good_edges.map(id => dom.el(id).addEventListener('mouseover', edge_hover))
-
-
-  function highlight_node(e) {
-    let id = e.target.id
-    if(!id) return undefined
-
-    let ids = G.v(id).both().both().run().map(x => x._id).filter(unique)
-    var fun = function(v) {return ~ids.indexOf(v._id)}
-    dom.highlight(fun)
-  }
-
-  let node_click = highlight_node
-  let node_hover = highlight_node
-
-  let good_nodes = nodes.filter(id => true)
-  good_nodes.map(id => dom.el(id).addEventListener('click', node_click))
-  good_nodes.map(id => dom.el(id).addEventListener('mouseover', node_hover))
-
-  // dom.highlight(function(v) { return ~v.tags.indexOf(tag) })
-
-
+  highlight.add_svg_listeners(edges, nodes)
 
   return env // <----- hey look, the function ends here!
 
@@ -966,7 +934,9 @@ function write_sentences(env) {
         classes.push('node-' +  thing._in._id + '-' + thing._out._id)
       }
 
-      if(thing.highlight)
+      // TODO: change this vis-a-vis new highlighting -- it currently only highlights a sentence if *all* of the elements are lit, but we could instead highlight individual elements.
+      // THINK: this fix probably makes more sense as part of lifting the html renderer into preact, through keeping the active/highlight info in the new intermediate data structure
+      if(thing.highlight || thing.active)
         highlight_count++
 
       if(type !== 'edge')
@@ -981,7 +951,7 @@ function write_sentences(env) {
     })
 
     var sentence_classes = 'sentence'
-    sentence_classes += highlight_count === 3 ? ' highlight' : ''
+    sentence_classes += highlight_count >= 2 ? ' highlight' : ''
     sentence += '<p class="' + sentence_classes + '">' + innerwords + '.</p>'
 
     // dom.append_el('sentences', sentence)

@@ -126,6 +126,8 @@ Dagoba.G.mergeVertices = function(vertices) {                     // props are m
 }
 
 Dagoba.G.findVertices = function(args) {                          // our general vertex finding function
+  if(Array.isArray(args[0]))
+    args = args[0]                                                // shunt for array applications
   if(typeof args[0] == 'object')
     return this.searchVertices(args[0])
   else if(args.length == 0)

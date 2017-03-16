@@ -7,6 +7,7 @@ import {error, noop} from 'fun'
 import {persist} from 'net'
 import {force_rerender, showtags, whatsnext} from 'render'
 
+
 export {set_el, append_el}
 
 export const el = function() {
@@ -43,59 +44,7 @@ export function login(e) {
   // el('storytime').classList.remove('hide')
 }
 
-// SOME HIGHLIGHTING OR SOMETHING
 
-var highlight_fun, highlight_target
-
-export function activate_highlighter() {
-  highlight_fun = el('sentences').addEventListener('mousemove', highlighter)
-}
-
-export function deactivate_highlighter() {
-  el('sentences').removeEventListener('mousemove', highlight_fun)
-}
-
-function highlighter(e) {
-  for(var t=e.target; t && t.matches; t = t.parentNode) {
-    if(t.matches('.sentence')) {
-      if(highlight_target === t)
-        return undefined
-
-      highlight_target = t
-      var ids = [].slice.call(t.children).map(node => node.dataset.id).filter(Boolean)
-      var fun = function(v) {return ~ids.indexOf(v._id)}
-      // ids.forEach(id => G.v(id).run()[0].highlight = true)
-      // render()
-      highlight(fun)
-      return undefined
-    }
-  }
-}
-
-export function highlight(o_or_f) {
-  var current = G.v({highlight: true}).run()
-  current.forEach(function(node) {
-    // node.highlight = false
-    delete node.highlight // better when collapsing
-  })
-
-  if(!o_or_f) {
-    force_rerender()
-    return undefined
-  }
-
-  if(typeof o_or_f === 'function') {
-    current = G.v().filter(o_or_f).run()
-  } else {
-    current = G.v(o_or_f).run()
-  }
-
-  current.forEach(function(node) {
-    node.highlight = true
-  })
-
-  force_rerender()
-}
 
 
 // INTERACTIONS & DOM BINDINGS
@@ -109,28 +58,6 @@ export function click_tagnames(ev) {
 
   force_rerender()
   showtags()
-}
-
-export function mouseover_tagnames(ev) {
-  var target = ev.target
-  var tag = target.innerText
-
-  if(!tag)
-    return undefined
-
-  if(highlight_target === tag)
-    return undefined
-
-  highlight_target = tag
-  highlight(function(v) { return ~v.tags.indexOf(tag) })
-}
-
-export function mouseout_tagnames(ev) {
-  if(!highlight_target)
-    return undefined
-
-  highlight_target = false
-  highlight()
 }
 
 export function global_keydown(ev) {

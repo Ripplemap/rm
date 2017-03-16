@@ -1443,6 +1443,35 @@ function add_to_server_facts(type, live_item) {
   send_data_to_server(fact);
 }
 
+function persist() {
+  // THINK: do we still need localstorage caching?
+  Dagoba.persist(G, 'rripplemap');
+}
+
+persist = debounce(persist, 1000);
+
+function debounce(func, wait, immediate) {
+  // via underscore, needs cleaning
+  // Returns a function, that, as long as it continues to be invoked, will not
+  // be triggered. The function will be called after it stops being called for
+  // N milliseconds. If `immediate` is passed, trigger the function on the
+  // leading edge, instead of the trailing.
+
+  var timeout;
+  return function () {
+    var context = this,
+        args = arguments;
+    var later = function later() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
+}
+
 function send_data_to_server(data, cb) {
   var url = 'http://ripplemap.io:8888';
 
@@ -2072,39 +2101,6 @@ function login(e) {
   // el('storytime').classList.remove('hide')
 }
 
-// SOME HIGHLIGHTING OR SOMETHING
-
-var highlight_target;
-
-
-
-
-
-function highlight(o_or_f) {
-  var current = G.v({ highlight: true }).run();
-  current.forEach(function (node) {
-    // node.highlight = false
-    delete node.highlight; // better when collapsing
-  });
-
-  if (!o_or_f) {
-    force_rerender();
-    return undefined;
-  }
-
-  if (typeof o_or_f === 'function') {
-    current = G.v().filter(o_or_f).run();
-  } else {
-    current = G.v(o_or_f).run();
-  }
-
-  current.forEach(function (node) {
-    node.highlight = true;
-  });
-
-  force_rerender();
-}
-
 // INTERACTIONS & DOM BINDINGS
 
 function click_tagnames(ev) {
@@ -2116,27 +2112,6 @@ function click_tagnames(ev) {
 
   force_rerender();
   showtags();
-}
-
-function mouseover_tagnames(ev) {
-  var target = ev.target;
-  var tag = target.innerText;
-
-  if (!tag) return undefined;
-
-  if (highlight_target === tag) return undefined;
-
-  highlight_target = tag;
-  highlight(function (v) {
-    return ~v.tags.indexOf(tag);
-  });
-}
-
-function mouseout_tagnames(ev) {
-  if (!highlight_target) return undefined;
-
-  highlight_target = false;
-  highlight();
 }
 
 function global_keydown(ev) {
@@ -2203,9 +2178,84 @@ function submit_addtag(ev) {
   showtags();
 }
 
+function keyup_sentences(ev) {
+  // var key = ev.keyCode || ev.which
+  var span = ev.target;
+  var type = span.classList.contains('edge') ? 'edge' : 'cat';
+  var val = span.textContent;
+  var id = span.getAttribute('data-id');
 
+  // TODO: trap return for special effects
+  // TODO: maybe trap tab also
 
+  // ev.preventDefault()
 
+  // handle the node case
+  if (type === 'cat' && id && val) {
+    var node = G.vertexIndex[id];
+    if (node && node.name !== val) {
+      // update the name/label in the real graph
+      node.name = val;
+      pub(id);
+    }
+  }
+
+  // handle the edge case
+  if (type === 'edge') {
+    var id1 = span.getAttribute('data-id1');
+    var id2 = span.getAttribute('data-id2');
+
+    var node1 = G.vertexIndex[id1];
+    var edges = node1._in.concat(node1._out);
+    var edge = edges.filter(function (edge) {
+      return edge._in._id === id1 && edge._out._id === id2 || edge._in._id === id2 && edge._out._id === id1;
+    })[0];
+
+    if (!edge) return undefined;
+
+    edge.label = val;
+    edge.type = val;
+
+    // pub(id1 + '-' + id2)
+    // Dagoba.persist(G, 'rripplemap')
+    persist();
+  }
+
+  function pub(id) {
+    // publish the change
+    // Dagoba.persist(G, 'rripplemap')
+    persist();
+
+    // update all other sentences
+    var spans = document.querySelectorAll('span.node-' + id);
+    for (var i = 0; i < spans.length; i++) {
+      if (spans[i] !== span) spans[i].textContent = val;
+    }
+
+    // rerender the graph
+    force_rerender(0);
+  }
+}
+
+function click_sentences(ev) {
+  var target = ev.target;
+  if (target.nodeName !== 'BUTTON') return true;
+
+  var id = target.getAttribute('data-id');
+  var node = G.vertexIndex[id];
+
+  if (!node) return error$1('That node does not exist');
+
+  if (node.cat === 'action') {
+    // remove "sentence"
+    G.removeVertex(node);
+  } else {
+    G.removeVertex(node); // THINK: is this really reasonable?
+  }
+
+  persist();
+  force_rerender();
+}
 
 function submit_convo(ev) {
   ev.preventDefault();
@@ -2222,6 +2272,163 @@ function submit_convo(ev) {
 
   force_rerender();
 }
+
+function highlight(vertex) {
+  vertex.highlight = true;
+}
+
+function unhighlight(vertex) {
+  delete vertex.highlight;
+}
+
+function add_svg_listeners(edges, nodes) {
+
+  // add listeners
+  function highlight_edge(e) {
+    var id = e.target.id;
+    var ids = id.split('-');
+    if (!ids[0]) return undefined;
+
+    // var fun = function(v) {return ~ids.indexOf(v._id)}
+    // highlightyo(fun)
+    highlightyo(ids);
+  }
+
+  var edge_click = highlight_edge;
+  var edge_hover = highlight_edge;
+
+  var good_edges = edges.filter(function (id) {
+    return true;
+  });
+  good_edges.map(function (id) {
+    return el(id).addEventListener('click', edge_click);
+  });
+  good_edges.map(function (id) {
+    return el(id).addEventListener('mouseover', edge_hover);
+  });
+
+  function highlight_node(e) {
+    var id = e.target.id;
+    if (!id) return undefined;
+
+    var ids = G.v(id).both().both().run().map(function (x) {
+      return x._id;
+    }).filter(unique);
+    // var fun = function(v) {return ~ids.indexOf(v._id)}
+    highlightyo(ids);
+  }
+
+  var node_click = highlight_node;
+  var node_hover = highlight_node;
+
+  var good_nodes = nodes.filter(function (id) {
+    return true;
+  });
+  good_nodes.map(function (id) {
+    return el(id).addEventListener('click', node_click);
+  });
+  good_nodes.map(function (id) {
+    return el(id).addEventListener('mouseover', node_hover);
+  });
+}
+
+var highlight_target = '';
+var highlight_fun = '';
+
+function activate_highlighter() {
+  highlight_fun = el('sentences').addEventListener('mousemove', highlight_event);
+}
+
+function deactivate_highlighter() {
+  el('sentences').removeEventListener('mousemove', highlight_fun);
+}
+
+function highlight_event(e) {
+  for (var t = e.target; t && t.matches; t = t.parentNode) {
+    if (t.matches('.sentence')) {
+      if (highlight_target === t) return undefined;
+
+      highlight_target = t;
+      var ids = [].slice.call(t.children).map(function (node) {
+        return node.dataset.id;
+      }).filter(Boolean);
+      // var fun = function(v) {return ~ids.indexOf(v._id)}
+      // ids.forEach(id => G.v(id).run()[0].highlight = true)
+      // render()
+      highlightyo(ids);
+      return undefined;
+    }
+  }
+}
+
+function highlightyo(o_or_f) {
+  var current = G.v({ highlight: true }).run();
+  current.forEach(function (node) {
+    unhighlight(node);
+  });
+
+  if (!o_or_f || !o_or_f.length) {
+    force_rerender();
+    return undefined;
+  }
+
+  if (typeof o_or_f === 'function') {
+    current = G.v().filter(o_or_f).run();
+  } else {
+    current = G.v(o_or_f).run();
+  }
+
+  current.forEach(function (node) {
+    highlight(node);
+  });
+
+  force_rerender();
+}
+
+function mouseover_tagnames(ev) {
+  var target = ev.target;
+  var tag = target.innerText;
+
+  if (!tag) return undefined;
+
+  if (highlight_target === tag) return undefined;
+
+  highlight_target = tag;
+  highlightyo(function (v) {
+    return ~v.tags.indexOf(tag);
+  });
+}
+
+function mouseout_tagnames(ev) {
+  if (!highlight_target) return undefined;
+
+  highlight_target = false;
+  highlightyo();
+}
+
+// HIGHLIGHT MODULE
+
+/*
+  So there's at least two kinds of highlighting:
+  - click on a node in the viz (or cmd-click a story node?) to 'activate' it
+  - mouseover a node/edge in the viz or stories to 'highlight' it
+
+  highlighting is temporary, and makes a visual difference in all copies of the impacted nodes/edges
+
+  activation lasts until deactivation (another subgraph is activated, or everything is deactivated)
+
+  in either case, we should be adding that knowledge to the graph so it can be rendered correctly everywhere
+
+
+  functions:
+  activate(node_or_edge)
+  highlight(node_or_edge)
+
+  do_for_edge(f, e)
+  do_for_connected_nodes(f, e) // this is based on the current rendering... :[
+
+  need to add listeners to things... where should those live? in preact?
+*/
 
 var renderers = [];
 function add_renderer(f) {
@@ -2734,18 +2941,20 @@ function copy_nodes(env) {
       fill: color
     };
 
-    if (!node.highlight) return shape;
+    if (!node.highlight && !node.active) return shape;
 
-    var highlight$$1 = { shape: 'circle',
+    var colour = node.active ? 'rgba(255, 214, 0, 0.98)' : 'rgba(255, 214, 0, 0.8)';
+
+    var highlight = { shape: 'circle',
       _id: node._id,
       x: node.x,
       y: node.y,
       r: node.r + 10,
       line: 0.01,
-      fill: 'rgba(255, 214, 0, 0.8)'
+      fill: colour
     };
 
-    return [highlight$$1, shape];
+    return [highlight, shape];
   }));
   return env;
 }
@@ -2800,59 +3009,7 @@ function draw_it_svg(env) {
   // inject the svg node
   document.getElementById('ripplemap-mount').innerHTML = env.svg.head + env.svg.body + env.svg.tail;
 
-  // add listeners
-  function highlight_edge(e) {
-    var id = e.target.id;
-    var ids = id.split('-');
-    if (!ids[0]) return undefined;
-
-    var fun = function fun(v) {
-      return ~ids.indexOf(v._id);
-    };
-    highlight(fun);
-  }
-
-  var edge_click = highlight_edge;
-  var edge_hover = highlight_edge;
-
-  var good_edges = edges.filter(function (id) {
-    return true;
-  });
-  good_edges.map(function (id) {
-    return el(id).addEventListener('click', edge_click);
-  });
-  good_edges.map(function (id) {
-    return el(id).addEventListener('mouseover', edge_hover);
-  });
-
-  function highlight_node(e) {
-    var id = e.target.id;
-    if (!id) return undefined;
-
-    var ids = G.v(id).both().both().run().map(function (x) {
-      return x._id;
-    }).filter(unique);
-    var fun = function fun(v) {
-      return ~ids.indexOf(v._id);
-    };
-    highlight(fun);
-  }
-
-  var node_click = highlight_node;
-  var node_hover = highlight_node;
-
-  var good_nodes = nodes.filter(function (id) {
-    return true;
-  });
-  good_nodes.map(function (id) {
-    return el(id).addEventListener('click', node_click);
-  });
-  good_nodes.map(function (id) {
-    return el(id).addEventListener('mouseover', node_hover);
-  });
-
-  // dom.highlight(function(v) { return ~v.tags.indexOf(tag) })
-
+  add_svg_listeners(edges, nodes);
 
   return env; // <----- hey look, the function ends here!
 
@@ -3041,7 +3198,9 @@ function write_sentences(env) {
         classes.push('node-' + thing._in._id + '-' + thing._out._id);
       }
 
-      if (thing.highlight) highlight_count++;
+      // TODO: change this vis-a-vis new highlighting -- it currently only highlights a sentence if *all* of the elements are lit, but we could instead highlight individual elements.
+      // THINK: this fix probably makes more sense as part of lifting the html renderer into preact, through keeping the active/highlight info in the new intermediate data structure
+      if (thing.highlight || thing.active) highlight_count++;
 
       if (type !== 'edge') data = { id: thing._id || '' };else data = { id1: thing._in._id, id2: thing._out._id };
 
@@ -3049,7 +3208,7 @@ function write_sentences(env) {
     });
 
     var sentence_classes = 'sentence';
-    sentence_classes += highlight_count === 3 ? ' highlight' : '';
+    sentence_classes += highlight_count >= 2 ? ' highlight' : '';
     sentence += '<p class="' + sentence_classes + '">' + innerwords + '.</p>';
 
     // dom.append_el('sentences', sentence)
@@ -3322,11 +3481,12 @@ var Current = function Current() {
       null,
       'Click any story to edit'
     ),
-    h(
-      'div',
-      { id: 'sentences', dangerouslySetInnerHTML: { __html: get_sentence_html() } },
-      ' '
-    )
+    h('div', { id: 'sentences',
+      onMouseover: activate_highlighter,
+      onMouseout: deactivate_highlighter,
+      onKeyup: keyup_sentences,
+      onClick: click_sentences,
+      dangerouslySetInnerHTML: { __html: get_sentence_html() } })
   );
 };
 

@@ -2,6 +2,7 @@ import {add_data} from './graph'
 import {init as render_init, add_renderer as on_render, force_rerender, showtags, get_viz_html} from 'render'
 import * as dom from 'dom' // just for effects
 import state from 'state'
+import {mouseover_tagnames, mouseout_tagnames, activate_highlighter, deactivate_highlighter} from 'highlight'
 
 
 export {init, state, on_render}
@@ -76,8 +77,8 @@ function init() {
 function tagglue() {
   // barf yuck
   dom.el('tagnames').addEventListener('click', dom.click_tagnames)
-  dom.el('tagnames').addEventListener('mouseover', dom.mouseover_tagnames)
-  dom.el('tagnames').addEventListener('mouseout', dom.mouseout_tagnames)
+  dom.el('tagnames').addEventListener('mouseover', mouseover_tagnames)
+  dom.el('tagnames').addEventListener('mouseout', mouseout_tagnames)
   dom.el('addtag').addEventListener('submit', dom.submit_addtag)
 
   // not quite as barfy
@@ -97,8 +98,8 @@ export function do_the_glue() {
 
   dom.el('the-conversation').addEventListener('submit', dom.submit_convo)
 
-  dom.el('sentences').addEventListener('mouseover', dom.activate_highlighter)
-  dom.el('sentences').addEventListener('mouseout', dom.deactivate_highlighter)
+  dom.el('sentences').addEventListener('mouseover', activate_highlighter)
+  dom.el('sentences').addEventListener('mouseout', deactivate_highlighter)
   dom.el('sentences').addEventListener('keyup', dom.keyup_sentences)
   dom.el('sentences').addEventListener('click', dom.click_sentences)
 
