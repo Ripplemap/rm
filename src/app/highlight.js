@@ -59,13 +59,23 @@ function add_svg_listeners(edges, nodes) {
 
     let ids = G.v(id).both().both().run().map(x => x._id).filter(unique)
     // var fun = function(v) {return ~ids.indexOf(v._id)}
-    highlightyo(ids)
+
+    setTimeout(x => highlightyo(ids), 300) // TODO: this is so weird
   }
 
-  let node_click = highlight_node
+  function activate_node(e) {
+    let id = e.target.id
+    if(!id) return undefined
+
+    let ids = G.v(id).both().both().run().map(x => x._id).filter(unique)
+    // var fun = function(v) {return ~ids.indexOf(v._id)}
+    highlightyo(ids, 'activate')
+  }
+
+  let node_click = activate_node
   let node_hover = highlight_node
 
-  let good_nodes = nodes.filter(id => true)
+  let good_nodes = nodes.filter(id => +id)
   good_nodes.map(id => dom.el(id).addEventListener('click', node_click))
   good_nodes.map(id => dom.el(id).addEventListener('mouseover', node_hover))
 }
@@ -101,10 +111,16 @@ function highlight_event(e) {
   }
 }
 
-function highlightyo(o_or_f) {
-  var current = G.v({highlight: true}).run()
+function highlightyo(o_or_f, action='highlight') {
+  var current = action === 'activate' ? G.v({active:    true}).run()
+                                      : G.v({highlight: true}).run()
+
+
   current.forEach(function(node) {
-    unhighlight(node)
+    if(action === 'activate')
+      deactivate(node)
+    else
+      unhighlight(node)
   })
 
   if(!o_or_f || !o_or_f.length) {
@@ -119,7 +135,10 @@ function highlightyo(o_or_f) {
   }
 
   current.forEach(function(node) {
-    highlight(node)
+    if(action === 'activate')
+      activate(node)
+    else
+      highlight(node)
   })
 
   force_rerender()

@@ -11,7 +11,7 @@ import state from 'state'
 import {isDate} from '../utils'
 
 
-export {init, force_rerender, add_renderer, get_sentence_html, get_viz_html, get_convo_html, get_tag_html, showtags, whatsnext}
+export {init, force_rerender, add_renderer, get_sentence_html, get_viz_html, get_convo_html, get_tag_html, showtags, whatsnext, get_active_sentence_html}
 
 const renderers = []
 function add_renderer(f) {
@@ -43,7 +43,7 @@ function force_rerender() {
 
 const ctx = dom.el('ripples').getContext('2d')
 
-var viz_pipe, word_pipe
+var viz_pipe, word_pipe, wyrd_pipe
 
 
 // RENDER PIPELINE
@@ -79,8 +79,15 @@ function init() {
                  )
 
   word_pipe = pipe( get_actions
+                    , filter_actions
+                    , make_sentences
+                    , write_sentences
+                  )
+
+  wyrd_pipe = pipe( get_actions
                   , filter_actions
                   , make_sentences
+                  , filter_active
                   , write_sentences
                   )
 }
@@ -110,6 +117,11 @@ function render_pipe(pipe) {
 
 function get_sentence_html() {
   let env = render_pipe(word_pipe)
+  return env.output_html
+}
+
+function get_active_sentence_html() {
+  let env = render_pipe(wyrd_pipe)
   return env.output_html
 }
 
@@ -562,12 +574,13 @@ function copy_nodes(env) {
                              : 'rgba(255, 214, 0, 0.8)'
 
     var highlight = { shape: 'circle'
-                    , _id: node._id
+                    , _id: node._id + '-highlight'
                     , x: node.x
                     , y: node.y
                     , r: node.r + 10
                     , line: 0.01
                     , fill: colour
+                    , type: 'highlight'
                     }
 
     return [highlight, shape]
@@ -880,7 +893,6 @@ function filter_actions(env) {
   return env
 }
 
-
 function make_sentences(env) {
   var sentences = env.params.actions.map(construct).filter(Boolean)
   env.params.sentences = sentences
@@ -897,6 +909,14 @@ function construct(action) {
   list.push(notme(action._id, edges[0]), edges[0], action, edges[1], notme(action._id, edges[1]))
   list.year = action.year
   return list
+}
+
+function filter_active(env) {
+  env.params.sentences = env.params.sentences.filter(list => {
+    return list[0].active && list[4].active
+  })
+
+  return env
 }
 
 function write_sentences(env) {

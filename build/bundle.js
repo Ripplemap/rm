@@ -2282,6 +2282,14 @@ function submit_convo(ev) {
   force_rerender();
 }
 
+function activate(vertex) {
+  vertex.active = true;
+}
+
+function deactivate(vertex) {
+  delete vertex.active;
+}
+
 function highlight(vertex) {
   vertex.highlight = true;
 }
@@ -2324,14 +2332,28 @@ function add_svg_listeners(edges, nodes) {
       return x._id;
     }).filter(unique);
     // var fun = function(v) {return ~ids.indexOf(v._id)}
-    highlightyo(ids);
+
+    setTimeout(function (x) {
+      return highlightyo(ids);
+    }, 300); // TODO: this is so weird
   }
 
-  var node_click = highlight_node;
+  function activate_node(e) {
+    var id = e.target.id;
+    if (!id) return undefined;
+
+    var ids = G.v(id).both().both().run().map(function (x) {
+      return x._id;
+    }).filter(unique);
+    // var fun = function(v) {return ~ids.indexOf(v._id)}
+    highlightyo(ids, 'activate');
+  }
+
+  var node_click = activate_node;
   var node_hover = highlight_node;
 
   var good_nodes = nodes.filter(function (id) {
-    return true;
+    return +id;
   });
   good_nodes.map(function (id) {
     return el(id).addEventListener('click', node_click);
@@ -2371,9 +2393,12 @@ function highlight_event(e) {
 }
 
 function highlightyo(o_or_f) {
-  var current = G.v({ highlight: true }).run();
+  var action = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'highlight';
+
+  var current = action === 'activate' ? G.v({ active: true }).run() : G.v({ highlight: true }).run();
+
   current.forEach(function (node) {
-    unhighlight(node);
+    if (action === 'activate') deactivate(node);else unhighlight(node);
   });
 
   if (!o_or_f || !o_or_f.length) {
@@ -2388,7 +2413,7 @@ function highlightyo(o_or_f) {
   }
 
   current.forEach(function (node) {
-    highlight(node);
+    if (action === 'activate') activate(node);else highlight(node);
   });
 
   force_rerender();
@@ -2439,6 +2464,7 @@ function mouseout_tagnames(ev) {
   need to add listeners to things... where should those live? in preact?
 */
 
+// TODO: ask Tyler about this (and utils.js in general):
 var renderers = [];
 function add_renderer(f) {
   renderers.push(f);
@@ -2471,6 +2497,7 @@ var ctx = el('ripples').getContext('2d');
 
 var viz_pipe;
 var word_pipe;
+var wyrd_pipe;
 
 // RENDER PIPELINE
 
@@ -2485,6 +2512,8 @@ function init() {
   , clear_it_svg, draw_it_svg, draw_metadata);
 
   word_pipe = pipe(get_actions, filter_actions, make_sentences, write_sentences);
+
+  wyrd_pipe = pipe(get_actions, filter_actions, make_sentences, filter_active, write_sentences);
 }
 
 function render_pipe(pipe$$1) {
@@ -2512,6 +2541,11 @@ function render_pipe(pipe$$1) {
 
 function get_sentence_html() {
   var env = render_pipe(word_pipe);
+  return env.output_html;
+}
+
+function get_active_sentence_html() {
+  var env = render_pipe(wyrd_pipe);
   return env.output_html;
 }
 
@@ -2955,12 +2989,13 @@ function copy_nodes(env) {
     var colour = node.active ? 'rgba(255, 214, 0, 0.98)' : 'rgba(255, 214, 0, 0.8)';
 
     var highlight = { shape: 'circle',
-      _id: node._id,
+      _id: node._id + '-highlight',
       x: node.x,
       y: node.y,
       r: node.r + 10,
       line: 0.01,
-      fill: colour
+      fill: colour,
+      type: 'highlight'
     };
 
     return [highlight, shape];
@@ -3123,15 +3158,13 @@ function draw_it_svg(env) {
   }
 }
 
-/////////////////////////////////
-
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// CANVAS FUNCTIONS
+// SENTENCE STRUCTURES
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -3171,6 +3204,14 @@ function construct(action) {
   list.push(notme(action._id, edges[0]), edges[0], action, edges[1], notme(action._id, edges[1]));
   list.year = action.year;
   return list;
+}
+
+function filter_active(env) {
+  env.params.sentences = env.params.sentences.filter(function (list) {
+    return list[0].active && list[4].active;
+  });
+
+  return env;
 }
 
 function write_sentences(env) {
@@ -3255,8 +3296,6 @@ function write_sentences(env) {
     return ' ' + text + notes + button;
   }
 }
-
-// FORM BUILDER & FRIENDS
 
 function render_conversation(conversation) {
   var str = '';
@@ -3487,7 +3526,7 @@ var YourSelection = function YourSelection(_ref) {
     ),
     h(
       'div',
-      { id: 'sentences', dangerouslySetInnerHTML: { __html: get_sentence_html() } },
+      { id: 'sentences', dangerouslySetInnerHTML: { __html: get_active_sentence_html() } },
       ' '
     )
   );
