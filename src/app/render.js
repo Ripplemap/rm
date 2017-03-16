@@ -1201,7 +1201,7 @@ function showtags() {
   var tagstr = state.tags.map(function(tag) {
     return (
       `<span class="tag">
-        <i class="tag_icon fa fa-trash-o pr_1" aria-hidden="true"></i>${tag}
+        <i class="tag_icon fa fa-times-circle pr_1" aria-hidden="true"></i>${tag}
       </span>`
     )
   }).join('');
