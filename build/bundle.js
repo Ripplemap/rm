@@ -1396,11 +1396,11 @@ state.safe_mode = false;
 state.all_edges = true; // awkward... :(
 state.admin_mode = false; // yep another hack w00t
 state.my_maxyear = 2017; // total hackery...
-state.my_minyear = 2008; // hack hack hack
+state.my_minyear = 2004; // hack hack hack
 state.show_labels = false; // yup
 state.current_year = 2017; // more hacks
 state.filter_sentences = false; // awkward... :(
-state.ring_radius = 40; // lalala
+state.ring_radius = 30; // lalala
 
 var loaded = false;
 
@@ -2464,7 +2464,6 @@ function mouseout_tagnames(ev) {
   need to add listeners to things... where should those live? in preact?
 */
 
-// TODO: ask Tyler about this (and utils.js in general):
 var renderers = [];
 function add_renderer(f) {
   renderers.push(f);
@@ -3158,13 +3157,15 @@ function draw_it_svg(env) {
   }
 }
 
+/////////////////////////////////
+
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// SENTENCE STRUCTURES
+// CANVAS FUNCTIONS
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -3296,6 +3297,8 @@ function write_sentences(env) {
     return ' ' + text + notes + button;
   }
 }
+
+// FORM BUILDER & FRIENDS
 
 function render_conversation(conversation) {
   var str = '';
