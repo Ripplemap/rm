@@ -1190,15 +1190,6 @@ var classMaker = function classMaker(a, b, class_1, class_2) {
   return a === b ? class_1 : class_2;
 };
 
-// check if a string is a date for applying condition formatting to years.
-// I should use indexOf to check against an array of dates but ¯\_(ツ)_/¯
-function isDate(str) {
-  for (var i = 1999; i < 2050; i++) {
-    if (str === i) return true;
-  }
-  return false;
-}
-
 var Tab = function Tab(_ref) {
   var id = _ref.id,
       name = _ref.name,
@@ -1578,18 +1569,6 @@ function error$1(mess) {
 
 var cats = {}; // ripplemap categories
 var adders = { thing: add_thing, action: add_action, edge: add_edge };
-/* INTERFACES FOR RIPPLE MODEL
- *
- * There are four categories: Thing, Action, Effect, and Happening
- *
- * Each category has multiple types associated with it. Each node has a category and type.
- *
- * Each node also tracks its cron, the adding user, and some type of 'confidence interval' (later)
- *
- * Each edge has a type, which is its label. Nodes expect edges of certain types.
- *
- */
-
 cats.thing = {};
 cats.action = {};
 cats.effect = {};
@@ -1818,11 +1797,6 @@ function add_edge(type, from, to, props, persist$$1) {
   add_to_graph('edge', edge);
   if (persist$$1) add_to_server_facts('edge', edge);
 }
-
-// find all the paths between them, and their attached bits
-
-
-// SET UP CATEGORIES AND EDGES
 
 new_thing_type('person', {});
 new_thing_type('program', {});
@@ -2921,7 +2895,7 @@ function filter_nodes(env) {
 
 function add_rings(env) {
   for (var i = env.params.minyear; i <= env.params.maxyear; i++) {
-    var color = i === state.current_year ? 'rgba(0, 0, 0, 0.80)' : 'rgba(0, 0, 0, 0.3)';
+    var color = i === state.current_year ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.3)';
     var radius = state.ring_radius * (i - env.params.my_minyear + 1);
     env.shapes.unshift({ shape: 'circle', x: 0, y: 0, r: radius, stroke: color, fill: 'rgba(0, 0, 0, 0)', line: 1, type: 'ring', year: i });
   }
@@ -2932,8 +2906,8 @@ function add_ring_labels(env) {
   var labels = [];
 
   env.shapes.filter(eq('type', 'ring')).forEach(function (shape) {
-    var fill = shape.year === state.current_year ? '#999' : '#ccc';
-    var label = { shape: 'text', str: shape.year, x: -15, y: -shape.r - 5, fill: fill, font: "18px Raleway" };
+    var fill = shape.year == state.current_year ? '#ccc' : '#999';
+    var label = { shape: 'text', str: shape.year, x: -15, y: -shape.r - 5, fill: fill }; //, font: "18px Raleway" }
     labels.push(label);
   });
 
@@ -3121,15 +3095,15 @@ function draw_it_svg(env) {
   }
 
   function draw_text(node, x, y, str, font, fill_color, font_size) {
-    fill_color = '#fff';
-    font = "Archivo Narrow";
-    font_size = '14.5px';
+    fill_color = fill_color || '#fff';
+    font_size = font_size || '14.5px';
+    font = font || "Archivo  Narrow";
+
     if (isNaN(x)) return '';
+
     x = x || 0;
     y = y || 0;
-    if (isDate(str)) {
-      return '<text x="' + x + '" y="' + y + '" font-family="' + font + '" fill="#999" letter-spacing="1px" font-size="' + font_size + '">' + str + '</text>';
-    }
+
     return '<text x="' + x + '" y="' + y + '" font-family="' + font + '" fill="' + fill_color + '" letter-spacing="1px" font-size="' + font_size + '">' + str + '</text>';
   }
 
