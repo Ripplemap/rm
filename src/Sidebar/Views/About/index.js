@@ -4,19 +4,24 @@ import Header from 'UiKit/Header/index';
 const About = () => {
   return (
     <div>
-      <Header>About</Header>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nesciunt culpa, iste repellendus a, provident saepe! Illum exercitationem, ipsa! Magnam consequatur, nam, atque tempore nihil perspiciatis? Reiciendis sequi est reprehenderit veniam.</p>
-      <p>Doloribus, perferendis ipsa veritatis vitae consequuntur ut autem! Repellendus odit cum cupiditate ab eum laudantium, voluptas hic libero eaque distinctio dolor, nesciunt error eligendi tenetur itaque earum aut ipsa aliquid.</p>
-      <p>Quaerat doloremque suscipit aperiam, velit, perspiciatis mollitia officia ad vero reprehenderit veritatis dolores blanditiis reiciendis iusto quisquam, quasi, incidunt ab hic. Fugit necessitatibus tempore cupiditate aspernatur quaerat. Itaque, labore, provident.</p>
-      <p>Aspernatur, error. Consequatur eos, laudantium unde vitae ipsam voluptatem neque ea quod et velit voluptatum nihil, aperiam. Quod tenetur, rem consequuntur itaque dignissimos saepe est? Modi laudantium delectus tempora ut.</p>
-      <p>Unde a neque laudantium beatae voluptas tenetur, expedita consequuntur nemo quos dolorem quasi, amet quo perspiciatis! Aspernatur nesciunt modi perspiciatis ea nisi iste quam voluptate veritatis. Facilis minus aperiam, perspiciatis.</p>
+      <Header>What it is</Header>
 
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nesciunt culpa, iste repellendus a, provident saepe! Illum exercitationem, ipsa! Magnam consequatur, nam, atque tempore nihil perspiciatis? Reiciendis sequi est reprehenderit veniam.</p>
-      <p>Doloribus, perferendis ipsa veritatis vitae consequuntur ut autem! Repellendus odit cum cupiditate ab eum laudantium, voluptas hic libero eaque distinctio dolor, nesciunt error eligendi tenetur itaque earum aut ipsa aliquid.</p>
-      <p>Quaerat doloremque suscipit aperiam, velit, perspiciatis mollitia officia ad vero reprehenderit veritatis dolores blanditiis reiciendis iusto quisquam, quasi, incidunt ab hic. Fugit necessitatibus tempore cupiditate aspernatur quaerat. Itaque, labore, provident.</p>
-      <p>Aspernatur, error. Consequatur eos, laudantium unde vitae ipsam voluptatem neque ea quod et velit voluptatum nihil, aperiam. Quod tenetur, rem consequuntur itaque dignissimos saepe est? Modi laudantium delectus tempora ut.</p>
-      <p>Unde a neque laudantium beatae voluptas tenetur, expedita consequuntur nemo quos dolorem quasi, amet quo perspiciatis! Aspernatur nesciunt modi perspiciatis ea nisi iste quam voluptate veritatis. Facilis minus aperiam, perspiciatis.</p>
-     <Header> Documentation </Header>
+      <p>The Ripple Mapping Tool is an interactive data visualization platform for social movements and community organizers. It allows community members to tell stories about how events and programs impacted their lives, and generates “ripple maps” that show the long term outcomes of interconnected organizing efforts.</p>
+
+      <Header>Origins and inspiration</Header>
+
+      <p>The tool began as a static infographic poster design that demonstrated the many outcomes from the Difference Engine Initiative, a women-in-games program in Toronto. As the poster evolved into this app, we drew inspiration from philosopher and activist Grace Lee Boggs, who wrote, “We never know how our small activities will affect others through the invisible fabric of our connectedness. In this exquisitely connected world, it’s never a question of ‘critical mass.’ It’s always about critical connections.” The Ripple Map demonstrates that it is strong relationships that move progress forward.</p>
+
+      <Header>Nuts & Bolts</Header>
+
+      <p>The Ripple Mapping Tool is a web-based platform, with most of the logic happening in the browser aided by a tiny NodeJS server for persistence. It uses an in-memory graph database for the semantic graph (individual words are vertices, connections are edges), a configurable rendering pipeline for the story visualization (previously canvas-based, now svg), a similar pipeline for textual rendering (stories are rendered into sentences from the raw graph data), and has a custom layout algorithm for building the story visualization. The UI wrapper is Preact, a minimalistic version of React.</p>
+
+      <Header>Credits</Header>
+
+      <p>Lead designer: Una Lee</p>
+      <p>Lead developer: Dann Toliver</p>
+      <p>Interactive designer: Lupe Pérez</p>
+      <p>Front end developer: Tyler Sloane</p>
     </div>
   );
 };
