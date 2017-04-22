@@ -1129,7 +1129,7 @@ function render_conversation(conversation) {
     }
 
     if(cat === 'action') {
-      var options = ['participate in', 'lead', 'fund', 'organize', 'inspire', 'invite']
+      var options = ['participate in', 'fund', 'organize', 'inspire', 'invite', 'meet', 'create', 'present']
       return make_select_list('verb', options)
 
       // text += '<select id="verb" name="verb">'
@@ -1144,16 +1144,8 @@ function render_conversation(conversation) {
 
   function make_type_input(cat, key) {
     // TODO: this assumes cat is always 'thing'
-    var options = ['person', 'org', 'event', 'outcome']
+    var options = ['person', 'org', 'event', 'outcome', 'program', 'job']
     return make_select_list(key, options)
-
-    // var str = '<select id="'+key+'">'
-    // str += '<option value="person">person</option>'
-    // str += '<option value="org">org</option>'
-    // str += '<option value="event">event</option>'
-    // str += '<option value="outcome">outcome</option>'
-    // str += '</select>'
-    // return str
   }
 
   function make_select_box(id, xs) {  // takes a list of strings

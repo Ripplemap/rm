@@ -31,6 +31,18 @@ const LegendNodes = [{
         selected: 'grey',
         filter_key: 'outcome',
     },
+    {
+        name: 'Program',
+        color: '#af00d6',
+        selected: 'grey',
+        filter_key: 'program',
+    },
+    {
+        name: 'Job/contract',
+        color: '#d6af00',
+        selected: 'grey',
+        filter_key: 'job',
+    },
 ]
 
 const LegendEdges = [{

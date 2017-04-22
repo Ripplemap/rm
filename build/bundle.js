@@ -1578,6 +1578,18 @@ function error$1(mess) {
 
 var cats = {}; // ripplemap categories
 var adders = { thing: add_thing, action: add_action, edge: add_edge };
+/* INTERFACES FOR RIPPLE MODEL
+ *
+ * There are four categories: Thing, Action, Effect, and Happening
+ *
+ * Each category has multiple types associated with it. Each node has a category and type.
+ *
+ * Each node also tracks its cron, the adding user, and some type of 'confidence interval' (later)
+ *
+ * Each edge has a type, which is its label. Nodes expect edges of certain types.
+ *
+ */
+
 cats.thing = {};
 cats.action = {};
 cats.effect = {};
@@ -1659,6 +1671,7 @@ function new_thing_type(type, properties) {
   cattype.aliases = []; // THINK: but if you do don't override properties.aliases
 
   // add properties.cc
+  // NOTE: cc means 'can connect', it's used to limit illogical causality
   cattype.cc = properties.cc || {};
 
   // add default props for all things
@@ -1806,7 +1819,14 @@ function add_edge(type, from, to, props, persist$$1) {
   if (persist$$1) add_to_server_facts('edge', edge);
 }
 
+// find all the paths between them, and their attached bits
+
+
+// SET UP CATEGORIES AND EDGES
+
 new_thing_type('person', {});
+new_thing_type('program', {});
+new_thing_type('job', { aliases: ['contract'] });
 new_thing_type('org', { cc: ['org'] });
 new_thing_type('place', { cc: ['place', 'event'] });
 new_thing_type('event', { cc: ['event', 'outcome'], timerange: true }); // already has start and end, so... ?
@@ -1815,7 +1835,7 @@ new_thing_type('outcome', { cc: ['outcome'], aliases: ['artwork', 'session'] });
 new_action_type('pass', { aliases: [] });
 new_action_type('join', { aliases: [] });
 new_action_type('leave', { aliases: [] });
-new_action_type('create', { aliases: [] });
+new_action_type('create', { aliases: ['make', 'write'] });
 new_action_type('attend', { aliases: ['participate in'] });
 new_action_type('manage', { aliases: ['run', 'lead', 'facilitate', 'coordinate', 'organize'] });
 new_action_type('assist', { aliases: ['help', 'host', 'contribute'] });
@@ -1824,6 +1844,7 @@ new_action_type('represent', { aliases: [] });
 new_action_type('fund', { aliases: [] });
 new_action_type('inspire', { aliases: [] });
 new_action_type('invite', { aliases: [] });
+new_action_type('meet', { aliases: [] });
 
 new_effect_type('inspire', { aliases: ['influenced'] });
 new_effect_type('convince', { aliases: ['ask'] });
@@ -2095,8 +2116,6 @@ var el = function () {
 function set_el(el_id, val) {
   el(el_id).innerHTML = val;
 }
-
-// LOGIN/ORG/TAG STUFF
 
 function login(e) {
   e.preventDefault();
@@ -3386,7 +3405,7 @@ function render_conversation(conversation) {
     }
 
     if (cat === 'action') {
-      var options = ['participate in', 'lead', 'fund', 'organize', 'inspire', 'invite'];
+      var options = ['participate in', 'fund', 'organize', 'inspire', 'invite', 'meet', 'create', 'present'];
       return make_select_list('verb', options);
 
       // text += '<select id="verb" name="verb">'
@@ -3401,16 +3420,8 @@ function render_conversation(conversation) {
 
   function make_type_input(cat, key) {
     // TODO: this assumes cat is always 'thing'
-    var options = ['person', 'org', 'event', 'outcome'];
+    var options = ['person', 'org', 'event', 'outcome', 'program', 'job'];
     return make_select_list(key, options);
-
-    // var str = '<select id="'+key+'">'
-    // str += '<option value="person">person</option>'
-    // str += '<option value="org">org</option>'
-    // str += '<option value="event">event</option>'
-    // str += '<option value="outcome">outcome</option>'
-    // str += '</select>'
-    // return str
   }
 
   function make_select_list(id, xs) {
@@ -3622,6 +3633,16 @@ var LegendNodes = [{
   color: '#ffd600',
   selected: 'grey',
   filter_key: 'outcome'
+}, {
+  name: 'Program',
+  color: '#af00d6',
+  selected: 'grey',
+  filter_key: 'program'
+}, {
+  name: 'Job/contract',
+  color: '#d6af00',
+  selected: 'grey',
+  filter_key: 'job'
 }];
 
 var LegendEdges = [{

@@ -132,6 +132,7 @@ function new_thing_type(type, properties) {
   cattype.aliases = [] // THINK: but if you do don't override properties.aliases
 
   // add properties.cc
+  // NOTE: cc means 'can connect', it's used to limit illogical causality
   cattype.cc = properties.cc || {}
 
   // add default props for all things
@@ -311,6 +312,8 @@ function subgraph_of(thing1, thing2) {
 // SET UP CATEGORIES AND EDGES
 
 new_thing_type('person',  {})
+new_thing_type('program', {})
+new_thing_type('job',     {aliases: ['contract']})
 new_thing_type('org',     {cc: ['org']})
 new_thing_type('place',   {cc: ['place', 'event']})
 new_thing_type('event',   {cc: ['event', 'outcome'], timerange: true}) // already has start and end, so... ?
@@ -319,7 +322,7 @@ new_thing_type('outcome', {cc: ['outcome'], aliases: ['artwork', 'session']}) //
 new_action_type('pass',      {aliases: []})
 new_action_type('join',      {aliases: []})
 new_action_type('leave',     {aliases: []})
-new_action_type('create',    {aliases: []})
+new_action_type('create',    {aliases: ['make', 'write']})
 new_action_type('attend',    {aliases: ['participate in']})
 new_action_type('manage',    {aliases: ['run', 'lead', 'facilitate', 'coordinate', 'organize']})
 new_action_type('assist',    {aliases: ['help', 'host', 'contribute']})
@@ -328,6 +331,7 @@ new_action_type('represent', {aliases: []})
 new_action_type('fund',      {aliases: []})
 new_action_type('inspire',   {aliases: []})
 new_action_type('invite',    {aliases: []})
+new_action_type('meet',      {aliases: []})
 
 new_effect_type('inspire',   {aliases: ['influenced']})
 new_effect_type('convince',  {aliases: ['ask']})
