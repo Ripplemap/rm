@@ -3152,15 +3152,13 @@ function draw_it_svg(env) {
   }
 }
 
-/////////////////////////////////
-
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// CANVAS FUNCTIONS
+// SENTENCE STRUCTURES
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -3293,8 +3291,6 @@ function write_sentences(env) {
   }
 }
 
-// FORM BUILDER & FRIENDS
-
 function render_conversation(conversation) {
   var str = '';
 
@@ -3333,7 +3329,7 @@ function render_conversation(conversation) {
   });
 
   if (!prelude) {
-    prelude = '<p>Okay, let\u2019s fill in the blanks.</p>\n               <p>E.g. Sylver Sterling organized the Design Justice Exhibition.</p>\n              ';
+    prelude = '<p>Okay, let\u2019s fill in the blanks.</p>\n               <p>E.g. <b><u>Beyonc\xE9 Knowles</b></u> performed at AMC 2018.</p>\n\n              ';
   }
 
   // display the unfilled slot

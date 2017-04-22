@@ -1073,7 +1073,8 @@ function render_conversation(conversation) {
 
   if(!prelude) {
     prelude = `<p>Okay, let’s fill in the blanks.</p>
-               <p>E.g. Sylver Sterling organized the Design Justice Exhibition.</p>
+               <p>E.g. <b><u>Beyoncé Knowles</b></u> performed at AMC 2018.</p>
+
               `
   }
 
