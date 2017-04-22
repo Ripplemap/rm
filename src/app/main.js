@@ -90,7 +90,8 @@ function tagglue() {
 
 
 
-export function do_the_glue() {
+export function do_the_glue2() {
+  // NOTE: this never gets called
 
   dom.el('login').addEventListener('submit', dom.login)
 

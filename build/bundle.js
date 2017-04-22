@@ -2096,6 +2096,8 @@ function set_el(el_id, val) {
   el(el_id).innerHTML = val;
 }
 
+// LOGIN/ORG/TAG STUFF
+
 function login(e) {
   e.preventDefault();
   state.email = el('email').value;
@@ -2269,6 +2271,11 @@ function submit_convo(ev) {
   var values = fields.reduce(function (acc, el) {
     acc[el.id] = el.value;return acc;
   }, {});
+
+  if (!Object.keys(values).reduce(function (acc, k) {
+    return acc + values[k];
+  }, '')) // no values? don't submit
+    return false;
 
   update_conversation(values);
 

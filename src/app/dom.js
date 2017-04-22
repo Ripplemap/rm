@@ -220,6 +220,9 @@ export function submit_convo(ev) {
   let fields = [...ev.currentTarget.elements]
   let values = fields.reduce((acc, el) => {acc[el.id] = el.value; return acc}, {})
 
+  if(!Object.keys(values).reduce((acc, k) => acc + values[k], '')) // no values? don't submit
+    return false
+
   update_conversation(values)
 
   // whatsnext(G, update_conversation())
