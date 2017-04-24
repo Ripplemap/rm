@@ -322,16 +322,20 @@ new_thing_type('outcome', {cc: ['outcome'], aliases: ['artwork', 'session']}) //
 new_action_type('pass',      {aliases: []})
 new_action_type('join',      {aliases: []})
 new_action_type('leave',     {aliases: []})
-new_action_type('create',    {aliases: ['make', 'write']})
-new_action_type('attend',    {aliases: ['participate in']})
-new_action_type('manage',    {aliases: ['run', 'lead', 'facilitate', 'coordinate', 'organize']})
+new_action_type('create',    {aliases: ['make', 'write', 'created']})
+new_action_type('attend',    {aliases: ['participate in', 'participated in']})
+new_action_type('manage',    {aliases: ['run', 'lead', 'facilitate', 'coordinate', 'organize', 'organized']})
 new_action_type('assist',    {aliases: ['help', 'host', 'contribute']})
-new_action_type('present',   {aliases: []})
+new_action_type('present',   {aliases: ['presented']})
 new_action_type('represent', {aliases: []})
-new_action_type('fund',      {aliases: []})
-new_action_type('inspire',   {aliases: []})
-new_action_type('invite',    {aliases: []})
-new_action_type('meet',      {aliases: []})
+new_action_type('fund',      {aliases: ['funded']})
+new_action_type('inspire',   {aliases: ['inspired']})
+new_action_type('invite',    {aliases: ['invited']})
+new_action_type('meet',      {aliases: ['met']})
+
+
+var options = ['participated in', 'funded', 'organized', 'inspired', 'invited', 'met', 'created', 'presented']
+
 
 new_effect_type('inspire',   {aliases: ['influenced']})
 new_effect_type('convince',  {aliases: ['ask']})

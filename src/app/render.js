@@ -1125,7 +1125,8 @@ function render_conversation(conversation) {
     }
 
     if(cat === 'action') {
-      var options = ['participate in', 'fund', 'organize', 'inspire', 'invite', 'meet', 'create', 'present']
+      // var options = ['participate in', 'fund', 'organize', 'inspire', 'invite', 'meet', 'create', 'present']
+      var options = ['participated in', 'funded', 'organized', 'inspired', 'invited', 'met', 'created', 'presented']
       return make_select_list('verb', options)
 
       // text += '<select id="verb" name="verb">'
@@ -1174,9 +1175,9 @@ function render_conversation(conversation) {
       }
     }
     else if(slot.key === 'verb') {
-      text += ' did '
+      // text += ' did '
       text += value
-      text += ' the '
+      // text += ' the '
     }
     else if(slot.key === 'object') {
       text += value + ' '
@@ -1200,7 +1201,7 @@ function render_conversation(conversation) {
       // }
     }
     else if(slot.type === 'date') {
-      text += ' on '
+      text += ' on around '
       text += value + ' '
     }
     else {
