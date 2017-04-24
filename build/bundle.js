@@ -3195,14 +3195,16 @@ function construct(action) {
   function notme(id, edge) {
     return edge._in._id === id ? edge._out : edge._in;
   }
-  list.push(notme(action._id, edges[0]), edges[0], action, edges[1], notme(action._id, edges[1]));
+  // list.push(notme(action._id, edges[0]), edges[0], action, edges[1], notme(action._id, edges[1]))
+  list.push(notme(action._id, edges[0]), action, notme(action._id, edges[1])); // TODO: change this for did/the
   list.year = action.year;
   return list;
 }
 
 function filter_active(env) {
   env.params.sentences = env.params.sentences.filter(function (list) {
-    return list[0].active && list[4].active;
+    // return list[0].active && list[4].active
+    return list[0].active && list[2].active;
   });
 
   return env;
