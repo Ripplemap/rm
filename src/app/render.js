@@ -679,7 +679,7 @@ function draw_it_svg(env) {
   function draw_line(node, fromx, fromy, tox, toy, stroke_color, line_width) {
     /* stroke_color = stroke_color || '#eef' // override until highlighting is figured out*/
     stroke_color = 'rgba(255, 255, 255, 0.4)'
-    console.log(stroke_color);
+    // console.log(stroke_color)
     line_width = line_width || 0.5
 
 
