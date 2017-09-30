@@ -202,6 +202,13 @@ var NON_DIMENSION_PROPS = {
 // DOM event types that do not bubble and should be attached via useCapture
 var NON_BUBBLING_EVENTS = { blur: 1, error: 1, focus: 1, load: 1, resize: 1, scroll: 1 };
 
+/** Create an Event handler function that sets a given state property.
+ *	@param {Component} component	The component whose state should be updated
+ *	@param {string} key				A dot-notated key path to update in the component's state
+ *	@param {string} eventPath		A dot-notated key path to the value that should be retrieved from the Event or component
+ *	@returns {function} linkedStateHandler
+ *	@private
+ */
 function createLinkedState(component, key, eventPath) {
 	var path = key.split('.');
 	return function (e) {
@@ -218,6 +225,9 @@ function createLinkedState(component, key, eventPath) {
 	};
 }
 
+/** Managed queue of dirty components to be re-rendered */
+
+// items/itemsOffline swap on each rerender() call (just a simple pool technique)
 var items = [];
 
 function enqueueRender(component) {
@@ -235,6 +245,12 @@ function rerender() {
 	}
 }
 
+/** Check if a VNode is a reference to a stateless functional component.
+ *	A function component is represented as a VNode whose `nodeName` property is a reference to a function.
+ *	If that function is not a Component (ie, has no `.render()` method on a prototype), it is considered a stateless functional component.
+ *	@param {VNode} vnode	A VNode
+ *	@private
+ */
 function isFunctionalComponent(vnode) {
   var nodeName = vnode && vnode.nodeName;
   return nodeName && isFunction(nodeName) && !(nodeName.prototype && nodeName.prototype.render);
@@ -248,6 +264,11 @@ function buildFunctionalComponent(vnode, context) {
   return vnode.nodeName(getNodeProps(vnode), context || EMPTY);
 }
 
+/** Check if two nodes are equivalent.
+ *	@param {Element} node
+ *	@param {VNode} vnode
+ *	@private
+ */
 function isSameNodeType(node, vnode) {
 	if (isString(vnode)) {
 		return node instanceof Text;
@@ -411,6 +432,7 @@ var toConsumableArray = function (arr) {
   }
 };
 
+/** Removes a given DOM Node from its parent. */
 function removeNode(node) {
 	var p = node.parentNode;
 	if (p) p.removeChild(node);
@@ -493,6 +515,8 @@ function eventProxy(e) {
 	return this._listeners[e.type](options.event && options.event(e) || e);
 }
 
+/** DOM node pool, keyed on nodeName. */
+
 var nodes = {};
 
 function collectNode(node) {
@@ -513,6 +537,7 @@ function createNode(nodeName, isSvg) {
 	return node;
 }
 
+/** Queue of components that have been mounted and are awaiting componentDidMount */
 var mounts = [];
 
 /** Diff recursion count, used to track the end of the diff cycle. */
@@ -811,6 +836,10 @@ function diffAttributes(dom, attrs, old) {
 	}
 }
 
+/** Retains a pool of Components for re-use, keyed on component name.
+ *	Note: since component names are not unique or even necessarily available, these are primarily a form of sharding.
+ *	@private
+ */
 var components = {};
 
 function collectComponent(component) {
@@ -835,6 +864,12 @@ function createComponent(Ctor, props, context) {
 	return inst;
 }
 
+/** Set a component's `props` (generally derived from JSX attributes).
+ *	@param {Object} props
+ *	@param {Object} [opts]
+ *	@param {boolean} [opts.renderSync=false]	If `true` and {@link options.syncComponentUpdates} is `true`, triggers synchronous rendering.
+ *	@param {boolean} [opts.render=true]			If `false`, no render will be triggered.
+ */
 function setComponentProps(component, props, opts, context, mountAll) {
 	if (component._disable) return;
 	component._disable = true;
@@ -1090,6 +1125,16 @@ function unmountComponent(component, remove) {
 	if (component.componentDidUnmount) component.componentDidUnmount();
 }
 
+/** Base Component class, for the ES6 Class method of creating Components
+ *	@public
+ *
+ *	@example
+ *	class MyFoo extends Component {
+ *		render(props, state) {
+ *			return <div />;
+ *		}
+ *	}
+ */
 function Component(props, context) {
 	/** @private */
 	this._dirty = true;
@@ -1175,6 +1220,21 @@ extend(Component.prototype, {
 	render: function render() {}
 });
 
+/** Render JSX into a `parent` Element.
+ *	@param {VNode} vnode		A (JSX) VNode to render
+ *	@param {Element} parent		DOM element to render into
+ *	@param {Element} [merge]	Attempt to re-use an existing DOM tree rooted at `merge`
+ *	@public
+ *
+ *	@example
+ *	// render a div into <body>:
+ *	render(<div id="hello">hello!</div>, document.body);
+ *
+ *	@example
+ *	// render a "Thing" component into #foo:
+ *	const Thing = ({ name }) => <span>{ name }</span>;
+ *	render(<Thing name="one" />, document.querySelector('#foo'));
+ */
 function render(vnode, parent, merge) {
   return diff(merge, vnode, {}, false, parent);
 }
@@ -1211,6 +1271,9 @@ var Tab = function Tab(_ref) {
   );
 };
 
+/**
+ * List to iterate over and generate tab commponents with.
+ */
 var tabs = [{ name: "Home", id: "home", icon: "fa fa-home" }, { name: "Add A Story", id: "story", icon: "fa fa-commenting-o" }, { name: "Filters", id: "filters", icon: "fa fa-map-marker" }, { name: "Read Stories", id: "read_stories", icon: "fa fa-eye" }, { name: "Selected Stories", id: "selected_stories", icon: "fa fa-commenting" }, { name: "About", id: "about", icon: "fa fa-clone" }];
 
 /**
@@ -1569,6 +1632,18 @@ function error$1(mess) {
 
 var cats = {}; // ripplemap categories
 var adders = { thing: add_thing, action: add_action, edge: add_edge };
+/* INTERFACES FOR RIPPLE MODEL
+ *
+ * There are four categories: Thing, Action, Effect, and Happening
+ *
+ * Each category has multiple types associated with it. Each node has a category and type.
+ *
+ * Each node also tracks its cron, the adding user, and some type of 'confidence interval' (later)
+ *
+ * Each edge has a type, which is its label. Nodes expect edges of certain types.
+ *
+ */
+
 cats.thing = {};
 cats.action = {};
 cats.effect = {};
@@ -1798,6 +1873,11 @@ function add_edge(type, from, to, props, persist$$1) {
   if (persist$$1) add_to_server_facts('edge', edge);
 }
 
+// find all the paths between them, and their attached bits
+
+
+// SET UP CATEGORIES AND EDGES
+
 new_thing_type('person', {});
 new_thing_type('program', {});
 new_thing_type('job', { aliases: ['contract'] });
@@ -1970,6 +2050,7 @@ function set_intersect(xs, ys) {
   });
 }
 
+// import * as dom from 'dom'
 var convo = new_conversation();
 function restart_sentence() {
   convo.current = new_sentence();
@@ -2090,6 +2171,8 @@ var el = function () {
 function set_el(el_id, val) {
   el(el_id).innerHTML = val;
 }
+
+// LOGIN/ORG/TAG STUFF
 
 function login(e) {
   e.preventDefault();
@@ -3068,7 +3151,7 @@ function draw_it_svg(env) {
   function draw_circle(node, x, y, radius, stroke_color, fill_color, line_width) {
     if (!x || !y || !radius) return undefined;
 
-    console.log(stroke_color);
+    // console.log(stroke_color)
     fill_color = fill_color || '#444444';
     line_width = line_width || 2;
     stroke_color = stroke_color || '#eef';
@@ -3082,7 +3165,7 @@ function draw_it_svg(env) {
   function draw_line(node, fromx, fromy, tox, toy, stroke_color, line_width) {
     /* stroke_color = stroke_color || '#eef' // override until highlighting is figured out*/
     stroke_color = 'rgba(255, 255, 255, 0.4)';
-    console.log(stroke_color);
+    // console.log(stroke_color)
     line_width = line_width || 0.5;
 
     if (fromx * fromy * tox * toy * 0 !== 0) return '';
@@ -3586,6 +3669,7 @@ var LegendItem = function LegendItem(props) {
   );
 };
 
+// TODO: find out if EDGES need to be filterable (like NODES are clickable to toggle)
 var LegendNodes = [{
   name: 'Event',
   color: '#f32938',
@@ -3843,6 +3927,10 @@ var Story = function Story() {
   );
 };
 
+/**
+ * Sidebar layout and state
+ */
+
 var Sidebar = function (_Component) {
   inherits(Sidebar, _Component);
 
@@ -3934,6 +4022,24 @@ var Sidebar = function (_Component) {
   return Sidebar;
 }(Component);
 
+// TODO: partition incoming bleep bloops by action
+// TODO: build edit functions
+// TODO: build remove functions
+// TODO: ask user for email address
+// TODO: show current tags
+// TODO: allow changing of tags
+// TODO: allow multitag views
+// TODO: add all tags on server
+// TODO: try to get an additional compaction in
+
+// TODO: consolidate like-named nodes
+// TODO: consolidate email addresses on server
+// TODO: copy tags into url
+
+
+// INIT
+
+
 function init$1() {
 
   // TODO: break this up a little so the logic is clearer
@@ -3994,6 +4100,8 @@ function tagglue() {
  * Binds the RM app to the Preact renderer
  *
  */
+
+// TODO: do we need h, Component below?
 
 window.yuck = update_conversation;
 window.f__r = force_rerender;
