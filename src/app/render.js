@@ -665,7 +665,7 @@ function draw_it_svg(env) {
   function draw_circle(node, x, y, radius, stroke_color, fill_color, line_width) {
     if(!x || !y || !radius) return undefined
 
-    console.log(stroke_color)
+    // console.log(stroke_color)
     fill_color = fill_color || '#444444'
     line_width = line_width || 2
     stroke_color = stroke_color || '#eef'
