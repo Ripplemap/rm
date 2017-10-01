@@ -1435,6 +1435,8 @@ var About = function About() {
 };
 
 var state = {};
+state.org = 2; // this changes per branch...
+
 state.tags = []; // THINK: default to ['plain']?
 state.facts = [];
 state.tagkeys = {};
@@ -1541,11 +1543,14 @@ function send_data_to_server(data, cb) {
 
 function get_facts_from_server(cb) {
   var url = 'http://ripplemap.io:8888';
+  var org = state.org || 1;
 
   // local shunt for airplane mode
   if (state.safe_mode === 'local') return cb(JSON.parse(localStorage['DAGOBA::ripmapdata']));
 
   if (state.safe_mode === 'daring') url = 'http://localhost:8888';
+
+  url += '?org=' + org;
 
   fetch(url, { method: 'get' }).then(function (response) {
     return response.json();

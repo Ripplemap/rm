@@ -1,6 +1,8 @@
 const state = {}
 export default state
 
+state.org = 2 // this changes per branch...
+
 state.tags = [] // THINK: default to ['plain']?
 state.facts = []
 state.tagkeys = {}

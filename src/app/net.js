@@ -95,6 +95,7 @@ function send_data_to_server(data, cb) {
 
 function get_facts_from_server(cb) {
   var url = 'http://ripplemap.io:8888'
+  var org = state.org || 1
 
   // local shunt for airplane mode
   if(state.safe_mode === 'local')
@@ -102,6 +103,8 @@ function get_facts_from_server(cb) {
 
   if(state.safe_mode === 'daring')
     url = 'http://localhost:8888'
+
+  url += '?org=' + org
 
   fetch(url, { method: 'get'})
   .then(response => response.json())
