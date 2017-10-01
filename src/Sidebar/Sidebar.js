@@ -69,8 +69,8 @@ class Sidebar extends Component {
 
         {/* Render different views based on which section is selected*/}
         <section class="Sidebar__container">
-          <h3 class="Sidebar__header">AMC: Ripple Effect</h3>
-          <div class="Sidebar__subheading">A collaborative laboratory of media-based organizing strategies</div>
+          <h3 class="Sidebar__header">MozFest: Ripple Effect</h3>
+        <div class="Sidebar__subheading"> The world's leading festival for the open Internet movement. </div>
           {this.renderSelectedView()}
         </section>
 

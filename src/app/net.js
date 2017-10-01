@@ -98,6 +98,7 @@ function get_facts_from_server(cb) {
   var org = state.org || 1
 
   // local shunt for airplane mode
+
   if(state.safe_mode === 'local')
     return cb(JSON.parse(localStorage['DAGOBA::ripmapdata']))
 

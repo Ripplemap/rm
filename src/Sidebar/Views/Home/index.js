@@ -15,10 +15,9 @@ const Home = ({changeView}) => {
       {/* Add a story CTA */}
       <section class="Home__cta-addstory">
 
-        <p>Held every summer in Detroit, the Allied Media Conference brings together a vibrant and diverse community of people using media to incite change: filmmakers, radio producers, technologists, youth organizers, writers, entrepreneurs, musicians, dancers, and artists. This ripple map illustrates the many connections and outcomes that the AMC has fostered.</p>
+      <p>An annual celebration of the open Internet movement, where passionate technologists, educators, and makers come together to explore the future of the open Web and advocate for a healthy internet. This ripple map illustrates the many connections and outcomes that MozFest has fostered</p>
 
-
-        <p class="Home__cta_text">We'd love to hear your stories!</p>
+      <p class="Home__cta_text">We'd love to hear your stories!</p>
 
         <Button onClick={() => changeView('story')}>
           Add a story
