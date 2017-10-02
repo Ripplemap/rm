@@ -1306,24 +1306,13 @@ var Home = function Home(_ref) {
         h('i', { 'class': 'fa fa-chevron-right pl_1', 'aria-hidden': 'true' })
       ),
       h(
-        'p',
-        null,
-        'Accountability around it: someone put me in without my consent'
-      ),
-      h(
-        'p',
-        null,
-        'Button'
-      ),
-      h(
-        'p',
-        null,
-        'For now, have people email us using a form'
-      ),
-      h(
-        'p',
-        null,
-        '\u201CSomeone put me in without my consent\u201D'
+        'form',
+        { action: 'mailto:youraddr@domain.tld', method: 'GET' },
+        h(
+          'button',
+          null,
+          'Someone put me in without my consent'
+        )
       )
     )
   );
@@ -3193,13 +3182,15 @@ function draw_it_svg(env) {
   }
 }
 
+/////////////////////////////////
+
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// SENTENCE STRUCTURES
+// CANVAS FUNCTIONS
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -3333,6 +3324,8 @@ function write_sentences(env) {
     return ' ' + text + notes + button;
   }
 }
+
+// FORM BUILDER & FRIENDS
 
 function render_conversation(conversation) {
   var str = '';
@@ -3881,6 +3874,21 @@ var Story = function Story() {
             { value: 'presented at' },
             'presenter'
           )
+        ),
+        h(
+          'p',
+          null,
+          'It\u2019s really important to us that we have your informed consent to add your story to the map. Here\u2019s what you need to know.'
+        ),
+        h(
+          'p',
+          null,
+          'Who will see this map: everyone at MozFest 2017'
+        ),
+        h(
+          'p',
+          null,
+          'At any time, you can change or remove your story. You will also be able to see if someone has added you to a story. Does this all sound okay to you?'
         ),
         h(
           Button,

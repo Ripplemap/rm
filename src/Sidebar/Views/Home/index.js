@@ -24,11 +24,9 @@ const Home = ({changeView}) => {
           <i class="fa fa-chevron-right pl_1" aria-hidden="true"></i>
         </Button>
 
-
-<p>Accountability around it: someone put me in without my consent</p>
-<p>Button</p>
-<p>For now, have people email us using a form</p>
-<p>“Someone put me in without my consent”</p>
+        <form action="mailto:youraddr@domain.tld" method="GET">
+          <button >Someone put me in without my consent</button>
+        </form>
 
       </section>
 

@@ -33,6 +33,13 @@ const Story = () => {
             <option value="presented at">presenter</option>
           </select>
 
+          <p>It’s really important to us that we have your informed consent to add your story to the map. Here’s what you need to know.</p>
+
+          <p>Who will see this map: everyone at MozFest 2017</p>
+
+          <p>At any time, you can change or remove your story. You will also be able to see if someone has added you to a story. Does this all sound okay to you?</p>
+
+
           <Button type="submit" buttonStyle="next">Next
             <i class="fa fa-chevron-right pl_1" aria-hidden="true"></i>
           </Button>
