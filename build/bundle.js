@@ -2117,6 +2117,8 @@ function set_el(el_id, val) {
   el(el_id).innerHTML = val;
 }
 
+// LOGIN/ORG/TAG STUFF
+
 function login(e) {
   e.preventDefault();
   state.email = el('email').value;
@@ -2124,14 +2126,16 @@ function login(e) {
   var name = el('name').value;
   var verb = el('mz_involved').value;
   var values = { subject: name,
+    type: 'person',
     verb: verb,
     object: 'MozFest 2017',
     date: '2017-10-26'
   };
-  update_conversation(values);
-  update_conversation(values);
-  update_conversation(values);
-  update_conversation(values);
+  // update_conversation(values)
+  // update_conversation(values)
+  // update_conversation(values)
+  // update_conversation(values)
+  // update_conversation(values)
 
   force_rerender();
 
@@ -3191,13 +3195,15 @@ function draw_it_svg(env) {
   }
 }
 
+/////////////////////////////////
+
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// SENTENCE STRUCTURES
+// CANVAS FUNCTIONS
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -3331,6 +3337,8 @@ function write_sentences(env) {
     return ' ' + text + notes + button;
   }
 }
+
+// FORM BUILDER & FRIENDS
 
 function render_conversation(conversation) {
   var str = '';

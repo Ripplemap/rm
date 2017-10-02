@@ -42,14 +42,16 @@ export function login(e) {
   const name = el('name').value
   const verb = el('mz_involved').value
   let values = { subject: name
+               , type: 'person'
                , verb: verb
                , object: 'MozFest 2017'
                , date: '2017-10-26'
                }
-  update_conversation(values)
-  update_conversation(values)
-  update_conversation(values)
-  update_conversation(values)
+  // update_conversation(values)
+  // update_conversation(values)
+  // update_conversation(values)
+  // update_conversation(values)
+  // update_conversation(values)
 
   force_rerender()
 
