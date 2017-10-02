@@ -2117,8 +2117,6 @@ function set_el(el_id, val) {
   el(el_id).innerHTML = val;
 }
 
-// LOGIN/ORG/TAG STUFF
-
 function login(e) {
   e.preventDefault();
   state.email = el('email').value;
@@ -3195,15 +3193,13 @@ function draw_it_svg(env) {
   }
 }
 
-/////////////////////////////////
-
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// CANVAS FUNCTIONS
+// SENTENCE STRUCTURES
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -3338,8 +3334,6 @@ function write_sentences(env) {
   }
 }
 
-// FORM BUILDER & FRIENDS
-
 function render_conversation(conversation) {
   var str = '';
 
@@ -3425,8 +3419,7 @@ function render_conversation(conversation) {
 
     if (cat === 'action') {
       // var options = ['participate in', 'fund', 'organize', 'inspire', 'invite', 'meet', 'create', 'present']
-      // var options = ['participated in', 'funded', 'organized', 'inspired', 'invited', 'met', 'created', 'presented']
-      var options = ['attended', 'wrangled at', 'presented at'];
+      var options = ['attended', 'inspired', 'invited', 'met', 'created', 'wrangled at', 'presented at'];
       return make_select_list('verb', options);
 
       // text += '<select id="verb" name="verb">'

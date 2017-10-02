@@ -1126,8 +1126,7 @@ function render_conversation(conversation) {
 
     if(cat === 'action') {
       // var options = ['participate in', 'fund', 'organize', 'inspire', 'invite', 'meet', 'create', 'present']
-      // var options = ['participated in', 'funded', 'organized', 'inspired', 'invited', 'met', 'created', 'presented']
-      var options = ['attended', 'wrangled at', 'presented at']
+      var options = ['attended', 'inspired', 'invited', 'met', 'created', 'wrangled at', 'presented at']
       return make_select_list('verb', options)
 
       // text += '<select id="verb" name="verb">'
