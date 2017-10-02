@@ -23,14 +23,15 @@ const Story = () => {
           <p>We'd love to hear your stories! Let's start with your contact info:</p>
           <input name="email" id="email" type="text" placeholder="email" class="typeahead Story__input" />
 
-      <p>Your name</p>
-      <input name="name" id="name" type="text" placeholder="name" class="typeahead Story__input" />
+          <p>Your name</p>
+          <input name="name" id="name" type="text" placeholder="name" class="typeahead Story__input" />
 
-      <p>How are you involved in Mozfest?</p>
-      <input name="mz_involved" id="mz_involved" type="text" placeholder="mz_involved" class="typeahead Story__input" />
-
-      <p>What have you attended/wrangled/presented?</p>
-      <input name="mz_attended" id="mz_attended" type="text" placeholder="mz_attended" class="typeahead Story__input" />
+          <p>How are you involved in Mozfest?</p>
+          <select name="mz_involved" id="mz_involved" class="Story__input" />
+            <option>attendee</option>
+            <option>wrangler</option>
+            <option>presenter</option>
+          </select>
 
           <Button type="submit" buttonStyle="next">Next
             <i class="fa fa-chevron-right pl_1" aria-hidden="true"></i>
