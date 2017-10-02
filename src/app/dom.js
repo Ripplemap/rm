@@ -47,11 +47,11 @@ export function login(e) {
                , object: 'MozFest 2017'
                , date: '2017-10-26'
                }
-  // update_conversation(values)
-  // update_conversation(values)
-  // update_conversation(values)
-  // update_conversation(values)
-  // update_conversation(values)
+  update_conversation(values)
+  update_conversation(values)
+  update_conversation(values)
+  update_conversation(values)
+  update_conversation(values)
 
   force_rerender()
 
