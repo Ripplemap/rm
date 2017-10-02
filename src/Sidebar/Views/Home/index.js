@@ -24,9 +24,9 @@ const Home = ({changeView}) => {
           <i class="fa fa-chevron-right pl_1" aria-hidden="true"></i>
         </Button>
 
-        <form action="mailto:youraddr@domain.tld" method="GET">
+        <a href="mailto:una@andalsotoo.net?subject=Someone+added+me+to+the+Ripple+Map+without+my+consent&body=Please+remove+me,+my+name+is:">
           <button >Someone put me in without my consent</button>
-        </form>
+        </a>
 
       </section>
 
