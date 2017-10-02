@@ -28,9 +28,9 @@ const Story = () => {
 
           <p>How are you involved in Mozfest?</p>
           <select name="mz_involved" id="mz_involved" class="Story__input">
-            <option>attendee</option>
-            <option>wrangler</option>
-            <option>presenter</option>
+            <option value="attended">attendee</option>
+            <option value="wrangled at">wrangler</option>
+            <option value="presented at">presenter</option>
           </select>
 
           <Button type="submit" buttonStyle="next">Next

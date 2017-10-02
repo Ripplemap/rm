@@ -1836,10 +1836,10 @@ new_action_type('pass', { aliases: [] });
 new_action_type('join', { aliases: [] });
 new_action_type('leave', { aliases: [] });
 new_action_type('create', { aliases: ['make', 'write', 'created'] });
-new_action_type('attend', { aliases: ['participate in', 'participated in'] });
+new_action_type('attend', { aliases: ['attended', 'participate in', 'participated in'] });
 new_action_type('manage', { aliases: ['run', 'lead', 'facilitate', 'coordinate', 'organize', 'organized'] });
-new_action_type('assist', { aliases: ['help', 'host', 'contribute'] });
-new_action_type('present', { aliases: ['presented'] });
+new_action_type('assist', { aliases: ['help', 'host', 'contribute', 'wrangled at'] });
+new_action_type('present', { aliases: ['presented', 'presented at'] });
 new_action_type('represent', { aliases: [] });
 new_action_type('fund', { aliases: ['funded'] });
 new_action_type('inspire', { aliases: ['inspired'] });
@@ -3191,15 +3191,13 @@ function draw_it_svg(env) {
   }
 }
 
-/////////////////////////////////
-
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// CANVAS FUNCTIONS
+// SENTENCE STRUCTURES
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -3334,8 +3332,6 @@ function write_sentences(env) {
   }
 }
 
-// FORM BUILDER & FRIENDS
-
 function render_conversation(conversation) {
   var str = '';
 
@@ -3421,7 +3417,8 @@ function render_conversation(conversation) {
 
     if (cat === 'action') {
       // var options = ['participate in', 'fund', 'organize', 'inspire', 'invite', 'meet', 'create', 'present']
-      var options = ['participated in', 'funded', 'organized', 'inspired', 'invited', 'met', 'created', 'presented'];
+      // var options = ['participated in', 'funded', 'organized', 'inspired', 'invited', 'met', 'created', 'presented']
+      var options = ['attended', 'wrangled at', 'presented at'];
       return make_select_list('verb', options);
 
       // text += '<select id="verb" name="verb">'
@@ -3828,8 +3825,6 @@ var Legend = function (_Component) {
 
 __$styleInject(".Story,.Story__form{display:flex;flex-direction:column}.Story__input{margin-top:10px}", undefined);
 
-// <p>We'd love to hear your stories! Let's start with your contact info:</p>
-
 var Story = function Story() {
   return h(
     'div',
@@ -3872,17 +3867,17 @@ var Story = function Story() {
           { name: 'mz_involved', id: 'mz_involved', 'class': 'Story__input' },
           h(
             'option',
-            null,
+            { value: 'attended' },
             'attendee'
           ),
           h(
             'option',
-            null,
+            { value: 'wrangled at' },
             'wrangler'
           ),
           h(
             'option',
-            null,
+            { value: 'presented at' },
             'presenter'
           )
         ),

@@ -502,12 +502,12 @@ function add_ring_labels(env) {
 }
 
 function copy_edges(env) {
-  var hues = {  "participate in": "rgba(52, 73, 94, 0.7)"
-              , "inspire": "rgba(241, 196, 15, 0.7)"
-              , "organize": "rgba(141, 196, 215, 0.7)"
-              , "lead": "rgba(231, 76, 60, 0.7)"
-              , "met": "rgba(102, 39, 239, 0.7)"
-  }
+  var hues = { "participate in": "rgba(52, 73, 94, 0.7)"
+             , "inspire": "rgba(241, 196, 15, 0.7)"
+             , "organize": "rgba(141, 196, 215, 0.7)"
+             , "lead": "rgba(231, 76, 60, 0.7)"
+             , "met": "rgba(102, 39, 239, 0.7)"
+             }
 
   env.data.E.forEach(function(edge) {
     if(!state.all_edges && !(edge._out.year === state.current_year || edge._in.year === state.current_year)) // HACK: remove this
@@ -1126,7 +1126,8 @@ function render_conversation(conversation) {
 
     if(cat === 'action') {
       // var options = ['participate in', 'fund', 'organize', 'inspire', 'invite', 'meet', 'create', 'present']
-      var options = ['participated in', 'funded', 'organized', 'inspired', 'invited', 'met', 'created', 'presented']
+      // var options = ['participated in', 'funded', 'organized', 'inspired', 'invited', 'met', 'created', 'presented']
+      var options = ['attended', 'wrangled at', 'presented at']
       return make_select_list('verb', options)
 
       // text += '<select id="verb" name="verb">'
