@@ -27,7 +27,7 @@ const Story = () => {
           <input name="name" id="name" type="text" placeholder="name" class="typeahead Story__input" />
 
           <p>How are you involved in Mozfest?</p>
-          <select name="mz_involved" id="mz_involved" class="Story__input" />
+          <select name="mz_involved" id="mz_involved" class="Story__input">
             <option>attendee</option>
             <option>wrangler</option>
             <option>presenter</option>

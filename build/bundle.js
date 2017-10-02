@@ -2120,6 +2120,19 @@ function set_el(el_id, val) {
 function login(e) {
   e.preventDefault();
   state.email = el('email').value;
+
+  var name = el('name').value;
+  var verb = el('mz_involved').value;
+  var values = { subject: name,
+    verb: verb,
+    object: 'MozFest 2017',
+    date: '2017-10-26'
+  };
+  update_conversation(values);
+  update_conversation(values);
+  update_conversation(values);
+  update_conversation(values);
+
   force_rerender();
 
   // el('login').classList.add('hide')
@@ -3854,13 +3867,25 @@ var Story = function Story() {
           null,
           'How are you involved in Mozfest?'
         ),
-        h('input', { name: 'mz_involved', id: 'mz_involved', type: 'text', placeholder: 'mz_involved', 'class': 'typeahead Story__input' }),
         h(
-          'p',
-          null,
-          'What have you attended/wrangled/presented?'
+          'select',
+          { name: 'mz_involved', id: 'mz_involved', 'class': 'Story__input' },
+          h(
+            'option',
+            null,
+            'attendee'
+          ),
+          h(
+            'option',
+            null,
+            'wrangler'
+          ),
+          h(
+            'option',
+            null,
+            'presenter'
+          )
         ),
-        h('input', { name: 'mz_attended', id: 'mz_attended', type: 'text', placeholder: 'mz_attended', 'class': 'typeahead Story__input' }),
         h(
           Button,
           { type: 'submit', buttonStyle: 'next' },
