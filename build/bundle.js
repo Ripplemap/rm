@@ -1304,6 +1304,26 @@ var Home = function Home(_ref) {
           } },
         'Add a story',
         h('i', { 'class': 'fa fa-chevron-right pl_1', 'aria-hidden': 'true' })
+      ),
+      h(
+        'p',
+        null,
+        'Accountability around it: someone put me in without my consent'
+      ),
+      h(
+        'p',
+        null,
+        'Button'
+      ),
+      h(
+        'p',
+        null,
+        'For now, have people email us using a form'
+      ),
+      h(
+        'p',
+        null,
+        '\u201CSomeone put me in without my consent\u201D'
       )
     )
   );
@@ -3341,7 +3361,7 @@ function render_conversation(conversation) {
   });
 
   if (!prelude) {
-    prelude = '<p>Okay, let\u2019s fill in the blanks.</p>\n               <p>E.g. <b><u>Beyonc\xE9 Knowles</b></u> performed at AMC 2018.</p>\n\n              ';
+    prelude = '<p>Okay, let\u2019s fill in the blanks.</p>\n              ';
   }
 
   // display the unfilled slot
@@ -3795,6 +3815,8 @@ var Legend = function (_Component) {
 
 __$styleInject(".Story,.Story__form{display:flex;flex-direction:column}.Story__input{margin-top:10px}", undefined);
 
+// <p>We'd love to hear your stories! Let's start with your contact info:</p>
+
 var Story = function Story() {
   return h(
     'div',
@@ -3822,6 +3844,24 @@ var Story = function Story() {
         ),
         h('input', { name: 'email', id: 'email', type: 'text', placeholder: 'email', 'class': 'typeahead Story__input' }),
         h(
+          'p',
+          null,
+          'Your name'
+        ),
+        h('input', { name: 'name', id: 'name', type: 'text', placeholder: 'name', 'class': 'typeahead Story__input' }),
+        h(
+          'p',
+          null,
+          'How are you involved in Mozfest?'
+        ),
+        h('input', { name: 'mz_involved', id: 'mz_involved', type: 'text', placeholder: 'mz_involved', 'class': 'typeahead Story__input' }),
+        h(
+          'p',
+          null,
+          'What have you attended/wrangled/presented?'
+        ),
+        h('input', { name: 'mz_attended', id: 'mz_attended', type: 'text', placeholder: 'mz_attended', 'class': 'typeahead Story__input' }),
+        h(
           Button,
           { type: 'submit', buttonStyle: 'next' },
           'Next',
@@ -3848,6 +3888,11 @@ var Story = function Story() {
           ' Go back',
           h('i', { 'class': 'fa fa-chevron-left pl_1', 'aria-hidden': 'true' })
         )
+      ),
+      h(
+        'p',
+        null,
+        'When you add an \u2018individual\u2019 or tell a new story about an individual: Did you ask this person\u2019s consent? This is what getting consent means/looks like These are questions you can ask to get their consent Okay go do that now'
       )
     )
   );
