@@ -3182,15 +3182,13 @@ function draw_it_svg(env) {
   }
 }
 
-/////////////////////////////////
-
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// CANVAS FUNCTIONS
+// SENTENCE STRUCTURES
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -3325,8 +3323,6 @@ function write_sentences(env) {
   }
 }
 
-// FORM BUILDER & FRIENDS
-
 function render_conversation(conversation) {
   var str = '';
 
@@ -3365,7 +3361,9 @@ function render_conversation(conversation) {
   });
 
   if (!prelude) {
-    prelude = '<p>Okay, let\u2019s fill in the blanks.</p>\n              ';
+    prelude = '<p>Okay, let\u2019s fill in the blanks.</p>';
+  } else {
+    prelude += '<p>Tell us some other stories about your involvement</p>';
   }
 
   // display the unfilled slot
@@ -3854,7 +3852,7 @@ var Story = function Story() {
         h(
           'p',
           null,
-          'How are you involved in Mozfest?'
+          'How are you involved in Mozfest 2017?'
         ),
         h(
           'select',
@@ -3921,7 +3919,27 @@ var Story = function Story() {
       h(
         'p',
         null,
-        'When you add an \u2018individual\u2019 or tell a new story about an individual: Did you ask this person\u2019s consent? This is what getting consent means/looks like These are questions you can ask to get their consent Okay go do that now'
+        'To add your story, we need the consent of everyone in it. To obtain someone\u2019s informed consent, they need to know:'
+      ),
+      h(
+        'p',
+        null,
+        '- That they\u2019re consenting to being named in a story on the MozFest Ripple Map, and that MozFest attendees and organizers will be able to read that story'
+      ),
+      h(
+        'p',
+        null,
+        '- That there are risks we will do our best to protect them from: unintentional data usage, monitoring, surveillance'
+      ),
+      h(
+        'p',
+        null,
+        '- That at any time, they can change or remove their story.'
+      ),
+      h(
+        'p',
+        null,
+        'For transparency and accountability, they will be able to see that you have added them.'
       )
     )
   );

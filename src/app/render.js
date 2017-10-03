@@ -1074,8 +1074,9 @@ function render_conversation(conversation) {
   })
 
   if(!prelude) {
-    prelude = `<p>Okay, let’s fill in the blanks.</p>
-              `
+    prelude = `<p>Okay, let’s fill in the blanks.</p>`
+  } else {
+    prelude += `<p>Tell us some other stories about your involvement</p>`
   }
 
   // display the unfilled slot

@@ -26,7 +26,7 @@ const Story = () => {
           <p>Your name</p>
           <input name="name" id="name" type="text" placeholder="name" class="typeahead Story__input" />
 
-          <p>How are you involved in Mozfest?</p>
+          <p>How are you involved in Mozfest 2017?</p>
           <select name="mz_involved" id="mz_involved" class="Story__input">
             <option value="attended">attendee</option>
             <option value="wrangled at">wrangler</option>
@@ -59,13 +59,12 @@ const Story = () => {
           </p>
         </form>
 
-      <p>
-      When you add an ‘individual’ or tell a new story about an individual:
-    Did you ask this person’s consent?
-      This is what getting consent means/looks like
-    These are questions you can ask to get their consent
-    Okay go do that now
-    </p>
+      <p>To add your story, we need the consent of everyone in it. To obtain someone’s informed consent, they need to know:</p>
+      <p>- That they’re consenting to being named in a story on the MozFest Ripple Map, and that MozFest attendees and organizers will be able to read that story</p>
+      <p>- That there are risks we will do our best to protect them from: unintentional data usage, monitoring, surveillance</p>
+      <p>- That at any time, they can change or remove their story.</p>
+
+      <p>For transparency and accountability, they will be able to see that you have added them.</p>
 
       </div>
 
