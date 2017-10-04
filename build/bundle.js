@@ -3366,9 +3366,9 @@ function render_conversation(conversation) {
 
   if (!prelude) {
     prelude = '<p>Okay, let\u2019s fill in the blanks.</p>';
-  } else {
-    prelude += '<p>Thanks for adding your story, it\'s on the map!</p><p>Tell us some other stories about your involvement in MozFest</p>';
-  }
+  } else {}
+  // prelude += `<p>Thanks for adding your story, it's on the map!</p><p>Tell us some other stories about your involvement in MozFest</p>`
+
 
   // display the unfilled slot
   var slot = sentence.slots[0];
@@ -3822,6 +3822,50 @@ var Legend = function (_Component) {
 __$styleInject(".Story,.Story__form{display:flex;flex-direction:column}.Story__input{margin-top:10px}", undefined);
 
 // <p>We'd love to hear your stories! Let's start with your contact info:</p>
+var consent_disclaimer = h(
+  'div',
+  null,
+  h(
+    'p',
+    null,
+    'To add your story, we need the consent of everyone in it. To obtain someone\u2019s informed consent, they need to know:'
+  ),
+  h(
+    'p',
+    null,
+    '- That they\u2019re consenting to being named in a story on the MozFest Ripple Map, and that MozFest attendees and organizers will be able to read that story'
+  ),
+  h(
+    'p',
+    null,
+    '- That there are risks we will do our best to protect them from: unintentional data usage, monitoring, surveillance'
+  ),
+  h(
+    'p',
+    null,
+    '- That at any time, they can change or remove their story.'
+  ),
+  h(
+    'p',
+    null,
+    'For transparency and accountability, they will be able to see that you have added them.'
+  )
+);
+
+var thanks = h(
+  'div',
+  null,
+  h(
+    'p',
+    null,
+    'Thanks for adding your story, it\'s on the map!'
+  ),
+  h(
+    'p',
+    null,
+    'Tell us some other stories about your involvement in MozFest'
+  )
+);
 
 var Story = function Story() {
   return h(
@@ -3905,35 +3949,12 @@ var Story = function Story() {
     h(
       'div',
       { id: 'storytime', 'class': state.email ? '' : 'hide' },
+      !convo.filled.length && thanks,
       h(
         'form',
         { id: 'the-conversation', onSubmit: submit_convo },
         h('div', { dangerouslySetInnerHTML: { __html: get_convo_html() } }),
-        h(
-          'p',
-          null,
-          'To add your story, we need the consent of everyone in it. To obtain someone\u2019s informed consent, they need to know:'
-        ),
-        h(
-          'p',
-          null,
-          '- That they\u2019re consenting to being named in a story on the MozFest Ripple Map, and that MozFest attendees and organizers will be able to read that story'
-        ),
-        h(
-          'p',
-          null,
-          '- That there are risks we will do our best to protect them from: unintentional data usage, monitoring, surveillance'
-        ),
-        h(
-          'p',
-          null,
-          '- That at any time, they can change or remove their story.'
-        ),
-        h(
-          'p',
-          null,
-          'For transparency and accountability, they will be able to see that you have added them.'
-        ),
+        !convo.slots.length && consent_disclaimer,
         h(
           Button,
           { type: 'submit', buttonStyle: 'next' },
