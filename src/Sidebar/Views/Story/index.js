@@ -50,6 +50,17 @@ const Story = () => {
         <form id="the-conversation" onSubmit={dom.submit_convo}>
           <div dangerouslySetInnerHTML={{__html: get_convo_html()}}></div>
 
+          <p>To add your story, we need the consent of everyone in it. To obtain someone’s informed consent, they need to know:</p>
+          <p>- That they’re consenting to being named in a story on the MozFest Ripple Map, and that MozFest attendees and organizers will be able to read that story</p>
+          <p>- That there are risks we will do our best to protect them from: unintentional data usage, monitoring, surveillance</p>
+          <p>- That at any time, they can change or remove their story.</p>
+
+          <p>For transparency and accountability, they will be able to see that you have added them.</p>
+
+      <Button type="submit" buttonStyle="next">Next
+      <i class="fa fa-chevron-right pl_1" aria-hidden="true"></i>
+      </Button>
+
           <Button type="submit" buttonStyle="next">Next
             <i class="fa fa-chevron-right pl_1" aria-hidden="true"></i>
           </Button>
@@ -58,13 +69,6 @@ const Story = () => {
             <i class="fa fa-chevron-left pl_1" aria-hidden="true"></i>
           </p>
         </form>
-
-      <p>To add your story, we need the consent of everyone in it. To obtain someone’s informed consent, they need to know:</p>
-      <p>- That they’re consenting to being named in a story on the MozFest Ripple Map, and that MozFest attendees and organizers will be able to read that story</p>
-      <p>- That there are risks we will do our best to protect them from: unintentional data usage, monitoring, surveillance</p>
-      <p>- That at any time, they can change or remove their story.</p>
-
-      <p>For transparency and accountability, they will be able to see that you have added them.</p>
 
       </div>
 

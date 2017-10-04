@@ -1076,7 +1076,7 @@ function render_conversation(conversation) {
   if(!prelude) {
     prelude = `<p>Okay, let’s fill in the blanks.</p>`
   } else {
-    prelude += `<p>Tell us some other stories about your involvement</p>`
+    prelude += `<p>Thanks for adding your story, it's on the map!</p><p>Tell us some other stories about your involvement in MozFest</p>`
   }
 
   // display the unfilled slot

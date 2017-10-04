@@ -1393,7 +1393,7 @@ state.safe_mode = false;
 state.all_edges = true; // awkward... :(
 state.admin_mode = false; // yep another hack w00t
 state.my_maxyear = 2017; // total hackery...
-state.my_minyear = 2004; // hack hack hack
+state.my_minyear = 2010; // hack hack hack
 state.show_labels = false; // yup
 state.current_year = 2017; // more hacks
 state.filter_sentences = false; // awkward... :(
@@ -3182,13 +3182,15 @@ function draw_it_svg(env) {
   }
 }
 
+/////////////////////////////////
+
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// SENTENCE STRUCTURES
+// CANVAS FUNCTIONS
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -3323,6 +3325,8 @@ function write_sentences(env) {
   }
 }
 
+// FORM BUILDER & FRIENDS
+
 function render_conversation(conversation) {
   var str = '';
 
@@ -3363,7 +3367,7 @@ function render_conversation(conversation) {
   if (!prelude) {
     prelude = '<p>Okay, let\u2019s fill in the blanks.</p>';
   } else {
-    prelude += '<p>Tell us some other stories about your involvement</p>';
+    prelude += '<p>Thanks for adding your story, it\'s on the map!</p><p>Tell us some other stories about your involvement in MozFest</p>';
   }
 
   // display the unfilled slot
@@ -3817,6 +3821,8 @@ var Legend = function (_Component) {
 
 __$styleInject(".Story,.Story__form{display:flex;flex-direction:column}.Story__input{margin-top:10px}", undefined);
 
+// <p>We'd love to hear your stories! Let's start with your contact info:</p>
+
 var Story = function Story() {
   return h(
     'div',
@@ -3904,6 +3910,37 @@ var Story = function Story() {
         { id: 'the-conversation', onSubmit: submit_convo },
         h('div', { dangerouslySetInnerHTML: { __html: get_convo_html() } }),
         h(
+          'p',
+          null,
+          'To add your story, we need the consent of everyone in it. To obtain someone\u2019s informed consent, they need to know:'
+        ),
+        h(
+          'p',
+          null,
+          '- That they\u2019re consenting to being named in a story on the MozFest Ripple Map, and that MozFest attendees and organizers will be able to read that story'
+        ),
+        h(
+          'p',
+          null,
+          '- That there are risks we will do our best to protect them from: unintentional data usage, monitoring, surveillance'
+        ),
+        h(
+          'p',
+          null,
+          '- That at any time, they can change or remove their story.'
+        ),
+        h(
+          'p',
+          null,
+          'For transparency and accountability, they will be able to see that you have added them.'
+        ),
+        h(
+          Button,
+          { type: 'submit', buttonStyle: 'next' },
+          'Next',
+          h('i', { 'class': 'fa fa-chevron-right pl_1', 'aria-hidden': 'true' })
+        ),
+        h(
           Button,
           { type: 'submit', buttonStyle: 'next' },
           'Next',
@@ -3915,31 +3952,6 @@ var Story = function Story() {
           ' Go back',
           h('i', { 'class': 'fa fa-chevron-left pl_1', 'aria-hidden': 'true' })
         )
-      ),
-      h(
-        'p',
-        null,
-        'To add your story, we need the consent of everyone in it. To obtain someone\u2019s informed consent, they need to know:'
-      ),
-      h(
-        'p',
-        null,
-        '- That they\u2019re consenting to being named in a story on the MozFest Ripple Map, and that MozFest attendees and organizers will be able to read that story'
-      ),
-      h(
-        'p',
-        null,
-        '- That there are risks we will do our best to protect them from: unintentional data usage, monitoring, surveillance'
-      ),
-      h(
-        'p',
-        null,
-        '- That at any time, they can change or remove their story.'
-      ),
-      h(
-        'p',
-        null,
-        'For transparency and accountability, they will be able to see that you have added them.'
       )
     )
   );
