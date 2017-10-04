@@ -61,12 +61,12 @@ const Story = () => {
 
       <div id="storytime" class={state.email ? '' : 'hide'}>
 
-    {!convo.filled.length && thanks}
+    {!convo.current.filled.length && thanks}
 
         <form id="the-conversation" onSubmit={dom.submit_convo}>
           <div dangerouslySetInnerHTML={{__html: get_convo_html()}}></div>
 
-    {!convo.slots.length && consent_disclaimer}
+    {!convo.current.slots.length && consent_disclaimer}
 
           <Button type="submit" buttonStyle="next">
             <p onClick={restart_sentence} style={{textAlign: 'left', flex: 'inherit'}}>

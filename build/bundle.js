@@ -3949,12 +3949,12 @@ var Story = function Story() {
     h(
       'div',
       { id: 'storytime', 'class': state.email ? '' : 'hide' },
-      !convo.filled.length && thanks,
+      !convo.current.filled.length && thanks,
       h(
         'form',
         { id: 'the-conversation', onSubmit: submit_convo },
         h('div', { dangerouslySetInnerHTML: { __html: get_convo_html() } }),
-        !convo.slots.length && consent_disclaimer,
+        !convo.current.slots.length && consent_disclaimer,
         h(
           Button,
           { type: 'submit', buttonStyle: 'next' },
