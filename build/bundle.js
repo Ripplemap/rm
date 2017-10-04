@@ -3954,7 +3954,7 @@ var Story = function Story() {
         'form',
         { id: 'the-conversation', onSubmit: submit_convo },
         h('div', { dangerouslySetInnerHTML: { __html: get_convo_html() } }),
-        !convo.current.slots.length && consent_disclaimer,
+        convo.current.slots.length === 1 && consent_disclaimer,
         h(
           Button,
           { type: 'submit', buttonStyle: 'next' },

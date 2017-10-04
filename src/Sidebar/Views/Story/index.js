@@ -66,7 +66,7 @@ const Story = () => {
         <form id="the-conversation" onSubmit={dom.submit_convo}>
           <div dangerouslySetInnerHTML={{__html: get_convo_html()}}></div>
 
-    {!convo.current.slots.length && consent_disclaimer}
+    {convo.current.slots.length === 1 && consent_disclaimer}
 
           <Button type="submit" buttonStyle="next">
             <p onClick={restart_sentence} style={{textAlign: 'left', flex: 'inherit'}}>
