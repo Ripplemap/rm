@@ -3937,14 +3937,14 @@ var Story = function Story() {
         h(
           Button,
           { type: 'submit', buttonStyle: 'next' },
+          h(
+            'p',
+            { onClick: restart_sentence, style: { textAlign: 'left', flex: 'inherit' } },
+            h('i', { 'class': 'fa fa-chevron-left pl_1', 'aria-hidden': 'true' }),
+            'Go back'
+          ),
           'Next',
           h('i', { 'class': 'fa fa-chevron-right pl_1', 'aria-hidden': 'true' })
-        ),
-        h(
-          'p',
-          { onClick: restart_sentence },
-          h('i', { 'class': 'fa fa-chevron-left pl_1', 'aria-hidden': 'true' }),
-          'Go back'
         )
       )
     )

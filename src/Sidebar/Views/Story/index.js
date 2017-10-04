@@ -57,10 +57,6 @@ const Story = () => {
 
           <p>For transparency and accountability, they will be able to see that you have added them.</p>
 
-    {
-      text-align: left;
-      flex: inherit;
-    }
           <Button type="submit" buttonStyle="next">
             <p onClick={restart_sentence} style={{textAlign: 'left', flex: 'inherit'}}>
               <i class="fa fa-chevron-left pl_1" aria-hidden="true"></i>
