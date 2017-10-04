@@ -1406,14 +1406,14 @@ function add_to_server_facts(type, live_item) {
 
   /*
     data model:
-   user: id
-   action: add/remove/edit
-   type: node/edge
-   tags: [...]
-   [maybe other stats can live here?]
-   data:
-     node: {id, name, type, cat...}
-     edge: {_in, _out, type, label}
+     user: id
+     action: add/remove/edit
+     type: node/edge
+     tags: [...]
+     [maybe other stats can live here?]
+     data:
+       node: {id, name, type, cat...}
+       edge: {_in, _out, type, label}
     */
 
   // var item = JSON.parse(JSON.stringify(live_item))
@@ -1443,6 +1443,7 @@ function add_to_server_facts(type, live_item) {
 function persist() {
   // THINK: do we still need localstorage caching?
   Dagoba.persist(G, 'rripplemap');
+  localStorage.setItem('ripmap', state.facts);
 }
 
 persist = debounce(persist, 1000);
@@ -1475,7 +1476,8 @@ function send_data_to_server(data, cb) {
   if (state.safe_mode === 'daring') {
     url = 'http://localhost:8888';
   } else if (state.safe_mode) {
-    return console.log(G);
+    return persist();
+    // return console.log(G)
   }
 
   fetch(url, { method: 'post',
@@ -1493,7 +1495,9 @@ function get_facts_from_server(cb) {
 
   // local shunt for airplane mode
 
-  if (state.safe_mode === 'local') return cb(JSON.parse(localStorage['DAGOBA::ripmapdata']));
+  // if(state.safe_mode === 'local')
+  //   return cb(JSON.parse(localStorage['DAGOBA::ripmapdata']))
+  if (state.safe_mode === 'local') return cb(JSON.parse(localStorage['ripmap'] || '[]'));
 
   if (state.safe_mode === 'daring') url = 'http://localhost:8888';
 
@@ -1897,6 +1901,7 @@ function removetag(tag) {
 function add_data(cb) {
   get_facts_from_server(function (facts) {
     if (Array.isArray(facts)) cb(fact_to_graph(capture_facts(facts)));else cb(facts); // already a graph, from localStorage
+    // THINK: can maybe remove the else clause...
   });
 }
 
@@ -1983,331 +1988,6 @@ function set_intersect(xs, ys) {
   return xs.filter(function (x) {
     return ys.indexOf(x) !== -1;
   });
-}
-
-var convo = new_conversation();
-function restart_sentence() {
-  convo.current = new_sentence();
-  force_rerender();
-}
-
-function update_conversation(values, conversation) {
-  var conversation = conversation || convo;
-
-  var wants = conversation.current.slots[0].key;
-  var value = values && values[wants] || false;
-  // var value = dom.el(wants).value
-
-  convo = fulfill_desire(conversation, value);
-
-  return convo;
-}
-
-function new_sentence() {
-  var slots = [{ key: 'subject', type: 'word', cat: 'thing' }, { key: 'verb', type: 'word', cat: 'action' }, { key: 'object', type: 'word', cat: 'thing' }, { key: 'date', type: 'date' }];
-  return { slots: slots, filled: [] };
-}
-
-function new_conversation() {
-  var sentence = new_sentence();
-  return { sentences: [], current: sentence };
-}
-
-function fulfill_desire(conversation, value) {
-  var conversation = conversation || convo;
-
-  var sentence = give_word(conversation.current, value);
-
-  // TODO: allow multi-sentence conversations
-
-
-  if (!sentence.slots.length) {
-    var subject, verb, object, date;
-    sentence.filled.forEach(function (slot) {
-      if (slot.type === 'gettype') {
-        var thing = add_thing(slot.value, { name: slot.name }, true);
-        if (slot.oldkey === 'subject') subject = thing;
-        if (slot.oldkey === 'object') object = thing;
-      } else if (slot.type === 'date') {
-        date = slot.value;
-      } else if (slot.key === 'subject') {
-        subject = slot.word;
-      } else if (slot.key === 'object') {
-        object = slot.word;
-      } else if (slot.key === 'verb') {
-        verb = (slot.word || {}).type || slot.value;
-      }
-    });
-
-    if (subject && verb && object) {
-      verb = add_action(verb, { time: new Date(date).getTime() }, true);
-      add_edge('the', verb._id, object._id, 0, true);
-      add_edge('did', subject._id, verb._id, 0, true);
-    }
-
-    // start over
-    // TODO: show the sentence
-    // conversation = new_conversation()
-    conversation.sentences.push(sentence);
-    restart_sentence();
-    // conversation.current = new_sentence()
-
-    // force_rerender()
-  }
-
-  return conversation;
-}
-
-function give_word(sentence, value) {
-  var slot = sentence.slots.shift();
-  if (!slot) return error$1('This sentence is finished');
-
-  // TODO: check this logic modularly
-  if (slot.type === 'word') {
-    var word = G.v({ name: value, cat: slot.cat }).run()[0];
-    if (word) {
-      slot.word = word;
-    }
-  }
-
-  if (slot.cat === 'thing') {
-    if (slot.type === 'word') {
-      if (!slot.word) {
-        sentence.slots.unshift({ key: 'type', type: 'gettype', name: value, cat: slot.cat, oldkey: slot.key });
-      }
-    } else if (slot.type === 'gettype') {
-      // var nameslot = sentence.filled[sentence.filled.length-1]
-    }
-  }
-
-  // fix it in post
-  slot.value = value;
-  sentence.filled.push(slot);
-
-  return sentence;
-}
-
-// this does some dom things
-
-var el = function () {
-  var els = {};
-  var default_el = { addEventListener: noop, removeEventListener: noop };
-
-  return function (el_id) {
-    // NOTE: removing caching for now to deal with vdom
-    // if(els[el_id])
-    //   return els[el_id]
-    els[el_id] = document.getElementById(el_id) || default_el;
-    return els[el_id];
-  };
-}();
-
-function set_el(el_id, val) {
-  el(el_id).innerHTML = val;
-}
-
-// LOGIN/ORG/TAG STUFF
-
-function login(e) {
-  e.preventDefault();
-  state.email = el('email').value;
-
-  var name = el('name').value;
-  var verb = el('mz_involved').value;
-  var values = { subject: name,
-    type: 'person',
-    verb: verb,
-    object: 'MozFest 2017',
-    date: '2017-10-26'
-  };
-  // update_conversation(values)
-  // update_conversation(values)
-  // update_conversation(values)
-  // update_conversation(values)
-  // if(convo.current.slots.length)
-  //   update_conversation(values)
-
-  force_rerender();
-
-  // el('login').classList.add('hide')
-  // el('storytime').classList.remove('hide')
-}
-
-// INTERACTIONS & DOM BINDINGS
-
-function click_tagnames(ev) {
-  ev.preventDefault();
-  var target = ev.target;
-  var tag = target.innerText;
-  if (!tag) return undefined;
-  removetag(tag);
-
-  force_rerender();
-  showtags();
-}
-
-function global_keydown(ev) {
-  // TODO: clean this up (prevent span hijacking)
-  if (ev.target.tagName === 'SPAN' || ev.target.tagName === 'INPUT' || ev.target.tagName === 'SELECT' || ev.target.tagName === 'TEXTAREA') return true;
-
-  var key = ev.keyCode || ev.which;
-
-  // var key_a = 97
-  var key_e = 69;
-  var key_f = 70;
-  var key_l = 76;
-  var key_n = 78;
-  var key_p = 80;
-  // var key_s = 115
-  var tilde = 126;
-  var larro = 37;
-  var uarro = 38;
-  var rarro = 39;
-  var darro = 40;
-  // var langl = 60
-  // var rangl = 62
-
-  if (key === larro || key === darro || key === key_p) {
-    ev.preventDefault();
-    if (state.current_year <= state.my_minyear) return false;
-    state.current_year--;
-    force_rerender();
-  }
-
-  if (key === rarro || key === uarro || key === key_n) {
-    ev.preventDefault();
-    if (state.current_year >= state.my_maxyear) return false;
-    state.current_year++;
-    force_rerender();
-  }
-
-  if (key === key_f) {
-    state.filter_sentences = !state.filter_sentences;
-    force_rerender();
-  }
-
-  if (key === key_e) {
-    state.all_edges = !state.all_edges;
-    force_rerender();
-  }
-
-  if (key === key_l) {
-    state.show_labels = !state.show_labels;
-    force_rerender();
-  }
-
-  if (key === tilde) {
-    state.admin_mode = !state.admin_mode;
-    force_rerender();
-  }
-}
-
-function submit_addtag(ev) {
-  ev.preventDefault();
-  addtag(el('othertags').value);
-
-  force_rerender();
-  showtags();
-}
-
-function keyup_sentences(ev) {
-  // var key = ev.keyCode || ev.which
-  var span = ev.target;
-  var type = span.classList.contains('edge') ? 'edge' : 'cat';
-  var val = span.textContent;
-  var id = span.getAttribute('data-id');
-
-  // TODO: trap return for special effects
-  // TODO: maybe trap tab also
-
-  // ev.preventDefault()
-
-  // handle the node case
-  if (type === 'cat' && id && val) {
-    var node = G.vertexIndex[id];
-    if (node && node.name !== val) {
-      // update the name/label in the real graph
-      node.name = val;
-      pub(id);
-    }
-  }
-
-  // handle the edge case
-  if (type === 'edge') {
-    var id1 = span.getAttribute('data-id1');
-    var id2 = span.getAttribute('data-id2');
-
-    var node1 = G.vertexIndex[id1];
-    var edges = node1._in.concat(node1._out);
-    var edge = edges.filter(function (edge) {
-      return edge._in._id === id1 && edge._out._id === id2 || edge._in._id === id2 && edge._out._id === id1;
-    })[0];
-
-    if (!edge) return undefined;
-
-    edge.label = val;
-    edge.type = val;
-
-    // pub(id1 + '-' + id2)
-    // Dagoba.persist(G, 'rripplemap')
-    persist();
-  }
-
-  function pub(id) {
-    // publish the change
-    // Dagoba.persist(G, 'rripplemap')
-    persist();
-
-    // update all other sentences
-    var spans = document.querySelectorAll('span.node-' + id);
-    for (var i = 0; i < spans.length; i++) {
-      if (spans[i] !== span) spans[i].textContent = val;
-    }
-
-    // rerender the graph
-    force_rerender(0);
-  }
-}
-
-function click_sentences(ev) {
-  var target = ev.target;
-  if (target.nodeName !== 'BUTTON') return true;
-
-  var id = target.getAttribute('data-id');
-  var node = G.vertexIndex[id];
-
-  if (!node) return error$1('That node does not exist');
-
-  if (node.cat === 'action') {
-    // remove "sentence"
-    G.removeVertex(node);
-  } else {
-    G.removeVertex(node); // THINK: is this really reasonable?
-  }
-
-  persist();
-  force_rerender();
-}
-
-function submit_convo(ev) {
-  ev.preventDefault();
-
-  // submit event to field key-value list:
-  var fields = [].concat(toConsumableArray(ev.currentTarget.elements));
-  var values = fields.reduce(function (acc, el) {
-    acc[el.id] = el.value;return acc;
-  }, {});
-
-  if (!Object.keys(values).reduce(function (acc, k) {
-    return acc + values[k];
-  }, '')) // no values? don't submit
-    return false;
-
-  update_conversation(values);
-
-  // whatsnext(G, update_conversation())
-
-  force_rerender();
 }
 
 function activate(vertex) {
@@ -2492,6 +2172,342 @@ function mouseout_tagnames(ev) {
   need to add listeners to things... where should those live? in preact?
 */
 
+var convo = new_conversation();
+function restart_sentence() {
+  convo.current = new_sentence();
+  force_rerender();
+}
+
+function update_conversation(values, conversation) {
+  var conversation = conversation || convo;
+
+  var wants = conversation.current.slots[0].key;
+  var value = values && values[wants] || false;
+  // var value = dom.el(wants).value
+
+  // THINK: what could possibly go wrong?
+  if (!value) return convo;
+
+  convo = fulfill_desire(conversation, value);
+
+  return convo;
+}
+
+function new_sentence() {
+  var slots = [{ key: 'subject', type: 'word', cat: 'thing' }, { key: 'verb', type: 'word', cat: 'action' }, { key: 'object', type: 'word', cat: 'thing' }, { key: 'date', type: 'date' }];
+  return { slots: slots, filled: [] };
+}
+
+function new_conversation() {
+  var sentence = new_sentence();
+  return { sentences: [], current: sentence };
+}
+
+function fulfill_desire(conversation, value) {
+  var conversation = conversation || convo;
+
+  var sentence = give_word(conversation.current, value);
+
+  // TODO: allow multi-sentence conversations
+  // TODO: bind convo and graph, so active_sentences can include the current convo and the convo can show highlighting etc (render::render_conversation)
+
+  if (!sentence.slots.length) {
+    var subject, verb, object, date;
+    sentence.filled.forEach(function (slot) {
+      if (slot.type === 'gettype') {
+        var thing = add_thing(slot.value, { name: slot.name }, true);
+        if (slot.oldkey === 'subject') subject = thing;
+        if (slot.oldkey === 'object') object = thing;
+      } else if (slot.type === 'date') {
+        date = slot.value;
+      } else if (slot.key === 'subject') {
+        subject = slot.word;
+      } else if (slot.key === 'object') {
+        object = slot.word;
+      } else if (slot.key === 'verb') {
+        verb = (slot.word || {}).type || slot.value;
+      }
+    });
+
+    if (subject && verb && object) {
+      verb = add_action(verb, { time: new Date(date).getTime() }, true);
+      add_edge('the', verb._id, object._id, 0, true);
+      add_edge('did', subject._id, verb._id, 0, true);
+    }
+
+    var q = G.v(verb).as('v').both().as('b').merge('v', 'b').run();
+    highlightyo(q.map(function (x) {
+      return x._id;
+    }), 'activate');
+
+    // start over
+    // TODO: show the sentence
+    // conversation = new_conversation()
+    conversation.sentences.push(sentence);
+    restart_sentence();
+    // conversation.current = new_sentence()
+
+    // force_rerender()
+  }
+
+  return conversation;
+}
+
+function give_word(sentence, value) {
+  var slot = sentence.slots.shift();
+  if (!slot) return error$1('This sentence is finished');
+
+  // TODO: check this logic modularly
+  if (slot.type === 'word') {
+    var word = G.v({ name: value, cat: slot.cat }).run()[0];
+    if (word) {
+      slot.word = word;
+    }
+  }
+
+  if (slot.cat === 'thing') {
+    if (slot.type === 'word') {
+      if (!slot.word) {
+        sentence.slots.unshift({ key: 'type', type: 'gettype', name: value, cat: slot.cat, oldkey: slot.key });
+      }
+    } else if (slot.type === 'gettype') {
+      // var nameslot = sentence.filled[sentence.filled.length-1]
+    }
+  }
+
+  // fix it in post
+  slot.value = value;
+  sentence.filled.push(slot);
+
+  return sentence;
+}
+
+// this does some dom things
+
+var el = function () {
+  var els = {};
+  var default_el = { addEventListener: noop, removeEventListener: noop };
+
+  return function (el_id) {
+    // NOTE: removing caching for now to deal with vdom
+    // if(els[el_id])
+    //   return els[el_id]
+    els[el_id] = document.getElementById(el_id) || default_el;
+    return els[el_id];
+  };
+}();
+
+function set_el(el_id, val) {
+  el(el_id).innerHTML = val;
+}
+
+function login(e) {
+  e.preventDefault();
+
+  if (!el('email').value || !el('name').value) {
+    return 'Sorry, you need to fill out those values';
+  }
+
+  state.email = el('email').value;
+
+  var name = el('name').value;
+  var verb = el('mz_involved').value;
+  var values = { subject: name,
+    type: 'person',
+    verb: verb,
+    object: 'MozFest 2017',
+    date: '2017-10-26'
+  };
+
+  update_conversation(values);
+  update_conversation(values);
+  update_conversation(values);
+  update_conversation(values);
+  if (convo.current.slots.length) update_conversation(values);
+
+  force_rerender();
+
+  // el('login').classList.add('hide')
+  // el('storytime').classList.remove('hide')
+}
+
+// INTERACTIONS & DOM BINDINGS
+
+function click_tagnames(ev) {
+  ev.preventDefault();
+  var target = ev.target;
+  var tag = target.innerText;
+  if (!tag) return undefined;
+  removetag(tag);
+
+  force_rerender();
+  showtags();
+}
+
+function global_keydown(ev) {
+  // TODO: clean this up (prevent span hijacking)
+  if (ev.target.tagName === 'SPAN' || ev.target.tagName === 'INPUT' || ev.target.tagName === 'SELECT' || ev.target.tagName === 'TEXTAREA') return true;
+
+  var key = ev.keyCode || ev.which;
+
+  // var key_a = 97
+  var key_e = 69;
+  var key_f = 70;
+  var key_l = 76;
+  var key_n = 78;
+  var key_p = 80;
+  // var key_s = 115
+  var tilde = 126;
+  var larro = 37;
+  var uarro = 38;
+  var rarro = 39;
+  var darro = 40;
+  // var langl = 60
+  // var rangl = 62
+
+  if (key === larro || key === darro || key === key_p) {
+    ev.preventDefault();
+    if (state.current_year <= state.my_minyear) return false;
+    state.current_year--;
+    force_rerender();
+  }
+
+  if (key === rarro || key === uarro || key === key_n) {
+    ev.preventDefault();
+    if (state.current_year >= state.my_maxyear) return false;
+    state.current_year++;
+    force_rerender();
+  }
+
+  if (key === key_f) {
+    state.filter_sentences = !state.filter_sentences;
+    force_rerender();
+  }
+
+  if (key === key_e) {
+    state.all_edges = !state.all_edges;
+    force_rerender();
+  }
+
+  if (key === key_l) {
+    state.show_labels = !state.show_labels;
+    force_rerender();
+  }
+
+  if (key === tilde) {
+    state.admin_mode = !state.admin_mode;
+    force_rerender();
+  }
+}
+
+function submit_addtag(ev) {
+  ev.preventDefault();
+  addtag(el('othertags').value);
+
+  force_rerender();
+  showtags();
+}
+
+function keyup_sentences(ev) {
+  // var key = ev.keyCode || ev.which
+  var span = ev.target;
+  var type = span.classList.contains('edge') ? 'edge' : 'cat';
+  var val = span.textContent;
+  var id = span.getAttribute('data-id');
+
+  // TODO: trap return for special effects
+  // TODO: maybe trap tab also
+
+  // ev.preventDefault()
+
+  // handle the node case
+  if (type === 'cat' && id && val) {
+    var node = G.vertexIndex[id];
+    if (node && node.name !== val) {
+      // update the name/label in the real graph
+      node.name = val;
+      pub(id);
+    }
+  }
+
+  // handle the edge case
+  if (type === 'edge') {
+    var id1 = span.getAttribute('data-id1');
+    var id2 = span.getAttribute('data-id2');
+
+    var node1 = G.vertexIndex[id1];
+    var edges = node1._in.concat(node1._out);
+    var edge = edges.filter(function (edge) {
+      return edge._in._id === id1 && edge._out._id === id2 || edge._in._id === id2 && edge._out._id === id1;
+    })[0];
+
+    if (!edge) return undefined;
+
+    edge.label = val;
+    edge.type = val;
+
+    // pub(id1 + '-' + id2)
+    // Dagoba.persist(G, 'rripplemap')
+    persist();
+  }
+
+  function pub(id) {
+    // publish the change
+    // Dagoba.persist(G, 'rripplemap')
+    persist();
+
+    // update all other sentences
+    var spans = document.querySelectorAll('span.node-' + id);
+    for (var i = 0; i < spans.length; i++) {
+      if (spans[i] !== span) spans[i].textContent = val;
+    }
+
+    // rerender the graph
+    force_rerender(0);
+  }
+}
+
+function click_sentences(ev) {
+  var target = ev.target;
+  if (target.nodeName !== 'BUTTON') return true;
+
+  var id = target.getAttribute('data-id');
+  var node = G.vertexIndex[id];
+
+  if (!node) return error$1('That node does not exist');
+
+  if (node.cat === 'action') {
+    // remove "sentence"
+    G.removeVertex(node);
+  } else {
+    G.removeVertex(node); // THINK: is this really reasonable?
+  }
+
+  persist();
+  force_rerender();
+}
+
+function submit_convo(ev) {
+  ev.preventDefault();
+
+  // submit event to field key-value list:
+  var fields = [].concat(toConsumableArray(ev.currentTarget.elements));
+  var values = fields.reduce(function (acc, el) {
+    acc[el.id] = el.value;return acc;
+  }, {});
+
+  if (!Object.keys(values).reduce(function (acc, k) {
+    return acc + values[k];
+  }, '')) // no values? don't submit
+    return false;
+
+  update_conversation(values);
+
+  // whatsnext(G, update_conversation())
+
+  force_rerender();
+}
+
 var renderers = [];
 function add_renderer(f) {
   renderers.push(f);
@@ -2541,6 +2557,7 @@ function init() {
   word_pipe = pipe(get_actions, filter_actions, make_sentences, write_sentences);
 
   wyrd_pipe = pipe(get_actions, filter_actions, make_sentences, filter_active, write_sentences);
+  // THINK: partial pipes with injectable data would simplify this a lot...
 }
 
 function render_pipe(pipe$$1) {
@@ -3351,8 +3368,8 @@ function render_conversation(conversation) {
 
   // account for existing sentences
   if (conversation.sentences.length) {
-    conversation.sentences.forEach(function (s) {
-      prelude += '<p>';
+    conversation.sentences.forEach(function (s, i) {
+      prelude += '<p' + (i === conversation.sentences.length - 1 ? ' class="highlight"' : '') + '>';
       s.filled.forEach(function (slot, i) {
         return prelude += inject_value(slot, slot.value, i) + ' ';
       });
@@ -3367,11 +3384,13 @@ function render_conversation(conversation) {
     prelude += inject_value(slot, slot.value, i) + ' ';
   });
 
-  if (!prelude) {
-    prelude = '<p>Okay, let\u2019s fill in the blanks.</p>';
-  } else {}
-  // prelude += `<p>Thanks for adding your story, it's on the map!</p><p>Tell us some other stories about your involvement in MozFest</p>`
+  // if(!prelude) {
+  //   prelude = `<p>Okay, let’s fill in the blanks.</p>`
+  // // } else {
+  //   // prelude += `<p>Tell us a story about your involvement in MozFest.</p>`
+  // }
 
+  if (!conversation.current.filled.length) prelude += '<p>Tell us more about your involvement in MozFest.</p>';
 
   // display the unfilled slot
   var slot = sentence.slots[0];
@@ -3442,7 +3461,7 @@ function render_conversation(conversation) {
     ///       just return a data structure, bind it into the state as part of the convo,
     ///       and have preact render it. no sense mucking with dom weirdness here, just handle the logic
     return xs.reduce(function (acc, x) {
-      return acc + ('<p class="choice ' + x + '" onclick="f__r(yuck({' + id + ':\'' + x + '\'}))">' + x + '</p>');
+      return acc + ('<p class="choice ' + x + '" onclick="f_r(yuck({' + id + ':\'' + x + '\'}))">' + x + '</p>');
     }, '');
   }
 
@@ -3824,52 +3843,250 @@ var Legend = function (_Component) {
 
 __$styleInject(".Story,.Story__form{display:flex;flex-direction:column}.Story__input{margin-top:10px}", undefined);
 
-var consent_disclaimer = h(
-  'div',
-  null,
-  h(
-    'p',
-    null,
-    'To add your story, we need the consent of everyone in it. To obtain someone\u2019s informed consent, they need to know:'
-  ),
-  h(
-    'p',
-    null,
-    '- That they\u2019re consenting to being named in a story on the MozFest Ripple Map, and that MozFest attendees and organizers will be able to read that story'
-  ),
-  h(
-    'p',
-    null,
-    '- That there are risks we will do our best to protect them from: unintentional data usage, monitoring, surveillance'
-  ),
-  h(
-    'p',
-    null,
-    '- That at any time, they can change or remove their story.'
-  ),
-  h(
-    'p',
-    null,
-    'For transparency and accountability, they will be able to see that you have added them.'
-  )
-);
-
-var thanks = h(
-  'div',
-  null,
-  h(
-    'p',
-    null,
-    'Thanks for adding your story, it\'s on the map!'
-  ),
-  h(
-    'p',
-    null,
-    'Tell us some other stories about your involvement in MozFest'
-  )
-);
-
 var Story = function Story() {
+
+  var consent_no = false;
+
+  function add_consent(param) {
+    if (param) {
+      // TODO: persist param
+      return submit_convo();
+    }
+
+    consent_no = true;
+  }
+
+  var consent_list = h(
+    'div',
+    null,
+    h(
+      'div',
+      null,
+      '- That you\u2019re consenting to being named in a story on the MozFest Ripple Map, and that MozFest attendees and organizers will be able to read that story'
+    ),
+    h(
+      'div',
+      null,
+      '- You will be named in this story on the MozFest Ripple Map, and MozFest attendees and organizers will be able to read this story'
+    ),
+    h(
+      'div',
+      null,
+      '- That there are risks we will do our best to protect you from: unintentional data usage, monitoring, surveillance'
+    ),
+    h(
+      'div',
+      null,
+      '- That at any time, you can change your story or mark it for removal.'
+    )
+  );
+
+  var consent_disclaimer = h(
+    'div',
+    null,
+    h(
+      'div',
+      null,
+      'To add this story we need the consent of everyone in it. To obtain someone\u2019s informed consent tell them the following:'
+    ),
+    consent_list,
+    h(
+      'div',
+      null,
+      'Do you have the consent of everyone in this story?'
+    ),
+    h(
+      'div',
+      { 'class': 'choice org', onClick: add_consent('me') },
+      'Yes, I\u2019m the only one in this story'
+    ),
+    h(
+      'div',
+      { 'class': 'choice org', onClick: add_consent('verbal') },
+      'Yes, verbal'
+    ),
+    h(
+      'div',
+      { 'class': 'choice org', onClick: add_consent('written') },
+      'Yes, written'
+    ),
+    h(
+      'div',
+      { 'class': 'choice event', onClick: add_consent() },
+      'No/not sure'
+    )
+  );
+
+  var thanks = h(
+    'div',
+    null,
+    h(
+      'p',
+      null,
+      'Thanks for adding your story, it\'s on the map!'
+    )
+  );
+
+  var back_button = h(
+    'p',
+    { onClick: restart_sentence, style: { textAlign: 'left', flex: 'inherit' } },
+    h('i', { 'class': 'fa fa-chevron-left pl_1', 'aria-hidden': 'true' }),
+    '\xA0 Go back'
+  );
+
+  var footer_buttons = h(
+    Button,
+    { type: 'submit', buttonStyle: 'next' },
+    convo.current.filled.length && back_button || '',
+    'Next',
+    h('i', { 'class': 'fa fa-chevron-right pl_1', 'aria-hidden': 'true' })
+  );
+
+  var how_to_consent = h(
+    'div',
+    null,
+    h(
+      'h4',
+      null,
+      'Ask'
+    ),
+    h(
+      'p',
+      null,
+      'If you\u2019re not sure you have someone\u2019s consent to add them to the Ripple Map, please ask them and provide the following information. You can print out or email this to yourself.'
+    ),
+    h(
+      'h4',
+      null,
+      'Print/Email Consent Info'
+    ),
+    h(
+      'p',
+      null,
+      'Hi friend, I\u2019d like to add a story about us meeting/collaborating/??? To the MozFest Ripple Map. The Ripple Map is a web application that visualizes stories about a program or event\u2019s \u201Cripple effect\u201D \u2014 how the immediate outcomes of new learnings or connections give way to long term and large scale impacts.'
+    ),
+    h(
+      'p',
+      null,
+      'Before you give me your consent, here\u2019s what you need to know:'
+    ),
+    h(
+      'div',
+      null,
+      '- That you\u2019re consenting to being named in a story on the MozFest Ripple Map, and that MozFest attendees and organizers will be able to read that story'
+    ),
+    h(
+      'div',
+      null,
+      '- You will be named in this story on the MozFest Ripple Map, and MozFest attendees and organizers will be able to read this story'
+    ),
+    h(
+      'div',
+      null,
+      '- That there are risks we will do our best to protect you from: unintentional data usage, monitoring, surveillance'
+    ),
+    h(
+      'div',
+      null,
+      '- That at any time, you can change your story or mark it for removal.'
+    ),
+    h(
+      'p',
+      null,
+      'Do I have your consent to name you in this story?'
+    )
+  );
+
+  var storytime = h(
+    'div',
+    { id: 'storytime' },
+    !convo.current.filled.length && convo.sentences.length && thanks,
+    h(
+      'form',
+      { id: 'the-conversation', onSubmit: submit_convo },
+      h('div', { dangerouslySetInnerHTML: { __html: get_convo_html() } }),
+      convo.current.slots.length === 1 && consent_disclaimer,
+      consent_no ? how_to_consent : '',
+      footer_buttons
+    )
+  );
+
+  var signup = h(
+    'div',
+    { id: 'signup' },
+    h(
+      'form',
+      { id: 'login', onSubmit: login, 'class': 'Story__form' },
+      h(
+        'h3',
+        null,
+        'Want to add something to the map?'
+      ),
+      h(
+        'p',
+        null,
+        'We\'d love to hear your stories! Let\'s start with your contact info:'
+      ),
+      h('input', { name: 'email', id: 'email', type: 'text', placeholder: 'email', 'class': 'typeahead Story__input' }),
+      h(
+        'p',
+        null,
+        'Your name'
+      ),
+      h('input', { name: 'name', id: 'name', type: 'text', placeholder: 'name', 'class': 'typeahead Story__input' }),
+      h(
+        'p',
+        null,
+        'How are you involved in Mozfest 2017?'
+      ),
+      h(
+        'select',
+        { name: 'mz_involved', id: 'mz_involved', 'class': 'Story__input' },
+        h(
+          'option',
+          { value: 'attended' },
+          'attendee'
+        ),
+        h(
+          'option',
+          { value: 'wrangled at' },
+          'wrangler'
+        ),
+        h(
+          'option',
+          { value: 'presented at' },
+          'presenter'
+        )
+      ),
+      h(
+        'p',
+        null,
+        'It\u2019s really important to us that we have your informed consent to add your story to the map. Here\u2019s what you need to know.'
+      ),
+      h(
+        'p',
+        null,
+        'Who will see this map: everyone at MozFest 2017'
+      ),
+      h(
+        'p',
+        null,
+        'You can change your story, but the edits are retained to ensure integrity. Stories (and edits) can be marked for removal. You will also be able to see if someone has added you to a story.'
+      ),
+      h(
+        'p',
+        null,
+        'Does this all sound okay to you?'
+      ),
+      h(
+        Button,
+        { type: 'submit', buttonStyle: 'next' },
+        'Next',
+        h('i', { 'class': 'fa fa-chevron-right pl_1', 'aria-hidden': 'true' })
+      )
+    )
+  );
+
   return h(
     'div',
     { 'class': 'Story' },
@@ -3878,99 +4095,7 @@ var Story = function Story() {
       null,
       'Add a story'
     ),
-    h(
-      'div',
-      { id: 'signup', 'class': state.email ? 'hide' : '' },
-      h(
-        'form',
-        { id: 'login', onSubmit: login, 'class': 'Story__form' },
-        h(
-          'h3',
-          null,
-          'Want to add something to the map?'
-        ),
-        h(
-          'p',
-          null,
-          'We\'d love to hear your stories! Let\'s start with your contact info:'
-        ),
-        h('input', { name: 'email', id: 'email', type: 'text', placeholder: 'email', 'class': 'typeahead Story__input' }),
-        h(
-          'p',
-          null,
-          'Your name'
-        ),
-        h('input', { name: 'name', id: 'name', type: 'text', placeholder: 'name', 'class': 'typeahead Story__input' }),
-        h(
-          'p',
-          null,
-          'How are you involved in Mozfest 2017?'
-        ),
-        h(
-          'select',
-          { name: 'mz_involved', id: 'mz_involved', 'class': 'Story__input' },
-          h(
-            'option',
-            { value: 'attended' },
-            'attendee'
-          ),
-          h(
-            'option',
-            { value: 'wrangled at' },
-            'wrangler'
-          ),
-          h(
-            'option',
-            { value: 'presented at' },
-            'presenter'
-          )
-        ),
-        h(
-          'p',
-          null,
-          'It\u2019s really important to us that we have your informed consent to add your story to the map. Here\u2019s what you need to know.'
-        ),
-        h(
-          'p',
-          null,
-          'Who will see this map: everyone at MozFest 2017'
-        ),
-        h(
-          'p',
-          null,
-          'At any time, you can change or remove your story. You will also be able to see if someone has added you to a story. Does this all sound okay to you?'
-        ),
-        h(
-          Button,
-          { type: 'submit', buttonStyle: 'next' },
-          'Next',
-          h('i', { 'class': 'fa fa-chevron-right pl_1', 'aria-hidden': 'true' })
-        )
-      )
-    ),
-    h(
-      'div',
-      { id: 'storytime', 'class': state.email ? '' : 'hide' },
-      !convo.current.filled.length && thanks,
-      h(
-        'form',
-        { id: 'the-conversation', onSubmit: submit_convo },
-        h('div', { dangerouslySetInnerHTML: { __html: get_convo_html() } }),
-        convo.current.slots.length === 1 && consent_disclaimer,
-        h(
-          Button,
-          { type: 'submit', buttonStyle: 'next' },
-          h(
-            'p',
-            { onClick: restart_sentence, style: { textAlign: 'left', flex: 'inherit' } },
-            h('i', { 'class': 'fa fa-chevron-left pl_1', 'aria-hidden': 'true' }),
-            'Go back'
-          ),
-          'Next',
-          h('i', { 'class': 'fa fa-chevron-right pl_1', 'aria-hidden': 'true' })
-        )
-      )
-    )
+    state.email ? storytime : signup
   );
 };
 
@@ -4127,7 +4252,7 @@ function tagglue() {
  */
 
 window.yuck = update_conversation;
-window.f__r = force_rerender;
+window.f_r = force_rerender;
 
 init$1(); // engage the application
 

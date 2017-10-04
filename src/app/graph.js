@@ -37,6 +37,7 @@ function add_data(cb) {
       cb(fact_to_graph(capture_facts(facts)))
     else
       cb(facts) // already a graph, from localStorage
+    // THINK: can maybe remove the else clause...
   })
 }
 

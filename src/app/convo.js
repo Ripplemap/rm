@@ -3,6 +3,7 @@ import {add_thing, add_action, add_edge} from 'model'
 import {G} from 'graph'
 import {force_rerender} from 'render'
 import {error} from 'fun'
+import {highlightyo} from 'highlight'
 
 
 export let convo = new_conversation()
@@ -19,6 +20,10 @@ function update_conversation(values, conversation) {
   var wants = conversation.current.slots[0].key
   var value = values && values[wants] || false
   // var value = dom.el(wants).value
+
+  // THINK: what could possibly go wrong?
+  if(!value)
+    return convo
 
   convo = fulfill_desire(conversation, value)
 
@@ -45,7 +50,7 @@ function fulfill_desire(conversation, value) {
   var sentence = give_word(conversation.current, value)
 
   // TODO: allow multi-sentence conversations
-
+  // TODO: bind convo and graph, so active_sentences can include the current convo and the convo can show highlighting etc (render::render_conversation)
 
   if(!sentence.slots.length) {
     var subject, verb, object, date
@@ -74,6 +79,9 @@ function fulfill_desire(conversation, value) {
       add_edge('the', verb._id, object._id, 0, true)
       add_edge('did', subject._id, verb._id, 0, true)
     }
+
+    const q = G.v(verb).as('v').both().as('b').merge('v', 'b').run()
+    highlightyo(q.map(x => x._id), 'activate')
 
     // start over
     // TODO: show the sentence

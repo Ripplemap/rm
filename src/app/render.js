@@ -85,6 +85,7 @@ function init() {
                   , filter_active
                   , write_sentences
                   )
+  // THINK: partial pipes with injectable data would simplify this a lot...
 }
 
 function render_pipe(pipe) {
@@ -1059,8 +1060,8 @@ function render_conversation(conversation) {
   // account for existing sentences
   if(conversation.sentences.length) {
     conversation.sentences.forEach(
-      s => {
-        prelude += '<p>'
+      (s, i) => {
+        prelude += '<p' + (i === conversation.sentences.length-1 ? ' class="highlight"' : '') + '>'
         s.filled.forEach((slot, i) => prelude += inject_value(slot, slot.value, i) + ' ')
         prelude += '</p>'
       })
@@ -1073,11 +1074,14 @@ function render_conversation(conversation) {
     prelude += inject_value(slot, slot.value, i) + ' '
   })
 
-  if(!prelude) {
-    prelude = `<p>Okay, let’s fill in the blanks.</p>`
-  } else {
-    // prelude += `<p>Thanks for adding your story, it's on the map!</p><p>Tell us some other stories about your involvement in MozFest</p>`
-  }
+  // if(!prelude) {
+  //   prelude = `<p>Okay, let’s fill in the blanks.</p>`
+  // // } else {
+  //   // prelude += `<p>Tell us a story about your involvement in MozFest.</p>`
+  // }
+
+  if(!conversation.current.filled.length)
+    prelude += `<p>Tell us more about your involvement in MozFest.</p>`
 
   // display the unfilled slot
   var slot = sentence.slots[0]
@@ -1155,7 +1159,7 @@ function render_conversation(conversation) {
     /// TODO: this is sooooooper stooooopid
     ///       just return a data structure, bind it into the state as part of the convo,
     ///       and have preact render it. no sense mucking with dom weirdness here, just handle the logic
-    return xs.reduce((acc, x) => acc + `<p class="choice ${x}" onclick="f__r(yuck({${id}:'${x}'}))">${x}</p>`, '')
+    return xs.reduce((acc, x) => acc + `<p class="choice ${x}" onclick="f_r(yuck({${id}:'${x}'}))">${x}</p>`, '')
   }
 
 

@@ -13,14 +13,14 @@ function add_to_server_facts(type, live_item) {
   /*
 
    data model:
-   user: id
-   action: add/remove/edit
-   type: node/edge
-   tags: [...]
-   [maybe other stats can live here?]
-   data:
-     node: {id, name, type, cat...}
-     edge: {_in, _out, type, label}
+     user: id
+     action: add/remove/edit
+     type: node/edge
+     tags: [...]
+     [maybe other stats can live here?]
+     data:
+       node: {id, name, type, cat...}
+       edge: {_in, _out, type, label}
 
    */
 
@@ -51,6 +51,7 @@ function add_to_server_facts(type, live_item) {
 function persist() {
   // THINK: do we still need localstorage caching?
   Dagoba.persist(G, 'rripplemap')
+  localStorage.setItem('ripmap', state.facts)
 }
 
 persist = debounce(persist, 1000)
@@ -83,7 +84,8 @@ function send_data_to_server(data, cb) {
     url = 'http://localhost:8888'
   }
   else if(state.safe_mode) {
-    return console.log(G)
+    return persist()
+    // return console.log(G)
   }
 
   fetch(url, { method: 'post'
@@ -99,8 +101,10 @@ function get_facts_from_server(cb) {
 
   // local shunt for airplane mode
 
+  // if(state.safe_mode === 'local')
+  //   return cb(JSON.parse(localStorage['DAGOBA::ripmapdata']))
   if(state.safe_mode === 'local')
-    return cb(JSON.parse(localStorage['DAGOBA::ripmapdata']))
+    return cb(JSON.parse(localStorage['ripmap'] || '[]'))
 
   if(state.safe_mode === 'daring')
     url = 'http://localhost:8888'

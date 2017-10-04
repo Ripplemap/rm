@@ -3,7 +3,7 @@ import * as dom from 'dom'
 import {unique} from 'fun'
 import {force_rerender} from 'render'
 
-export {activate, deactivate, highlightz, unhighlight, add_svg_listeners}
+export {activate, deactivate, highlightz, unhighlight, add_svg_listeners, highlightyo}
 
 
 function do_for_edge(f, e) {

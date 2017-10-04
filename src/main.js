@@ -15,9 +15,9 @@ import Sidebar from './Sidebar/Sidebar'
 import {init, on_render} from 'app/main'
 
 import {update_conversation as yuck} from 'convo'
-import {force_rerender as f__r} from 'render'
+import {force_rerender as f_r} from 'render'
 window.yuck = yuck
-window.f__r = f__r
+window.f_r = f_r
 
 
 init() // engage the application
