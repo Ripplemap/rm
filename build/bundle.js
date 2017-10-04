@@ -3941,16 +3941,10 @@ var Story = function Story() {
           h('i', { 'class': 'fa fa-chevron-right pl_1', 'aria-hidden': 'true' })
         ),
         h(
-          Button,
-          { type: 'submit', buttonStyle: 'next' },
-          'Next',
-          h('i', { 'class': 'fa fa-chevron-right pl_1', 'aria-hidden': 'true' })
-        ),
-        h(
           'p',
           { onClick: restart_sentence },
-          ' Go back',
-          h('i', { 'class': 'fa fa-chevron-left pl_1', 'aria-hidden': 'true' })
+          h('i', { 'class': 'fa fa-chevron-left pl_1', 'aria-hidden': 'true' }),
+          'Go back'
         )
       )
     )
