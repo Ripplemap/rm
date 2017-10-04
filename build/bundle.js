@@ -2106,6 +2106,8 @@ function set_el(el_id, val) {
   el(el_id).innerHTML = val;
 }
 
+// LOGIN/ORG/TAG STUFF
+
 function login(e) {
   e.preventDefault();
   state.email = el('email').value;
@@ -2118,11 +2120,12 @@ function login(e) {
     object: 'MozFest 2017',
     date: '2017-10-26'
   };
-  update_conversation(values);
-  update_conversation(values);
-  update_conversation(values);
-  update_conversation(values);
-  update_conversation(values);
+  // update_conversation(values)
+  // update_conversation(values)
+  // update_conversation(values)
+  // update_conversation(values)
+  // if(convo.current.slots.length)
+  //   update_conversation(values)
 
   force_rerender();
 
@@ -3821,7 +3824,6 @@ var Legend = function (_Component) {
 
 __$styleInject(".Story,.Story__form{display:flex;flex-direction:column}.Story__input{margin-top:10px}", undefined);
 
-// <p>We'd love to hear your stories! Let's start with your contact info:</p>
 var consent_disclaimer = h(
   'div',
   null,

@@ -2,7 +2,7 @@
 
 import state from 'state'
 import {G, addtag, removetag} from 'graph'
-import {update_conversation} from 'convo'
+import {convo, update_conversation} from 'convo'
 import {error, noop} from 'fun'
 import {persist} from 'net'
 import {force_rerender, showtags, whatsnext} from 'render'
@@ -47,11 +47,12 @@ export function login(e) {
                , object: 'MozFest 2017'
                , date: '2017-10-26'
                }
-  update_conversation(values)
-  update_conversation(values)
-  update_conversation(values)
-  update_conversation(values)
-  update_conversation(values)
+  // update_conversation(values)
+  // update_conversation(values)
+  // update_conversation(values)
+  // update_conversation(values)
+  // if(convo.current.slots.length)
+  //   update_conversation(values)
 
   force_rerender()
 
