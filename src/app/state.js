@@ -17,4 +17,4 @@ state.my_minyear       = 2010  // hack hack hack
 state.show_labels      = false // yup
 state.current_year     = 2017  // more hacks
 state.filter_sentences = false // awkward... :(
-state.ring_radius      = 30    // lalala
+state.ring_radius      = 45    // lalala
