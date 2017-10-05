@@ -643,7 +643,7 @@ function draw_it_svg(env) {
 
 
   function draw_shape(node) {
-    var cx = 450
+    var cx = 400
     var cy = 450
 
     if(node.shape === 'circle')

@@ -3111,7 +3111,7 @@ function draw_it_svg(env) {
 
 
   function draw_shape(node) {
-    var cx = 450;
+    var cx = 400;
     var cy = 450;
 
     if (node.shape === 'circle') return draw_circle(node, cx + node.x, cy + node.y, node.r, node.stroke, node.fill, node.line);
@@ -3210,15 +3210,13 @@ function draw_it_svg(env) {
   }
 }
 
-/////////////////////////////////
-
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// CANVAS FUNCTIONS
+// SENTENCE STRUCTURES
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -3352,8 +3350,6 @@ function write_sentences(env) {
     return ' ' + text + notes + button;
   }
 }
-
-// FORM BUILDER & FRIENDS
 
 function render_conversation(conversation) {
   var str = '';
