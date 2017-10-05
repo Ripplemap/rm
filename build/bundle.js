@@ -1179,7 +1179,7 @@ function render(vnode, parent, merge) {
   return diff(merge, vnode, {}, false, parent);
 }
 
-__$styleInject(".Sidebar{display:flex;flex:1;justify-content:space-between;font-size:16px;line-height:1.6;min-width:400px}.Sidebar__container{flex-grow:1;justify-content:center;padding:16px 32px;padding:1rem 2rem;max-height:100vh;overflow-y:scroll}.Sidebar__header{align-content:center;color:#ff5961;font-size:30px;font-weight:100;letter-spacing:1px;text-transform:uppercase}.Sidebar__subheading{font-size:22.4px;font-size:1.4rem;font-style:italic;margin-bottom:48px;margin-bottom:3rem}", undefined);
+__$styleInject(".Sidebar{display:flex;flex:1;justify-content:space-between;font-size:16px;line-height:1.6;min-width:400px}.Sidebar__container{flex-grow:1;justify-content:center;padding:16px 32px;padding:1rem 2rem;max-height:100vh;overflow-y:scroll}.Sidebar__header{align-content:center;color:#ff5961;font-size:30px;font-weight:100;letter-spacing:1px;text-transform:uppercase}.Sidebar__subheading{font-size:22.4px;font-size:1.4rem;font-style:italic;margin-bottom:48px;margin-bottom:3rem}div.padded div{padding-top:16px;padding-top:1rem}", undefined);
 
 __$styleInject(".Tabbar{min-width:130px;max-width:130px;display:flex;flex-direction:column}.Tabbar__fillspace{background:#ede8ef;flex-grow:1}", undefined);
 
@@ -2194,7 +2194,7 @@ function update_conversation(values, conversation) {
 }
 
 function new_sentence() {
-  var slots = [{ key: 'subject', type: 'word', cat: 'thing' }, { key: 'verb', type: 'word', cat: 'action' }, { key: 'object', type: 'word', cat: 'thing' }, { key: 'date', type: 'date' }];
+  var slots = [{ key: 'subject', type: 'word', cat: 'thing' }, { key: 'verb', type: 'word', cat: 'action' }, { key: 'object', type: 'word', cat: 'thing' }, { key: 'date', type: 'date' }, { key: 'consent', type: 'consent' }];
   return { slots: slots, filled: [] };
 }
 
@@ -2211,44 +2211,50 @@ function fulfill_desire(conversation, value) {
   // TODO: allow multi-sentence conversations
   // TODO: bind convo and graph, so active_sentences can include the current convo and the convo can show highlighting etc (render::render_conversation)
 
-  if (!sentence.slots.length) {
-    var subject, verb, object, date;
-    sentence.filled.forEach(function (slot) {
-      if (slot.type === 'gettype') {
-        var thing = add_thing(slot.value, { name: slot.name }, true);
-        if (slot.oldkey === 'subject') subject = thing;
-        if (slot.oldkey === 'object') object = thing;
-      } else if (slot.type === 'date') {
-        date = slot.value;
-      } else if (slot.key === 'subject') {
-        subject = slot.word;
-      } else if (slot.key === 'object') {
-        object = slot.word;
-      } else if (slot.key === 'verb') {
-        verb = (slot.word || {}).type || slot.value;
-      }
-    });
+  if (sentence.slots.length) return conversation;
 
-    if (subject && verb && object) {
-      verb = add_action(verb, { time: new Date(date).getTime() }, true);
-      add_edge('the', verb._id, object._id, 0, true);
-      add_edge('did', subject._id, verb._id, 0, true);
+  return finalize_conversation(conversation, sentence);
+}
+
+function finalize_conversation(conversation, sentence) {
+  var subject, verb, object, date, consent;
+  sentence.filled.forEach(function (slot) {
+    if (slot.type === 'gettype') {
+      var thing = add_thing(slot.value, { name: slot.name }, true);
+      if (slot.oldkey === 'subject') subject = thing;
+      if (slot.oldkey === 'object') object = thing;
+    } else if (slot.type === 'date') {
+      date = slot.value;
+    } else if (slot.type === 'consent') {
+      consent = slot.value;
+    } else if (slot.key === 'subject') {
+      subject = slot.word;
+    } else if (slot.key === 'object') {
+      object = slot.word;
+    } else if (slot.key === 'verb') {
+      verb = (slot.word || {}).type || slot.value;
     }
+  });
 
-    var q = G.v(verb).as('v').both().as('b').merge('v', 'b').run();
-    highlightyo(q.map(function (x) {
-      return x._id;
-    }), 'activate');
-
-    // start over
-    // TODO: show the sentence
-    // conversation = new_conversation()
-    conversation.sentences.push(sentence);
-    restart_sentence();
-    // conversation.current = new_sentence()
-
-    // force_rerender()
+  if (subject && verb && object) {
+    verb = add_action(verb, { time: new Date(date).getTime(), consent: consent }, true);
+    add_edge('the', verb._id, object._id, 0, true);
+    add_edge('did', subject._id, verb._id, 0, true);
   }
+
+  var q = G.v(verb).as('v').both().as('b').merge('v', 'b').run();
+  highlightyo(q.map(function (x) {
+    return x._id;
+  }), 'activate');
+
+  // start over
+  // TODO: show the sentence
+  // conversation = new_conversation()
+  conversation.sentences.push(sentence);
+  restart_sentence();
+  // conversation.current = new_sentence()
+
+  // force_rerender()
 
   return conversation;
 }
@@ -2316,9 +2322,11 @@ function login(e) {
     type: 'person',
     verb: verb,
     object: 'MozFest 2017',
-    date: '2017-10-26'
+    date: '2017-10-26',
+    consent: 'me'
   };
 
+  update_conversation(values);
   update_conversation(values);
   update_conversation(values);
   update_conversation(values);
@@ -3401,6 +3409,8 @@ function render_conversation(conversation) {
     input = inject_value(slot, make_type_input(slot.cat, slot.key));
   } else if (slot.type === 'date') {
     input = inject_value(slot, make_date_input(slot.key));
+  } else if (slot.type === 'consent') {
+    input = '';
   }
 
   prelude += input;
@@ -3843,17 +3853,20 @@ var Legend = function (_Component) {
 
 __$styleInject(".Story,.Story__form{display:flex;flex-direction:column}.Story__input{margin-top:10px}", undefined);
 
+var consent_no = false;
+
 var Story = function Story() {
 
-  var consent_no = false;
-
   function add_consent(param) {
-    if (param) {
-      // TODO: persist param
-      return submit_convo();
-    }
+    return function () {
+      if (param) {
+        consent_no = false; // total hack
+        return force_rerender(update_conversation({ consent: param }));
+      }
 
-    consent_no = true;
+      consent_no = true;
+      force_rerender();
+    };
   }
 
   var consent_list = h(
@@ -3862,7 +3875,7 @@ var Story = function Story() {
     h(
       'div',
       null,
-      '- That you\u2019re consenting to being named in a story on the MozFest Ripple Map, and that MozFest attendees and organizers will be able to read that story'
+      '- That you\'re consenting to being named in a story on the MozFest Ripple Map, and that MozFest attendees and organizers will be able to read that story'
     ),
     h(
       'div',
@@ -3883,7 +3896,7 @@ var Story = function Story() {
 
   var consent_disclaimer = h(
     'div',
-    null,
+    { 'class': 'padded' },
     h(
       'div',
       null,
@@ -3953,7 +3966,7 @@ var Story = function Story() {
     h(
       'p',
       null,
-      'If you\u2019re not sure you have someone\u2019s consent to add them to the Ripple Map, please ask them and provide the following information. You can print out or email this to yourself.'
+      'If you\'re not sure you have someone\u2019s consent to add them to the Ripple Map, please ask them and provide the following information. You can print out or email this to yourself.'
     ),
     h(
       'h4',
@@ -3963,33 +3976,14 @@ var Story = function Story() {
     h(
       'p',
       null,
-      'Hi friend, I\u2019d like to add a story about us meeting/collaborating/??? To the MozFest Ripple Map. The Ripple Map is a web application that visualizes stories about a program or event\u2019s \u201Cripple effect\u201D \u2014 how the immediate outcomes of new learnings or connections give way to long term and large scale impacts.'
+      'Hi friend, I\'d like to add a story about us meeting/collaborating/??? to the MozFest Ripple Map. The Ripple Map is a web application that visualizes stories about a program or event\'s "ripple effect" \u2014 how the immediate outcomes of new learnings or connections give way to long term and large scale impacts.'
     ),
     h(
       'p',
       null,
       'Before you give me your consent, here\u2019s what you need to know:'
     ),
-    h(
-      'div',
-      null,
-      '- That you\u2019re consenting to being named in a story on the MozFest Ripple Map, and that MozFest attendees and organizers will be able to read that story'
-    ),
-    h(
-      'div',
-      null,
-      '- You will be named in this story on the MozFest Ripple Map, and MozFest attendees and organizers will be able to read this story'
-    ),
-    h(
-      'div',
-      null,
-      '- That there are risks we will do our best to protect you from: unintentional data usage, monitoring, surveillance'
-    ),
-    h(
-      'div',
-      null,
-      '- That at any time, you can change your story or mark it for removal.'
-    ),
+    consent_list,
     h(
       'p',
       null,
@@ -4005,9 +3999,9 @@ var Story = function Story() {
       'form',
       { id: 'the-conversation', onSubmit: submit_convo },
       h('div', { dangerouslySetInnerHTML: { __html: get_convo_html() } }),
-      convo.current.slots.length === 1 && consent_disclaimer,
       consent_no ? how_to_consent : '',
-      footer_buttons
+      convo.current.slots.length === 1 && consent_disclaimer,
+      convo.current.slots.length !== 1 && footer_buttons
     )
   );
 
@@ -4063,16 +4057,7 @@ var Story = function Story() {
         null,
         'It\u2019s really important to us that we have your informed consent to add your story to the map. Here\u2019s what you need to know.'
       ),
-      h(
-        'p',
-        null,
-        'Who will see this map: everyone at MozFest 2017'
-      ),
-      h(
-        'p',
-        null,
-        'You can change your story, but the edits are retained to ensure integrity. Stories (and edits) can be marked for removal. You will also be able to see if someone has added you to a story.'
-      ),
+      consent_list,
       h(
         'p',
         null,

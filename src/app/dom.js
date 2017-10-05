@@ -51,8 +51,10 @@ export function login(e) {
                , verb: verb
                , object: 'MozFest 2017'
                , date: '2017-10-26'
+               , consent: 'me'
                }
 
+  update_conversation(values)
   update_conversation(values)
   update_conversation(values)
   update_conversation(values)

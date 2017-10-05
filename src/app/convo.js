@@ -35,6 +35,7 @@ function new_sentence() {
               , {key: 'verb', type: 'word', cat: 'action'}
               , {key: 'object', type: 'word', cat: 'thing'}
               , {key: 'date', type: 'date'}
+              , {key: 'consent', type: 'consent'}
               ]
   return {slots: slots, filled: []}
 }
@@ -52,46 +53,54 @@ function fulfill_desire(conversation, value) {
   // TODO: allow multi-sentence conversations
   // TODO: bind convo and graph, so active_sentences can include the current convo and the convo can show highlighting etc (render::render_conversation)
 
-  if(!sentence.slots.length) {
-    var subject, verb, object, date
-    sentence.filled.forEach(function(slot) {
-      if(slot.type === 'gettype') {
-        var thing = add_thing(slot.value, {name: slot.name}, true)
-        if(slot.oldkey === 'subject') subject = thing
-        if(slot.oldkey === 'object' ) object  = thing
-      }
-      else if(slot.type === 'date') {
-        date = slot.value
-      }
-      else if(slot.key === 'subject') {
-        subject = slot.word
-      }
-      else if(slot.key === 'object') {
-        object = slot.word
-      }
-      else if(slot.key === 'verb') {
-        verb = (slot.word||{}).type || slot.value
-      }
-    })
+  if(sentence.slots.length)
+    return conversation
 
-    if(subject && verb && object) {
-      verb = add_action(verb, {time: new Date(date).getTime() }, true)
-      add_edge('the', verb._id, object._id, 0, true)
-      add_edge('did', subject._id, verb._id, 0, true)
+  return finalize_conversation(conversation, sentence)
+}
+
+function finalize_conversation(conversation, sentence) {
+  var subject, verb, object, date, consent
+  sentence.filled.forEach(function(slot) {
+    if(slot.type === 'gettype') {
+      var thing = add_thing(slot.value, {name: slot.name}, true)
+      if(slot.oldkey === 'subject') subject = thing
+      if(slot.oldkey === 'object' ) object  = thing
     }
+    else if(slot.type === 'date') {
+      date = slot.value
+    }
+    else if(slot.type === 'consent') {
+      consent = slot.value
+    }
+    else if(slot.key === 'subject') {
+      subject = slot.word
+    }
+    else if(slot.key === 'object') {
+      object = slot.word
+    }
+    else if(slot.key === 'verb') {
+      verb = (slot.word||{}).type || slot.value
+    }
+  })
 
-    const q = G.v(verb).as('v').both().as('b').merge('v', 'b').run()
-    highlightyo(q.map(x => x._id), 'activate')
-
-    // start over
-    // TODO: show the sentence
-    // conversation = new_conversation()
-    conversation.sentences.push(sentence)
-    restart_sentence()
-    // conversation.current = new_sentence()
-
-    // force_rerender()
+  if(subject && verb && object) {
+    verb = add_action(verb, {time: new Date(date).getTime(), consent: consent}, true)
+    add_edge('the', verb._id, object._id, 0, true)
+    add_edge('did', subject._id, verb._id, 0, true)
   }
+
+  const q = G.v(verb).as('v').both().as('b').merge('v', 'b').run()
+  highlightyo(q.map(x => x._id), 'activate')
+
+  // start over
+  // TODO: show the sentence
+  // conversation = new_conversation()
+  conversation.sentences.push(sentence)
+  restart_sentence()
+  // conversation.current = new_sentence()
+
+  // force_rerender()
 
   return conversation
 }

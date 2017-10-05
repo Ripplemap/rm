@@ -39,3 +39,7 @@ $TabBg: rgb(238, 233, 239);
   font-style: italic;
   margin-bottom: 3rem;
 }
+
+div.padded div {
+  padding-top: 1rem;
+}

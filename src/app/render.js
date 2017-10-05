@@ -1095,6 +1095,9 @@ function render_conversation(conversation) {
   else if(slot.type === 'date') {
     input = inject_value(slot, make_date_input(slot.key))
   }
+  else if(slot.type === 'consent') {
+    input = ''
+  }
 
   prelude += input
 
