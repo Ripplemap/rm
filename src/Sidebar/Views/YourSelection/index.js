@@ -11,8 +11,8 @@ const YourSelection = ({changeView}) => {
 
       {/* Add a story CTA */}
       <section class="YourSelection__cta-addstory">
-        <p>Ready to add your own story?</p>
-        <Button onClick={() => changeView('story')}>Add a story ▶</Button>
+        {/* <p>Ready to add your own story?</p> */}
+        <Button onClick={() => changeView('read_stories')}>Read all stories in the map ▶</Button>
       </section>
 
       <h3>Click any story to edit</h3>

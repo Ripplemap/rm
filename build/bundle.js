@@ -1289,13 +1289,8 @@ var Home = function Home(_ref) {
       { 'class': 'Home__cta-addstory' },
       h(
         'p',
-        null,
-        'An annual celebration of the open Internet movement, where passionate technologists, educators, and makers come together to explore the future of the open Web and advocate for a healthy internet. This ripple map illustrates the many connections and outcomes that MozFest has fostered'
-      ),
-      h(
-        'p',
         { 'class': 'Home__cta_text' },
-        'We\'d love to hear your stories!'
+        'Go ahead and add a new story or click around the map to read stories that have already been added'
       ),
       h(
         Button,
@@ -1322,6 +1317,35 @@ var About = function About() {
   return h(
     'div',
     null,
+    h(
+      'section',
+      { 'class': 'Legend__keys' },
+      h(
+        Header,
+        null,
+        ' Keys '
+      ),
+      h(
+        'p',
+        null,
+        '\'\u2190\' for previous year'
+      ),
+      h(
+        'p',
+        null,
+        '\'\u2192\' for next year'
+      ),
+      h(
+        'p',
+        null,
+        '\'e\' toggles recent connections'
+      ),
+      h(
+        'p',
+        null,
+        '\'f\' toggles filter stories by year'
+      )
+    ),
     h(
       Header,
       null,
@@ -3210,13 +3234,15 @@ function draw_it_svg(env) {
   }
 }
 
+/////////////////////////////////
+
 function draw_metadata(env) {
   // el('minyear').textContent = 1900 + env.params.minyear
   // el('maxyear').textContent = 1900 + state.current_year
   return env;
 }
 
-// SENTENCE STRUCTURES
+// CANVAS FUNCTIONS
 
 function get_actions(env) {
   var actions = G.v({ cat: 'action' }).run(); // FIXME: use env.data, not G
@@ -3351,6 +3377,8 @@ function write_sentences(env) {
   }
 }
 
+// FORM BUILDER & FRIENDS
+
 function render_conversation(conversation) {
   var str = '';
 
@@ -3372,8 +3400,9 @@ function render_conversation(conversation) {
 
   // account for existing sentences
   if (conversation.sentences.length) {
-    conversation.sentences.forEach(function (s, i) {
-      prelude += '<p' + (i === conversation.sentences.length - 1 ? ' class="highlight"' : '') + '>';
+    conversation.sentences.slice().reverse().forEach(function (s, i) {
+      // prelude += '<p' + (i === conversation.sentences.length-1 ? ' class="highlight"' : '') + '>'
+      prelude += '<p' + (i === 0 ? ' class="highlight"' : '') + '>';
       s.filled.forEach(function (slot, i) {
         return prelude += inject_value(slot, slot.value, i) + ' ';
       });
@@ -3560,16 +3589,11 @@ var YourSelection = function YourSelection(_ref) {
       'section',
       { 'class': 'YourSelection__cta-addstory' },
       h(
-        'p',
-        null,
-        'Ready to add your own story?'
-      ),
-      h(
         Button,
         { onClick: function onClick() {
-            return changeView('story');
+            return changeView('read_stories');
           } },
-        'Add a story \u25B6'
+        'Read all stories in the map \u25B6'
       )
     ),
     h(
@@ -3796,49 +3820,6 @@ var Legend = function (_Component) {
               'Actions'
             ),
             this.renderActions()
-          )
-        ),
-        h(
-          'section',
-          { 'class': 'Legend__years' },
-          h(
-            Header,
-            null,
-            ' Years '
-          )
-        ),
-        h(
-          'section',
-          { 'class': 'Legend__keys' },
-          h(
-            Header,
-            null,
-            ' Keys '
-          ),
-          h(
-            'p',
-            null,
-            '\'\u2190\' for previous year'
-          ),
-          h(
-            'p',
-            null,
-            '\'\u2192\' for next year'
-          ),
-          h(
-            'p',
-            null,
-            '\'e\' toggles recent connections'
-          ),
-          h(
-            'p',
-            null,
-            '\'f\' toggles filter stories by year'
-          ),
-          h(
-            'p',
-            null,
-            '\'l\' for legend edges'
           )
         )
       );
@@ -4160,7 +4141,7 @@ var Sidebar = function (_Component) {
           h(
             'div',
             { 'class': 'Sidebar__subheading' },
-            ' The world\'s leading festival for the open Internet movement. '
+            'The MozFest Ripple Map illustrates the way in which this conference fosters both new and deepened relationships, which lead to ripple effects that change the shape of open technology.'
           ),
           this.renderSelectedView()
         ),

@@ -4,6 +4,17 @@ import Header from 'UiKit/Header/index';
 const About = () => {
   return (
     <div>
+
+      {/* Keys Section */}
+      <section class="Legend__keys">
+        <Header> Keys </Header>
+        <p>'←' for previous year</p>
+        <p>'→' for next year</p>
+        <p>'e' toggles recent connections</p>
+        <p>'f' toggles filter stories by year</p>
+        {/* <p>'l' for legend edges</p> */}
+      </section>
+
       <Header>What it is</Header>
 
       <p>The Ripple Mapping Tool is an interactive data visualization platform for social movements and community organizers. It allows community members to tell stories about how events and programs impacted their lives, and generates “ripple maps” that show the long term outcomes of interconnected organizing efforts.</p>

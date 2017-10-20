@@ -1059,9 +1059,10 @@ function render_conversation(conversation) {
 
   // account for existing sentences
   if(conversation.sentences.length) {
-    conversation.sentences.forEach(
+    conversation.sentences.slice().reverse().forEach(
       (s, i) => {
-        prelude += '<p' + (i === conversation.sentences.length-1 ? ' class="highlight"' : '') + '>'
+        // prelude += '<p' + (i === conversation.sentences.length-1 ? ' class="highlight"' : '') + '>'
+        prelude += '<p' + (i === 0 ? ' class="highlight"' : '') + '>'
         s.filled.forEach((slot, i) => prelude += inject_value(slot, slot.value, i) + ' ')
         prelude += '</p>'
       })

@@ -70,7 +70,10 @@ class Sidebar extends Component {
         {/* Render different views based on which section is selected*/}
         <section class="Sidebar__container">
           <h3 class="Sidebar__header">MozFest: Ripple Effect</h3>
-        <div class="Sidebar__subheading"> The world's leading festival for the open Internet movement. </div>
+          <div class="Sidebar__subheading">
+            {/* The world's leading festival for the open Internet movement. */}
+            The MozFest Ripple Map illustrates the way in which this conference fosters both new and deepened relationships, which lead to ripple effects that change the shape of open technology.
+          </div>
           {this.renderSelectedView()}
         </section>
 

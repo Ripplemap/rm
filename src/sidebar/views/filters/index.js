@@ -149,20 +149,10 @@ class Legend extends Component {
         </section>
 
         {/* Years Section */}
-        <section class="Legend__years">
-          <Header> Years </Header>
+      {/* <section class="Legend__years"> */}
+      {/*  <Header> Years </Header> */}
           {/* TODO: year slider */}
-        </section>
-
-        {/* Keys Section */}
-        <section class="Legend__keys">
-          <Header> Keys </Header>
-          <p>'←' for previous year</p>
-          <p>'→' for next year</p>
-          <p>'e' toggles recent connections</p>
-          <p>'f' toggles filter stories by year</p>
-          <p>'l' for legend edges</p>
-        </section>
+      {/*   </section> */}
 
       </div>
     );

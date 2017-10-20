@@ -15,9 +15,9 @@ const Home = ({changeView}) => {
       {/* Add a story CTA */}
       <section class="Home__cta-addstory">
 
-      <p>An annual celebration of the open Internet movement, where passionate technologists, educators, and makers come together to explore the future of the open Web and advocate for a healthy internet. This ripple map illustrates the many connections and outcomes that MozFest has fostered</p>
-
-      <p class="Home__cta_text">We'd love to hear your stories!</p>
+        <p class="Home__cta_text">
+          Go ahead and add a new story or click around the map to read stories that have already been added
+        </p>
 
         <Button onClick={() => changeView('story')}>
           Add a story
