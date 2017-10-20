@@ -3857,11 +3857,6 @@ var Story = function Story() {
     h(
       'div',
       null,
-      '- You will be named in this story on the MozFest Ripple Map, and MozFest attendees and organizers will be able to read this story'
-    ),
-    h(
-      'div',
-      null,
       '- That there are risks we will do our best to protect you from: unintentional data usage, monitoring, surveillance'
     ),
     h(
@@ -3921,7 +3916,7 @@ var Story = function Story() {
     'p',
     { onClick: restart_sentence, style: { textAlign: 'left', flex: 'inherit' } },
     h('i', { 'class': 'fa fa-chevron-left pl_1', 'aria-hidden': 'true' }),
-    '\xA0 Go back'
+    '\xA0 Start Over'
   );
 
   var footer_buttons = h(

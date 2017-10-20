@@ -28,7 +28,6 @@ const Story = () => {
   const consent_list =
       <div>
         <div>- That you're consenting to being named in a story on the MozFest Ripple Map, and that MozFest attendees and organizers will be able to read that story</div>
-        <div>- You will be named in this story on the MozFest Ripple Map, and MozFest attendees and organizers will be able to read this story</div>
         <div>- That there are risks we will do our best to protect you from: unintentional data usage, monitoring, surveillance</div>
         <div>- That at any time, you can change your story or mark it for removal.</div>
       </div>
@@ -54,7 +53,7 @@ const Story = () => {
   <p onClick={restart_sentence} style={{textAlign: 'left', flex: 'inherit'}}>
     <i class="fa fa-chevron-left pl_1" aria-hidden="true"></i>
     &nbsp;
-    Go back
+    Start Over
   </p>
 
   const footer_buttons =
