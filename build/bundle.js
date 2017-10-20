@@ -3846,6 +3846,31 @@ var Story = function Story() {
     };
   }
 
+  var thanks = h(
+    'div',
+    null,
+    h(
+      'p',
+      null,
+      'Thanks for adding your story, it\'s on the map!'
+    )
+  );
+
+  var back_button = h(
+    'p',
+    { onClick: restart_sentence, style: { textAlign: 'left', flex: 'inherit' } },
+    h('i', { 'class': 'fa fa-chevron-left pl_1', 'aria-hidden': 'true' }),
+    '\xA0 Start Over'
+  );
+
+  var footer_buttons = h(
+    Button,
+    { type: 'submit', buttonStyle: 'next' },
+    convo.current.filled.length && back_button || '',
+    'Next',
+    h('i', { 'class': 'fa fa-chevron-right pl_1', 'aria-hidden': 'true' })
+  );
+
   var consent_list = h(
     'div',
     null,
@@ -3866,15 +3891,9 @@ var Story = function Story() {
     )
   );
 
-  var consent_disclaimer = h(
+  var consent_buttons = h(
     'div',
-    { 'class': 'padded' },
-    h(
-      'div',
-      null,
-      'To add this story we need the consent of everyone in it. To obtain someone\u2019s informed consent tell them the following:'
-    ),
-    consent_list,
+    null,
     h(
       'div',
       null,
@@ -3902,29 +3921,16 @@ var Story = function Story() {
     )
   );
 
-  var thanks = h(
+  var consent_disclaimer = h(
     'div',
-    null,
+    { 'class': 'padded' },
     h(
-      'p',
+      'div',
       null,
-      'Thanks for adding your story, it\'s on the map!'
-    )
-  );
-
-  var back_button = h(
-    'p',
-    { onClick: restart_sentence, style: { textAlign: 'left', flex: 'inherit' } },
-    h('i', { 'class': 'fa fa-chevron-left pl_1', 'aria-hidden': 'true' }),
-    '\xA0 Start Over'
-  );
-
-  var footer_buttons = h(
-    Button,
-    { type: 'submit', buttonStyle: 'next' },
-    convo.current.filled.length && back_button || '',
-    'Next',
-    h('i', { 'class': 'fa fa-chevron-right pl_1', 'aria-hidden': 'true' })
+      'To add this story we need the consent of everyone in it. To obtain someone\u2019s informed consent tell them the following:'
+    ),
+    consent_list,
+    consent_buttons
   );
 
   var how_to_consent = h(
@@ -3960,7 +3966,8 @@ var Story = function Story() {
       'p',
       null,
       'Do I have your consent to name you in this story?'
-    )
+    ),
+    consent_buttons
   );
 
   var storytime = h(
@@ -3972,7 +3979,7 @@ var Story = function Story() {
       { id: 'the-conversation', onSubmit: submit_convo },
       h('div', { dangerouslySetInnerHTML: { __html: get_convo_html() } }),
       consent_no ? how_to_consent : '',
-      convo.current.slots.length === 1 && consent_disclaimer,
+      convo.current.slots.length === 1 && !consent_no && consent_disclaimer,
       convo.current.slots.length !== 1 && footer_buttons
     )
   );

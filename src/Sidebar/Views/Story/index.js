@@ -25,25 +25,6 @@ const Story = () => {
     }
   }
 
-  const consent_list =
-      <div>
-        <div>- That you're consenting to being named in a story on the MozFest Ripple Map, and that MozFest attendees and organizers will be able to read that story</div>
-        <div>- That there are risks we will do our best to protect you from: unintentional data usage, monitoring, surveillance</div>
-        <div>- That at any time, you can change your story or mark it for removal.</div>
-      </div>
-
-  const consent_disclaimer =
-  <div class="padded">
-    <div>To add this story we need the consent of everyone in it. To obtain someone’s informed consent tell them the following:</div>
-    {consent_list}
-
-    <div>Do you have the consent of everyone in this story?</div>
-    <div class="choice org" onClick={add_consent('me')}>Yes, I’m the only one in this story</div>
-    <div class="choice org" onClick={add_consent('verbal')}>Yes, verbal</div>
-    <div class="choice org" onClick={add_consent('written')}>Yes, written</div>
-    <div class="choice event" onClick={add_consent()}>No/not sure</div>
-  </div>
-
   const thanks =
   <div>
     <p>Thanks for adding your story, it's on the map!</p>
@@ -63,6 +44,32 @@ const Story = () => {
     <i class="fa fa-chevron-right pl_1" aria-hidden="true"></i>
   </Button>
 
+  const consent_list =
+  <div>
+    <div>- That you're consenting to being named in a story on the MozFest Ripple Map, and that MozFest attendees and organizers will be able to read that story</div>
+    <div>- That there are risks we will do our best to protect you from: unintentional data usage, monitoring, surveillance</div>
+    <div>- That at any time, you can change your story or mark it for removal.</div>
+  </div>
+
+  const consent_buttons =
+  <div>
+    <div>Do you have the consent of everyone in this story?</div>
+    <div class="choice org" onClick={add_consent('me')}>Yes, I’m the only one in this story</div>
+    <div class="choice org" onClick={add_consent('verbal')}>Yes, verbal</div>
+    <div class="choice org" onClick={add_consent('written')}>Yes, written</div>
+    <div class="choice event" onClick={add_consent()}>No/not sure</div>
+  </div>
+
+  const consent_disclaimer =
+  <div class="padded">
+    <div>To add this story we need the consent of everyone in it. To obtain someone’s informed consent tell them the following:</div>
+    {consent_list}
+
+    {consent_buttons}
+  </div>
+
+
+
   const how_to_consent =
   <div>
     <h4>Ask</h4>
@@ -76,6 +83,8 @@ const Story = () => {
     {consent_list}
 
     <p>Do I have your consent to name you in this story?</p>
+
+    {consent_buttons}
   </div>
 
 
@@ -87,7 +96,7 @@ const Story = () => {
 
       {consent_no ? how_to_consent : ''}
 
-      {convo.current.slots.length === 1 && consent_disclaimer}
+      {convo.current.slots.length === 1 && !consent_no && consent_disclaimer}
 
       {convo.current.slots.length !== 1 && footer_buttons}
     </form>
