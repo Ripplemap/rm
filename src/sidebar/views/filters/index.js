@@ -141,11 +141,16 @@ class Legend extends Component {
           </section>
 
         {/* Render the "Actions" column (and "Hide all"" button) */}
+      {/*
           <section class="Legend__column" style={{paddingLeft: '10px'}}>
             <Header>Actions</Header>
             {this.renderActions()}
-            {/* <Button><icon class="fa fa-eye-slash" style={{paddingRight: '1rem'}} />Hide all </Button> */}
+
+       */}
+            {/* <Button><icon class="fa fa-eye-slash" style={{paddingRight: '1rem'}} />Hide all </Button>
+
           </section>
+              */}
         </section>
 
         {/* Years Section */}

@@ -3789,6 +3789,7 @@ var LegendItem = function LegendItem(props) {
   );
 };
 
+// TODO: find out if EDGES need to be filterable (like NODES are clickable to toggle)
 var LegendNodes = [{
   name: 'Event',
   color: '#f32938',
@@ -3925,16 +3926,6 @@ var Legend = function (_Component) {
               'People & things'
             ),
             this.renderNodes()
-          ),
-          h(
-            'section',
-            { 'class': 'Legend__column', style: { paddingLeft: '10px' } },
-            h(
-              Header,
-              null,
-              'Actions'
-            ),
-            this.renderActions()
           )
         )
       );
