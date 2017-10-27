@@ -6,7 +6,7 @@ import {convo} from 'convo'
 import {cats} from 'model'
 import state from 'state'
 
-export {init, force_rerender, add_renderer, get_sentence_html, get_viz_html, get_convo_html, get_tag_html, showtags, whatsnext, get_active_sentence_html}
+export {init, force_rerender, add_renderer, get_sentence_html, get_viz_html, get_convo_html, get_sentencesss_html, get_tag_html, showtags, whatsnext, get_active_sentence_html}
 
 const renderers = []
 function add_renderer(f) {
@@ -128,9 +128,12 @@ function get_viz_html() {
 }
 
 function get_convo_html() {
-  return render_conversation(convo)
+  return render_convo_input(convo)
 }
 
+function get_sentencesss_html() {
+  return render_sentences(convo)
+}
 
 // COMPACTIONS
 
@@ -990,7 +993,8 @@ function write_sentences(env) {
 
     return ' <span class="' + classtext + '"'
          + datatext
-         + ' contentEditable="true">'
+         // + ' contentEditable="true">'
+         + '>'
          + text + '</span>'
   }
 
@@ -1033,7 +1037,7 @@ function get_cat_dat(cat, q) {
   var substrRegex = new RegExp(q, 'i')
   var frontRegex = new RegExp('^' + q, 'i')
   var nodes = G.vertices.filter(function(node) {return node.cat === cat}).map(prop('name'))
-        .filter(function(name) {return substrRegex.test(name)})
+                        .filter(function(name) {return substrRegex.test(name)})
 
   nodes.sort(function(a, b) {
     return frontRegex.test(b) - frontRegex.test(a) || a.charCodeAt() - b.charCodeAt()
@@ -1042,34 +1046,45 @@ function get_cat_dat(cat, q) {
   return nodes
 }
 
-function render_conversation(conversation) {
+function render_sentences(conversation) {
   let str = ''
-
-  // var typeahead_params = {hint: true, highlight: true, minLength: 1}
-  // function typeahead_source(cat) {return {name: 'states', source: function(q, cb) {cb(get_cat_dat(cat, q))}}}
-  function make_datalist(cat) {
-    let nodes = G.vertices.filter(function(node) {return node.cat === cat}).map(prop('name'))
-    let options = nodes.reduce((acc, v) => acc + `<option value="${v}">`, '')
-    return `<datalist id="${cat}-list">${options}</datalist>`
-  }
-
-  var inputs = ''
-  var prelude = ''
-  // var submit_button = '<input type="submit" style="position: absolute; left: -9999px">'
 
   // account for existing sentences
   if(conversation.sentences.length) {
     conversation.sentences.slice().reverse().forEach(
       (s, i) => {
-        // prelude += '<p' + (i === conversation.sentences.length-1 ? ' class="highlight"' : '') + '>'
-        prelude += '<p' + (i === 0 ? ' class="highlight"' : '') + '>'
-        s.filled.forEach((slot, i) => prelude += inject_value(slot, slot.value, i) + ' ')
-        prelude += '</p>'
+        str += '<p' + (i === 0 ? ' class="highlight"' : '') + '>'
+        s.filled.forEach((slot, i) => str += inject_value(slot, slot.value, i) + ' ')
+        str += '<a style="text-decoration: underline; color: red;" onclick="remove(' + i + ')"' + '>X</a> '
+        str += '</p>'
       })
   }
 
+  return str
+}
+
+function render_convo_input(conversation) {
+  // let str = ''
+  // let inputs = ''
+  let prelude = ''
+
+  // var typeahead_params = {hint: true, highlight: true, minLength: 1}
+  // function typeahead_source(cat) {return {name: 'states', source: function(q, cb) {cb(get_cat_dat(cat, q))}}}
+  // var submit_button = '<input type="submit" style="position: absolute; left: -9999px">'
+
+  // account for existing sentences
+  // if(conversation.sentences.length) {
+  //   conversation.sentences.slice().reverse().forEach(
+  //     (s, i) => {
+  //       // prelude += '<p' + (i === conversation.sentences.length-1 ? ' class="highlight"' : '') + '>'
+  //       prelude += '<p' + (i === 0 ? ' class="highlight"' : '') + '>'
+  //       s.filled.forEach((slot, i) => prelude += inject_value(slot, slot.value, i) + ' ')
+  //       prelude += '</p>'
+  //     })
+  // }
+
   // special case the first step
-  var sentence = conversation.current
+  let sentence = conversation.current
 
   sentence.filled.forEach(function(slot, i) {
     prelude += inject_value(slot, slot.value, i) + ' '
@@ -1077,12 +1092,12 @@ function render_conversation(conversation) {
 
   // if(!prelude) {
   //   prelude = `<p>Okay, let’s fill in the blanks.</p>`
-  // // } else {
-  //   // prelude += `<p>Tell us a story about your involvement in MozFest.</p>`
+  // } else {
+    // prelude += `<p>Tell us a story about your involvement in MozFest.</p>`
   // }
 
-  if(!conversation.current.filled.length)
-    prelude += `<p>Tell us more about your involvement in MozFest.</p>`
+  // if(!conversation.current.filled.length)
+  //   prelude += `<p>Tell us more about your involvement in MozFest.</p>`
 
   // display the unfilled slot
   var slot = sentence.slots[0]
@@ -1100,27 +1115,37 @@ function render_conversation(conversation) {
     input = ''
   }
 
-  prelude += input
+  return prelude + input
+
+
+  // prelude += input
 
 
   // do the DOM
   // dom.set_el('the-conversation', prelude + inputs + submit_button)
-  str = prelude + inputs // + submit_button
+  // str = prelude + inputs // + submit_button
 
   // wiring... /sigh
-  var catnames = Object.keys(cats)
-  catnames.forEach(function(cat) {
-    // $('.'+cat+'-input').typeahead(typeahead_params, typeahead_source(cat))
-  })
+  // var catnames = Object.keys(cats)
+  // catnames.forEach(function(cat) {
+  //   // $('.'+cat+'-input').typeahead(typeahead_params, typeahead_source(cat))
+  // })
 
   // if(sentence.filled.length)
   //   dom.el(slot.key).focus()    // TODO: this probably doesn't work
 
   // TODO: use the autofocus attr directly on the input
+  // return str
 
-  return str
+
 
   // helper functions
+
+  function make_datalist(cat) {
+    let nodes = G.vertices.filter(function(node) {return node.cat === cat}).map(prop('name'))
+    let options = nodes.reduce((acc, v) => acc + `<option value="${v}">`, '')
+    return `<datalist id="${cat}-list">${options}</datalist>`
+  }
 
   function make_word_input(cat, key) {
     // var text = ''
@@ -1171,11 +1196,15 @@ function render_conversation(conversation) {
     var str = '<input id="' +key+ '" type="date" name="' +key+ '" value="2017-10-26" />'
     return str
   }
+}
 
   function inject_value(slot, value, index) { // HACK: index is a huge hack, remove it.
     var text = ''
 
-    if(slot.key === 'subject') {
+    if(slot.key === 'consent') {
+      text = ''
+    }
+    else if(slot.key === 'subject') {
       if(slot.value && Number.isInteger(index)) {
         // text += '<p><b>' + slot.value + '</b></p>'
         text += '<b>' + slot.value + '</b>'
@@ -1219,7 +1248,6 @@ function render_conversation(conversation) {
 
     return text
   }
-}
 
 function mayben(val) {
   return /^[aeiou]/.test(val) ? 'n' : ''

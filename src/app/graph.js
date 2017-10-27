@@ -63,6 +63,8 @@ function fact_to_graph(facts) {
    */
 
   var tree = factor_facts(filter_facts(facts))
+  tree = refactor_facts(tree)
+
   state.tagkeys = get_tagkeys(facts)
 
   tree.nodes.add.forEach(function(node) {
@@ -120,6 +122,27 @@ function factor_facts(facts) {
     list.push(item)
   })
   return tree
+}
+
+function refactor_facts(tree) {
+  // allows for soft deletion
+  // THINK: TODO: FIXME: maybe we don't want soft delete?!
+  tree.nodes.remove.forEach(function(node) {
+    tree.nodes.add = list_remove(tree.nodes.add, node)
+  })
+  tree.edges.remove.forEach(function(edge) {
+    tree.edges.add = list_remove(tree.edges.add, edge)
+  })
+  return tree
+}
+
+function list_remove(list, item) {
+  // TODO: oh the humanity
+  return list.filter(function(x) {
+    return !Object.keys(item).reduce(function(acc, key) {
+      return acc && JSON.stringify(x[key]) === JSON.stringify(item[key])
+    }, true)
+  })
 }
 
 function set_intersect(xs, ys) {

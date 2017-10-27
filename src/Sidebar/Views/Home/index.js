@@ -16,7 +16,7 @@ const Home = ({changeView}) => {
       <section class="Home__cta-addstory">
 
         <p class="Home__cta_text">
-          Go ahead and add a new story or click around the map to read stories that have already been added
+          Use this handy button to get started!
         </p>
 
         <Button onClick={() => changeView('story')}>
@@ -24,8 +24,16 @@ const Home = ({changeView}) => {
           <i class="fa fa-chevron-right pl_1" aria-hidden="true"></i>
         </Button>
 
-        <a href="mailto:una@andalsotoo.net?subject=Someone added me to the Ripple Map without my consent&body=Please remove me, my name is:">
-          <button >Someone put me in without my consent</button>
+        <p>
+          You can also click around the map to read other people's stories of their Mozfest experience.
+        </p>
+
+        <p>
+          If someone added you without your consent use the button below to let us know right away.
+        </p>
+
+        <a href="mailto:una@andalsotoo.net?subject=Someone added me to the Ripple Map without my consent&body=Please remove me, my name is:" style={{'text-decoration': 'none'}}>
+          <Button>Someone put me in without my consent</Button>
         </a>
 
       </section>

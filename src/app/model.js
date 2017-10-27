@@ -1,10 +1,10 @@
 import {G} from 'graph'
 import {error, clone} from 'fun'
-import {add_to_server_facts} from 'net'
+import {add_to_server_facts, remove_from_server_facts} from 'net'
 
 export const cats = {} // ripplemap categories
 export const adders = {thing: add_thing, action: add_action, edge: add_edge}
-export {add_thing, add_action, add_edge}
+export {add_thing, add_action, add_edge, remove_sentence}
 
 
 /* INTERFACES FOR RIPPLE MODEL
@@ -114,6 +114,45 @@ function add_happening(type, props, persist) {
   add_to_graph('node', node)
   if(persist)
     add_to_server_facts('node', node)
+}
+
+
+
+
+function remove_sentence(ids) {
+  // lalalala break up the sentence
+
+  // get nodes and edges from ids
+  let nodes = G.v(ids).filter({cat: 'action'}).unique().run()
+  let edges = nodes.reduce((acc, n) => acc.concat(n._in, n._out), [])
+
+  // remove the nodes
+  nodes.forEach(function(node) {
+    remove_from_graph('node', node)
+    // if(persist)
+      remove_from_server_facts('node', node)
+  })
+
+  // remove the edges
+  edges.forEach(function(edge) {
+    // THINK: Dagoba removes the edges automatically
+     // remove_from_graph('edge', edge)
+    // if(persist)
+      remove_from_server_facts('edge', edge)
+  })
+
+  // rebuild the graph?
+}
+
+
+function remove_from_graph(type, item) {
+  if(type === 'node') {
+    G.removeVertex(item)
+  }
+
+  if(type === 'edge') {
+    G.removeEdge(item)
+  }
 }
 
 

@@ -7,7 +7,11 @@ import {highlightyo} from 'highlight'
 
 
 export let convo = new_conversation()
-export {update_conversation, restart_sentence}
+export {update_conversation, restart_sentence, reset_convo}
+
+function reset_convo() {
+  convo = new_conversation()
+}
 
 function restart_sentence() {
   convo.current = new_sentence()
@@ -92,6 +96,10 @@ function finalize_conversation(conversation, sentence) {
 
   const q = G.v(verb).as('v').both().as('b').merge('v', 'b').run()
   highlightyo(q.map(x => x._id), 'activate')
+
+  // add the ids so we can get them back out later...
+  // TODO: this is really hacky, fix it!
+  sentence.ids = q.map(x => x._id)
 
   // start over
   // TODO: show the sentence

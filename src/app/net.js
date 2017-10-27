@@ -1,12 +1,14 @@
 import {G} from 'graph'
 import state from 'state'
 
-export {add_to_server_facts, persist, get_facts_from_server}
+export {add_to_server_facts, remove_from_server_facts, persist, get_facts_from_server}
 
 
 let loaded = false
 
-function add_to_server_facts(type, live_item) {
+function add_to_server_facts(type, live_item, action) {
+  action = action || 'add'
+
   if(!loaded)
     return undefined // can't save facts until you have all the facts
 
@@ -39,7 +41,7 @@ function add_to_server_facts(type, live_item) {
   // FIXME: present splash page of some kind
 
   var fact = { email: state.email
-             , action: 'add'
+             , action: action
              , type: type
              , tags: state.tags
              , data: item
@@ -47,6 +49,12 @@ function add_to_server_facts(type, live_item) {
 
   send_data_to_server(fact)
 }
+
+function remove_from_server_facts(type, item) {
+  add_to_server_facts(type, item, 'remove')
+}
+
+
 
 function persist() {
   // THINK: do we still need localstorage caching?
